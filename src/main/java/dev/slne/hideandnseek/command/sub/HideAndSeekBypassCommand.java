@@ -22,14 +22,14 @@ public class HideAndSeekBypassCommand extends CommandAPICommand {
     withPermission("hideandseek.command.bypass");
 
     executesPlayer((player, args) -> {
-      if (HideAndSeekManager.INSTANCE.getBypassing().contains(player)) {
-        HideAndSeekManager.INSTANCE.getBypassing().remove(player);
+      if (HideAndSeekManager.INSTANCE.isBypassing(player)) {
+        HideAndSeekManager.INSTANCE.removeBypassing(player);
 
         player.sendMessage(
             Messages.prefix().append(Component.text("Du bist nicht mehr im Bypass-Modus",
                 NamedTextColor.GREEN)));
       } else {
-        HideAndSeekManager.INSTANCE.getBypassing().add(player);
+        HideAndSeekManager.INSTANCE.addBypassing(player);
 
         player.sendMessage(Messages.prefix().append(Component.text("Du bist jetzt im Bypass-Modus",
             NamedTextColor.GREEN)));

@@ -20,7 +20,7 @@ public class InventoryListener implements Listener {
    */
   @EventHandler
   public void onDrop(PlayerDropItemEvent event) {
-    if (!HideAndSeekManager.INSTANCE.isByPassing(event.getPlayer())) {
+    if (!HideAndSeekManager.INSTANCE.isBypassing(event.getPlayer())) {
       event.setCancelled(true);
     }
   }
@@ -31,7 +31,7 @@ public class InventoryListener implements Listener {
       return;
     }
 
-    if (!HideAndSeekManager.INSTANCE.isByPassing(player)) {
+    if (!HideAndSeekManager.INSTANCE.isBypassing(player)) {
       event.setCancelled(true);
     }
   }
@@ -42,7 +42,7 @@ public class InventoryListener implements Listener {
       return;
     }
 
-    if (!HideAndSeekManager.INSTANCE.isByPassing(player)) {
+    if (!HideAndSeekManager.INSTANCE.isBypassing(player)) {
       event.setCancelled(true);
     }
   }

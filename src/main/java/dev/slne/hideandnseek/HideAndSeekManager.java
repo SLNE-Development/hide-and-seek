@@ -1,41 +1,55 @@
 package dev.slne.hideandnseek;
 
-import java.util.ArrayList;
-import java.util.List;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 /**
  * The type Hide and seek manager.
  */
-public class HideAndSeekManager {
+public enum HideAndSeekManager {
+  INSTANCE;
 
-  public static final HideAndSeekManager INSTANCE = new HideAndSeekManager();
+  private final ObjectSet<UUID> bypassing;
 
-  private final List<Player> bypassing;
-
+  @Setter
+  @Getter
   private HideAndSeekGame runningGame;
 
+  @Getter
   private Location lobbyLocation;
+
+  @Getter
   private int lobbyWorldBorderRadius;
+
+  @Getter
   private int lobbyCountdown;
+
+  @Getter
   private Location spawnLocation;
 
   /**
    * Instantiates a new Hide and seek manager.
    */
-  public HideAndSeekManager() {
-    this.bypassing = new ArrayList<>();
+  HideAndSeekManager() {
+    this.bypassing = new ObjectOpenHashSet<>();
   }
 
   /**
    * On enable.
    */
   public void onEnable() {
-    spawnLocation = HideAndSeek.getInstance().getConfig().getLocation("spawn");
-    lobbyLocation = HideAndSeek.getInstance().getConfig().getLocation("lobby");
-    lobbyWorldBorderRadius = HideAndSeek.getInstance().getConfig().getInt("lobbyWorldBorderRadius");
-    lobbyCountdown = HideAndSeek.getInstance().getConfig().getInt("lobbyCountdown");
+    final FileConfiguration config = HideAndSeek.getInstance().getConfig();
+
+    spawnLocation = config.getLocation("spawn");
+    lobbyLocation = config.getLocation("lobby");
+    lobbyWorldBorderRadius = config.getInt("lobbyWorldBorderRadius");
+    lobbyCountdown = config.getInt("lobbyCountdown");
   }
 
   /**
@@ -44,50 +58,16 @@ public class HideAndSeekManager {
   public void onDisable() {
   }
 
-  /**
-   * Gets bypassing.
-   *
-   * @return the bypassing
-   */
-  public List<Player> getBypassing() {
-    return bypassing;
+  public boolean isBypassing(Player player) {
+    return bypassing.contains(player.getUniqueId());
   }
 
-  /**
-   * Remove by passing.
-   *
-   * @param player the player
-   */
-  public void removeByPassing(Player player) {
-    bypassing.remove(player);
+  public void addBypassing(Player player) {
+    bypassing.add(player.getUniqueId());
   }
 
-  /**
-   * Add by passing.
-   *
-   * @param player the player
-   */
-  public void addByPassing(Player player) {
-    bypassing.add(player);
-  }
-
-  /**
-   * Is by passing boolean.
-   *
-   * @param player the player
-   * @return the boolean
-   */
-  public boolean isByPassing(Player player) {
-    return bypassing.contains(player);
-  }
-
-  /**
-   * Gets spawn location.
-   *
-   * @return the spawn location
-   */
-  public Location getSpawnLocation() {
-    return spawnLocation;
+  public void removeBypassing(Player player) {
+    bypassing.remove(player.getUniqueId());
   }
 
   /**
@@ -103,33 +83,6 @@ public class HideAndSeekManager {
   }
 
   /**
-   * Gets running game.
-   *
-   * @return the running game
-   */
-  public HideAndSeekGame getRunningGame() {
-    return runningGame;
-  }
-
-  /**
-   * Sets running game.
-   *
-   * @param runningGame the running game
-   */
-  public void setRunningGame(HideAndSeekGame runningGame) {
-    this.runningGame = runningGame;
-  }
-
-  /**
-   * Gets lobby world border radius.
-   *
-   * @return the lobby world border radius
-   */
-  public int getLobbyWorldBorderRadius() {
-    return lobbyWorldBorderRadius;
-  }
-
-  /**
    * Sets lobby location.
    *
    * @param lobbyLocation the lobby location
@@ -142,15 +95,6 @@ public class HideAndSeekManager {
   }
 
   /**
-   * Gets lobby location.
-   *
-   * @return the lobby location
-   */
-  public Location getLobbyLocation() {
-    return lobbyLocation;
-  }
-
-  /**
    * Sets lobby world border radius.
    *
    * @param lobbyWorldBorderRadius the lobby world border radius
@@ -160,10 +104,6 @@ public class HideAndSeekManager {
 
     HideAndSeek.getInstance().getConfig().set("lobbyWorldBorderRadius", lobbyWorldBorderRadius);
     HideAndSeek.getInstance().saveConfig();
-  }
-
-  public int getLobbyCountdown() {
-    return lobbyCountdown;
   }
 
   public void setLobbyCountdown(int lobbyCountdown) {

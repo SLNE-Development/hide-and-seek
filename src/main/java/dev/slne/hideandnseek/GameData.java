@@ -11,7 +11,7 @@ import org.bukkit.World;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class GameData {
+public final class GameData {
 
   private final Duration lobbyTime;
   private final Duration preparationTime;

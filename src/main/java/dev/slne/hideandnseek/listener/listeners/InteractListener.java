@@ -17,7 +17,7 @@ public class InteractListener implements Listener {
    */
   @EventHandler
   public void onInteract(PlayerInteractEvent event) {
-    if (!HideAndSeekManager.INSTANCE.isByPassing(event.getPlayer())) {
+    if (!HideAndSeekManager.INSTANCE.isBypassing(event.getPlayer())) {
       event.setCancelled(true);
     }
   }
