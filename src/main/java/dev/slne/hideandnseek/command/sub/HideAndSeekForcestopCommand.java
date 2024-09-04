@@ -31,7 +31,7 @@ public class HideAndSeekForcestopCommand extends CommandAPICommand {
         throw CommandAPI.failWithString("Es wurde noch kein Spiel erstellt.");
       }
 
-      runningGame.end(HideAndSeekEndReason.FORCED_END);
+      runningGame.end(HideAndSeekEndReason.FORCED_END); // TODO: 04.09.2024 22:04 - stop current running step
       HideAndSeekManager.INSTANCE.setRunningGame(null);
 
       player.sendMessage(Messages.prefix().append(Component.text("Das Spiel wurde gestoppt.",

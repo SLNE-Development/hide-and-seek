@@ -2,6 +2,8 @@ package dev.slne.hideandnseek.command.sub;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.IntegerArgument;
+import dev.jorel.commandapi.arguments.LocationArgument;
+import dev.jorel.commandapi.arguments.LocationType;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Messages;
 import net.kyori.adventure.text.Component;
@@ -23,19 +25,21 @@ public class HideAndSeekSetLobbyCommand extends CommandAPICommand {
 
     withPermission("hideandseek.command.setspawn");
 
-    withArguments(new IntegerArgument("radius"));
-    withArguments(new IntegerArgument("countdown"));
+    withArguments(
+        new LocationArgument("location", LocationType.BLOCK_POSITION, true),
+        new IntegerArgument("radius"),
+        new IntegerArgument("countdown")
+    );
 
-    executesPlayer((player, args) -> {
-      int radius = args.getOrDefaultUnchecked("radius", 0);
-      int countdown = args.getOrDefaultUnchecked("countdown", 0);
+    executes((sender, args) -> {
+      final Location location = args.getUnchecked("location");
+      final int radius = args.getOrDefaultUnchecked("radius", 0);
+      final int countdown = args.getOrDefaultUnchecked("countdown", 0);
 
-      Location playerLocation = player.getLocation().clone();
-
-      HideAndSeekManager.INSTANCE.setLobbyLocation(playerLocation);
+      HideAndSeekManager.INSTANCE.setLobbyLocation(location);
       HideAndSeekManager.INSTANCE.setLobbyWorldBorderRadius(radius);
 
-      player.sendMessage(Messages.prefix().append(Component.text("Du hast die Lobby gesetzt.",
+      sender.sendMessage(Messages.prefix().append(Component.text("Du hast die Lobby gesetzt.",
           NamedTextColor.GREEN)));
     });
   }

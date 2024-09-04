@@ -2,6 +2,10 @@ package dev.slne.hideandnseek.command.sub;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.BooleanArgument;
+import dev.jorel.commandapi.arguments.LocationArgument;
+import dev.jorel.commandapi.arguments.LocationType;
+import dev.jorel.commandapi.arguments.RotationArgument;
+import dev.jorel.commandapi.wrappers.Rotation;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Messages;
 import net.kyori.adventure.text.Component;
@@ -23,19 +27,19 @@ public class HideAndSeekSetSpawnCommand extends CommandAPICommand {
 
     withPermission("hideandseek.command.setspawn");
 
-    withOptionalArguments(new BooleanArgument("include_yaw_pitch"));
+    withArguments(new LocationArgument("location", LocationType.BLOCK_POSITION, true));
+    withOptionalArguments(new RotationArgument("rotation"));
 
     executesPlayer((player, args) -> {
-      boolean includeYawPitch = args.getOrDefaultUnchecked("include_yaw_pitch", true);
+      final Location location = args.getUnchecked("location");
+      final Rotation rotation = args.getOrDefaultUnchecked("include_yaw_pitch", new Rotation(0, 0));
 
-      Location playerLocation = player.getLocation().clone();
+      assert location != null;
 
-      if (!includeYawPitch) {
-        playerLocation.setYaw(0);
-        playerLocation.setPitch(0);
-      }
+      location.setYaw(rotation.getYaw());
+      location.setPitch(rotation.getPitch());
 
-      HideAndSeekManager.INSTANCE.setSpawnLocation(playerLocation);
+      HideAndSeekManager.INSTANCE.setSpawnLocation(location);
 
       player.sendMessage(Messages.prefix().append(Component.text("Du hast den Spawn gesetzt.",
           NamedTextColor.GREEN)));
