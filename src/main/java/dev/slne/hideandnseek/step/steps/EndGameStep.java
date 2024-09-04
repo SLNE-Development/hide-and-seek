@@ -5,6 +5,7 @@ import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Settings;
 import dev.slne.hideandnseek.step.GameStep;
+import dev.slne.hideandnseek.util.Continuation;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -33,7 +34,9 @@ public class EndGameStep implements GameStep {
   }
 
   @Override
-  public void reset() {
+  public void reset(Continuation continuation) {
+    super.reset(continuation);
+
     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
       if (!onlinePlayer.hasPermission("hideandseek.kick.bypass")) {
         onlinePlayer.kick(Component.text("Das Spiel wurde beendet.", NamedTextColor.RED));

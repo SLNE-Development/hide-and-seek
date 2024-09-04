@@ -7,8 +7,8 @@ import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.step.GameStep;
-import dev.slne.hideandnseek.step.GameStepManager.Continuation;
-import dev.slne.hideandnseek.step.GameStepManager.GameData;
+import dev.slne.hideandnseek.util.Continuation;
+import dev.slne.hideandnseek.GameData;
 import dev.slne.hideandnseek.timer.HiderPreparationCountdown;
 import java.time.Duration;
 import net.kyori.adventure.sound.Sound;
@@ -96,8 +96,8 @@ public class PreparationStep extends GameStep {
   }
 
   @Override
-  public void reset() {
-    super.reset();
+  public void reset(Continuation continuation) {
+    super.reset(continuation);
 
     Bukkit.getServer().setMaxPlayers(previousMaxPlayers);
   }

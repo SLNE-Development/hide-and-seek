@@ -1,17 +1,15 @@
 package dev.slne.hideandnseek.step.steps;
 
-import dev.slne.hideandnseek.HideAndSeek;
 import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.step.GameStep;
-import dev.slne.hideandnseek.step.GameStepManager.Continuation;
-import dev.slne.hideandnseek.step.GameStepManager.GameData;
+import dev.slne.hideandnseek.util.Continuation;
+import dev.slne.hideandnseek.GameData;
 import dev.slne.hideandnseek.timer.GameCountdown;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
 import net.kyori.adventure.sound.Sound.Source;
@@ -90,8 +88,8 @@ public class IngameStep extends GameStep {
       seeker.teleportSpawn();
     }
 
-    world.getWorldBorder().setSize(finalRadius * 2, shrinkTimeUnit.toSeconds(shrinkTime));
-    countdown.runTaskTimer(HideAndSeek.getInstance(), 0, 20);
+    world.getWorldBorder().setSize(finalRadius * 2, shrinkTime.getSeconds());
+    countdown.start();
   }
 
   @Override
@@ -100,6 +98,6 @@ public class IngameStep extends GameStep {
   }
 
   @Override
-  public void reset() {
+  public void reset(Continuation continuation) {
   }
 }

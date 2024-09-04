@@ -2,38 +2,37 @@ package dev.slne.hideandnseek;
 
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.step.GameStep;
+import dev.slne.hideandnseek.step.GameStepManager;
 import dev.slne.hideandnseek.step.steps.LobbyStep;
 import dev.slne.hideandnseek.step.steps.PreparationStep;
 import dev.slne.hideandnseek.timer.GameCountdown;
 import dev.slne.hideandnseek.timer.HiderPreparationCountdown;
+import dev.slne.hideandnseek.util.TeamUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 /**
  * The type Hide and seek game.
  */
+@Getter
 public class HideAndSeekGame {
 
+  private final GameData gameData;
+
+  @Setter
   private HideAndSeekGameState gameState;
-
-  private final List<HideAndSeekPlayer> seekers;
-  private final List<HideAndSeekPlayer> hiders;
-
-  private HideAndSeekPlayer initialSeeker;
-
-  private final boolean doHidersBecomeSeekers;
-  private final World world;
-  private final int finalRadius;
-  private final int initialRadius;
-  private final long shrinkTimeTicks;
-
-  private final List<GameStep> steps;
+  private Team hidersTeam;
+  private Team seekersTeam;
 
   /**
    * Instantiates a new Hide and seek game.
@@ -50,51 +49,37 @@ public class HideAndSeekGame {
    * @param shrinkTime            the shrink time
    * @param initialSeeker         the initial seeker
    */
-  public HideAndSeekGame(TimeUnit timeUnit, long maxTime, TimeUnit prepTimeUnit, long prepMaxTime,
-      boolean doHidersBecomeSeekers, World world, int finalRadius, int initialRadius,
-      TimeUnit shrinkTimeUnit, long shrinkTime, HideAndSeekPlayer initialSeeker) {
-    this.steps = new ArrayList<>();
-
-    this.steps.add(new LobbyStep(this, TimeUnit.SECONDS,
-        HideAndSeekManager.INSTANCE.getLobbyCountdown()));
-    this.steps.add(new PreparationStep(this, prepTimeUnit, prepMaxTime));
-
-    this.seekers = new ArrayList<>();
-    this.hiders = new ArrayList<>();
-    this.initialSeeker = initialSeeker;
-
-    this.world = world;
-    this.finalRadius = finalRadius;
-    this.initialRadius = initialRadius;
-    this.shrinkTimeTicks = shrinkTimeUnit.toSeconds(shrinkTime) * 20;
-
-    this.doHidersBecomeSeekers = doHidersBecomeSeekers;
+  public HideAndSeekGame(GameData gameData) {
+    this.gameData = gameData;
   }
 
-  /**
-   * Start.
-   *
-   * @param state the state
-   */
-  public void start(HideAndSeekGameState state) {
-    this.gameState = state;
+  public CompletableFuture<Void> prepare() {
+    return GameStepManager.INSTANCE.prepareGame(this, gameData).thenRun(() -> {
+      final ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
 
-    this.steps.stream().filter(lifecycle -> lifecycle.getGameState().equals(state))
-        .forEach(GameStep::start);
+      this.hidersTeam = TeamUtil.getOrCreateTeam(scoreboardManager, "hiders");
+      this.seekersTeam = TeamUtil.getOrCreateTeam(scoreboardManager, "seekers");
+
+      TeamUtil.prepareTeam(hidersTeam);
+      TeamUtil.prepareTeam(seekersTeam);
+    });
   }
 
-  /**
-   * Load.
-   */
-  public void load() {
-    steps.forEach(GameStep::load);
+  public CompletableFuture<Void> start() {
+//    this.gameState = state;
+
+    return GameStepManager.INSTANCE.startGame();
   }
 
-  /**
-   * Reset.
-   */
-  public void reset() {
-    steps.forEach(GameStep::reset);
+  public CompletableFuture<Void> reset() {
+    hidersTeam.unregister();
+    seekersTeam.unregister();
+
+    this.gameState = null;
+    this.hidersTeam = null;
+    this.seekersTeam = null;
+
+    return GameStepManager.INSTANCE.resetGame();
   }
 
 
@@ -104,9 +89,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void addSeeker(HideAndSeekPlayer player) {
-    seekers.add(player);
-
-    seekersTeam.addPlayer(player.getPlayer());
+    seekersTeam.addEntity(player.getPlayer());
   }
 
   /**
@@ -115,9 +98,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void addHider(HideAndSeekPlayer player) {
-    hiders.add(player);
-
-    hidersTeam.addPlayer(player.getPlayer());
+    hidersTeam.addEntity(player.getPlayer());
   }
 
   /**
@@ -126,9 +107,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void removeSeeker(HideAndSeekPlayer player) {
-    seekers.remove(player);
-
-    seekersTeam.removePlayer(player.getPlayer());
+    seekersTeam.removeEntity(player.getPlayer());
   }
 
   /**
@@ -137,9 +116,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void removeHider(HideAndSeekPlayer player) {
-    hiders.remove(player);
-
-    hidersTeam.removePlayer(player.getPlayer());
+    hidersTeam.removeEntity(player.getPlayer());
   }
 
   /**
@@ -149,7 +126,7 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isHider(HideAndSeekPlayer player) {
-    return hiders.contains(player);
+    return hidersTeam.hasEntity(player.getPlayer());
   }
 
   /**
@@ -159,52 +136,7 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isSeeker(HideAndSeekPlayer player) {
-    return seekers.contains(player);
-  }
-
-  /**
-   * Sets game state.
-   *
-   * @param gameState the game state
-   */
-  public void setGameState(HideAndSeekGameState gameState) {
-    this.gameState = gameState;
-  }
-
-  /**
-   * Is do hiders become seekers boolean.
-   *
-   * @return the boolean
-   */
-  public boolean isDoHidersBecomeSeekers() {
-    return doHidersBecomeSeekers;
-  }
-
-  /**
-   * Gets hiders team.
-   *
-   * @return the hiders team
-   */
-  public Team getHidersTeam() {
-    return hidersTeam;
-  }
-
-  /**
-   * Gets seekers team.
-   *
-   * @return the seekers team
-   */
-  public Team getSeekersTeam() {
-    return seekersTeam;
-  }
-
-  /**
-   * Gets game state.
-   *
-   * @return the game state
-   */
-  public HideAndSeekGameState getGameState() {
-    return gameState;
+    return seekersTeam.hasEntity(player.getPlayer());
   }
 
   /**
@@ -213,7 +145,10 @@ public class HideAndSeekGame {
    * @return the seekers
    */
   public List<HideAndSeekPlayer> getSeekers() {
-    return seekers;
+    return seekersTeam.getEntries().stream()
+        .map(UUID::fromString)
+        .map(HideAndSeekPlayer::get)
+        .toList();
   }
 
   /**
@@ -222,43 +157,10 @@ public class HideAndSeekGame {
    * @return the hiders
    */
   public List<HideAndSeekPlayer> getHiders() {
-    return hiders;
-  }
-
-  /**
-   * Gets timer.
-   *
-   * @return the timer
-   */
-  public GameCountdown getTimer() {
-    return timer;
-  }
-
-  /**
-   * Gets final radius.
-   *
-   * @return the final radius
-   */
-  public int getFinalRadius() {
-    return finalRadius;
-  }
-
-  /**
-   * Gets initial radius.
-   *
-   * @return the initial radius
-   */
-  public int getInitialRadius() {
-    return initialRadius;
-  }
-
-  /**
-   * Gets shrink time ticks.
-   *
-   * @return the shrink time ticks
-   */
-  public long getShrinkTimeTicks() {
-    return shrinkTimeTicks;
+    return hidersTeam.getEntries().stream()
+        .map(UUID::fromString)
+        .map(HideAndSeekPlayer::get)
+        .toList();
   }
 
   /**
@@ -267,40 +169,23 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean doHidersBecomeSeekers() {
-    return doHidersBecomeSeekers;
+    return gameData.isHidersBecomeSeekers();
   }
 
-  /**
-   * Are hiders remaining boolean.
-   *
-   * @return the boolean
-   */
-  public boolean areHidersRemaining() {
-    return !hiders.isEmpty();
-  }
-
-  /**
-   * Gets hider prep timer.
-   *
-   * @return the hider prep timer
-   */
-  public HiderPreparationCountdown getHiderPrepTimer() {
-    return hiderPrepTimer;
-  }
 
   /**
    * Perform player check.
    */
   public void performPlayerCheck() {
-    if (seekers.isEmpty() && !hiders.isEmpty()) {
+    if (seekersTeam.getEntries().isEmpty() && !hidersTeam.getEntries().isEmpty()) {
       assignNewSeeker();
     }
 
-    if (hiders.isEmpty()) {
+    if (hidersTeam.getEntries().isEmpty()) {
       end(HideAndSeekEndReason.SEEKER_WIN);
     }
 
-    if (seekers.isEmpty()) {
+    if (seekersTeam.getEntries().isEmpty()) {
       end(HideAndSeekEndReason.HIDER_WIN);
     }
   }
@@ -309,7 +194,8 @@ public class HideAndSeekGame {
    * Assign new seeker.
    */
   private void assignNewSeeker() {
-    HideAndSeekPlayer newSeeker = hiders.getFirst();
+    final String newSeekerStringUuid = hidersTeam.getEntries().stream().findAny().orElseThrow();
+    final HideAndSeekPlayer newSeeker = HideAndSeekPlayer.get(UUID.fromString(newSeekerStringUuid));
 
     removeHider(newSeeker);
     addSeeker(newSeeker);

@@ -5,8 +5,9 @@ import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.step.GameStep;
-import dev.slne.hideandnseek.step.GameStepManager.GameData;
+import dev.slne.hideandnseek.GameData;
 import dev.slne.hideandnseek.timer.EndCountdown;
+import dev.slne.hideandnseek.util.Continuation;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
@@ -93,7 +94,7 @@ public class EndingGameStep implements GameStep {
   }
 
   @Override
-  public void reset() {
+  public void reset(Continuation continuation) {
 
   }
 }

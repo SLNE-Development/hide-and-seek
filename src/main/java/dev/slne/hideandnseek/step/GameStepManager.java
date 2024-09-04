@@ -1,34 +1,35 @@
 package dev.slne.hideandnseek.step;
 
+import dev.slne.hideandnseek.GameData;
+import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGame;
-import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.step.steps.EndingGameStep;
 import dev.slne.hideandnseek.step.steps.IngameStep;
 import dev.slne.hideandnseek.step.steps.LobbyStep;
 import dev.slne.hideandnseek.step.steps.PreparationStep;
+import dev.slne.hideandnseek.util.Continuation;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import java.time.Duration;
 import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 
-public class GameStepManager {
+
+public enum GameStepManager {
+  INSTANCE;
 
   private ObjectSet<GameStep> gameSteps;
   private boolean running = false;
 
-  public CompletableFuture<Void> prepareGame(
+  public @NotNull CompletableFuture<Void> prepareGame(
       HideAndSeekGame game,
       GameData gameData
   ) {
     if (running) {
       throw new IllegalStateException("Game is already running");
     }
+
+    this.running = true;
 
     gameSteps = ObjectSet.of(
         new LobbyStep(game, gameData),
@@ -41,6 +42,32 @@ public class GameStepManager {
     executeStepsSequentially(gameSteps.iterator(), GameStep::load, future);
 
     return future;
+  }
+
+  public CompletableFuture<Void> startGame() {
+    if (!running) {
+      throw new IllegalStateException("Game is not running");
+    }
+
+    final CompletableFuture<Void> future = new CompletableFuture<>();
+    executeStepsSequentially(gameSteps.iterator(), GameStep::start, future);
+
+    return future;
+  }
+
+  public CompletableFuture<Void> stopGame(HideAndSeekEndReason reason) {
+    if (!running) {
+      throw new IllegalStateException("Game is not running");
+    }
+
+    final CompletableFuture<Void> future = new CompletableFuture<>();
+    executeStepsSequentially(
+        gameSteps.iterator(),
+        (gameStep, continuation) -> gameStep.end(reason, continuation),
+        future
+    );
+
+    return future.thenRun(() -> running = false);
   }
 
   private void executeStepsSequentially(
@@ -65,41 +92,14 @@ public class GameStepManager {
     }
   }
 
-
-  @Builder
-  @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  @Getter
-  public static class GameData {
-
-    private final Duration lobbyTime;
-    private final Duration preparationTime;
-    private final Duration gameDuration;
-    private final Duration shrinkTime;
-    private final HideAndSeekPlayer initialSeeker;
-    private final World world;
-    private final int initialRadius;
-  }
-
-  @Getter
-  public static class Continuation {
-
-    private final CompletableFuture<Void> future = new CompletableFuture<>();
-
-    public void resume() {
-      if (future.isDone()) {
-        throw new IllegalStateException("Continuation already completed");
-      }
-
-      future.complete(null);
+  public CompletableFuture<Void> resetGame() {
+    if (!running) {
+      throw new IllegalStateException("Game is not running");
     }
 
-    public void resumeWithException(Throwable throwable) {
-      if (future.isDone()) {
-        throw new IllegalStateException("Continuation already completed");
-      }
+    final CompletableFuture<Void> future = new CompletableFuture<>();
+    executeStepsSequentially(gameSteps.iterator(), GameStep::reset, future);
 
-      future.completeExceptionally(throwable);
-    }
-
+    return future;
   }
 }

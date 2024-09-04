@@ -2,7 +2,7 @@ package dev.slne.hideandnseek.step;
 
 import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGameState;
-import dev.slne.hideandnseek.step.GameStepManager.Continuation;
+import dev.slne.hideandnseek.util.Continuation;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 /**
@@ -55,7 +55,7 @@ public abstract class GameStep {
    * Reset.
    */
   @OverridingMethodsMustInvokeSuper
-  public void reset() {
+  public void reset(Continuation continuation) {
 
   }
 
