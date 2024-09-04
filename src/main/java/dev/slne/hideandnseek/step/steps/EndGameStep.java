@@ -45,7 +45,7 @@ public class EndGameStep implements GameStep {
       onlinePlayer.getInventory().clear();
     }
 
-    Bukkit.getServer().setMaxPlayers(Settings.MAX_PLAYERS);
+//    Bukkit.getServer().setMaxPlayers(Settings.MAX_PLAYERS); // TODO: not needed due to PreperationStep reset method
     HideAndSeekManager.INSTANCE.setRunningGame(null);
   }
 }
