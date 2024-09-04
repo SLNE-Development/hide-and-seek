@@ -18,29 +18,32 @@ public class OnlineListener implements Listener {
 
   @EventHandler
   public void onJoin(PlayerJoinEvent event) {
-    Player player = event.getPlayer();
-    HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+    final Player player = event.getPlayer();
+    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 
-    event.joinMessage(Messages.prefix().append(Messages.displayName(HideAndSeekPlayer.get(player))
-        .append(Component.text(" hat das Spiel betreten.", NamedTextColor.GRAY))));
+    event.joinMessage(Messages.prefix()
+        .append(Messages.displayName(HideAndSeekPlayer.get(player)))
+        .append(Component.text(" hat das Spiel betreten.", NamedTextColor.GRAY)));
 
     if (runningGame != null && runningGame.getGameState().isIngame()) {
       player.setGameMode(GameMode.SPECTATOR);
 
-      player.sendMessage(Messages.prefix().append(Component.text(
-          "Du hast das Spiel betreten, während es bereits läuft. Du bist nun ein Zuschauer. Bitte versetz dich NICHT manuell in einen anderen Spielmodus.",
-          NamedTextColor.RED, TextDecoration.BOLD)));
+      player.sendMessage(Messages.prefix()
+          .append(Component.text(
+              "Du hast das Spiel betreten, während es bereits läuft. Du bist nun ein Zuschauer. Bitte versetz dich NICHT manuell in einen anderen Spielmodus.",
+              NamedTextColor.RED, TextDecoration.BOLD)));
     }
   }
 
   @EventHandler
   public void onQuit(PlayerQuitEvent event) {
-    HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
-    Player player = event.getPlayer();
-    HideAndSeekPlayer hideAndSeekPlayer = HideAndSeekPlayer.get(player);
+    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+    final Player player = event.getPlayer();
+    final HideAndSeekPlayer hideAndSeekPlayer = HideAndSeekPlayer.get(player);
 
-    event.quitMessage(Messages.prefix().append(Messages.displayName(hideAndSeekPlayer)
-        .append(Component.text(" hat das Spiel verlassen.", NamedTextColor.GRAY))));
+    event.quitMessage(Messages.prefix()
+        .append(Messages.displayName(hideAndSeekPlayer))
+        .append(Component.text(" hat das Spiel verlassen.", NamedTextColor.GRAY)));
 
     if (runningGame == null) {
       return;

@@ -1,6 +1,5 @@
 package dev.slne.hideandnseek.listener.listeners;
 
-import java.util.Arrays;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,10 +10,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
  * The type Regeneration listener.
  */
 public class RegenerationListener implements Listener {
-
-  private final RegainReason[] ALLOWED_REASONS = new RegainReason[]{
-      RegainReason.MAGIC, RegainReason.MAGIC_REGEN
-  };
 
   /**
    * On regenerate.
@@ -37,7 +32,10 @@ public class RegenerationListener implements Listener {
    * @return the boolean
    */
   private boolean isAllowed(RegainReason reason) {
-    return Arrays.stream(ALLOWED_REASONS).anyMatch(allowed -> allowed == reason);
+    return switch (reason) {
+      case MAGIC, MAGIC_REGEN -> true;
+      default -> false;
+    };
   }
 
 }

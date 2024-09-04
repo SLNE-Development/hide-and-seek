@@ -19,8 +19,8 @@ public class RespawnListener implements Listener {
    */
   @EventHandler
   public void onRespawn(PlayerRespawnEvent event) {
-    HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
-    HideAndSeekPlayer player = HideAndSeekPlayer.get(event.getPlayer());
+    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+    final HideAndSeekPlayer player = HideAndSeekPlayer.get(event.getPlayer());
 
     event.setRespawnLocation(HideAndSeekManager.INSTANCE.getLobbyLocation());
 

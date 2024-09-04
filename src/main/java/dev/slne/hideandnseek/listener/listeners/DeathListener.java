@@ -25,11 +25,11 @@ public class DeathListener implements Listener {
    */
   @EventHandler
   public void onPlayerDeath(PlayerDeathEvent event) {
-    HideAndSeekPlayer player = HideAndSeekPlayer.get(event.getPlayer());
+    final HideAndSeekPlayer player = HideAndSeekPlayer.get(event.getPlayer());
 
     event.getDrops().clear();
 
-    HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
     printDeathMessage(event);
 
     if (runningGame == null) {
@@ -45,8 +45,9 @@ public class DeathListener implements Listener {
     }
 
     runningGame.performPlayerCheck();
-    
-    player.getPlayer().spigot().respawn();
+
+    player.getPlayer().spigot()
+        .respawn(); // TODO: 04.09.2024 22:11 - replace with gamerule doImmediateRespawn?
   }
 
   /**
@@ -55,22 +56,24 @@ public class DeathListener implements Listener {
    * @param event the event
    */
   private void printDeathMessage(PlayerDeathEvent event) {
-    Player died = event.getPlayer();
-    Entity killer = died.getKiller();
+    final Player died = event.getPlayer();
+    final Entity killer = died.getKiller();
 
-    HideAndSeekPlayer diedPlayer = HideAndSeekPlayer.get(died);
-    Component diedDisplayName = Messages.displayName(diedPlayer);
+    final HideAndSeekPlayer diedPlayer = HideAndSeekPlayer.get(died);
+    final Component diedDisplayName = Messages.displayName(diedPlayer);
 
     if (killer != null) {
-      HideAndSeekPlayer killerPlayer = HideAndSeekPlayer.get(killer.getUniqueId());
-      Component killerDisplayName = Messages.displayName(killerPlayer);
+      final HideAndSeekPlayer killerPlayer = HideAndSeekPlayer.get(killer.getUniqueId());
+      final Component killerDisplayName = Messages.displayName(killerPlayer);
 
-      Bukkit.broadcast(
-          Messages.prefix().append(diedDisplayName).append(Component.text(" wurde von ",
-                  NamedTextColor.GRAY)).append(killerDisplayName)
-              .append(Component.text(" getötet.", NamedTextColor.GRAY)));
+      Bukkit.broadcast(Messages.prefix()
+          .append(diedDisplayName)
+          .append(Component.text(" wurde von ", NamedTextColor.GRAY))
+          .append(killerDisplayName)
+          .append(Component.text(" getötet.", NamedTextColor.GRAY)));
     } else {
-      Bukkit.broadcast(Messages.prefix().append(diedDisplayName)
+      Bukkit.broadcast(Messages.prefix()
+          .append(diedDisplayName)
           .append(Component.text(" ist gestorben.", NamedTextColor.GRAY)));
     }
   }
