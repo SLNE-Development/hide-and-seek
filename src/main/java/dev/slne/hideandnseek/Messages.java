@@ -1,12 +1,14 @@
 package dev.slne.hideandnseek;
 
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
+import lombok.experimental.UtilityClass;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 /**
  * The type Messages.
  */
+@UtilityClass
 public class Messages {
 
   /**
@@ -15,12 +17,13 @@ public class Messages {
    * @param player the player
    * @return the component
    */
-  public static Component displayName(HideAndSeekPlayer player) {
-    HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
-    boolean isHider = runningGame != null && runningGame.isHider(player);
+  public Component displayName(HideAndSeekPlayer player) {
+    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+    final boolean isHider = runningGame != null && runningGame.isHider(player);
 
     return Component.text(player.getPlayer().getName(),
-        isHider ? NamedTextColor.AQUA : NamedTextColor.GRAY);
+        isHider ? NamedTextColor.AQUA
+            : NamedTextColor.GRAY); // TODO: 04.09.2024 22:33 - just use team display name?
   }
 
   /**
@@ -28,7 +31,7 @@ public class Messages {
    *
    * @return the component
    */
-  public static Component prefix() {
+  public Component prefix() {
     return Component.text(">> ", NamedTextColor.DARK_GRAY)
         .append(Component.text("HideAndSeek", NamedTextColor.GOLD))
         .append(Component.text(" | ", NamedTextColor.DARK_GRAY));
