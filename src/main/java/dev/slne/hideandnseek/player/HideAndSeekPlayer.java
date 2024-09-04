@@ -4,6 +4,7 @@ import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Items;
 import java.util.UUID;
+import lombok.Getter;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.PlayerInventory;
 /**
  * The type Hide and seek player.
  */
+@Getter
 public class HideAndSeekPlayer {
 
   private final UUID uuid;
@@ -53,15 +55,6 @@ public class HideAndSeekPlayer {
    */
   public void giveSeekerInventory() {
     Items.prepareSeekerInventory(getPlayer());
-  }
-
-  /**
-   * Gets uuid.
-   *
-   * @return the uuid
-   */
-  public UUID getUuid() {
-    return uuid;
   }
 
   /**
@@ -106,11 +99,13 @@ public class HideAndSeekPlayer {
    */
   public void teleportSpawn() {
     getPlayer().teleportAsync(HideAndSeekManager.INSTANCE.getSpawnLocation())
-        .thenAcceptAsync(result -> {
-          getPlayer().playSound(
-              Sound.sound().type(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT).volume(.5f).build(),
-              Emitter.self());
-        });
+        .thenRun(() -> getPlayer().playSound(
+            Sound.sound()
+                .type(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT)
+                .volume(.5f)
+                .build(),
+            Emitter.self()
+        ));
   }
 
   /**
@@ -128,7 +123,7 @@ public class HideAndSeekPlayer {
    * @return the boolean
    */
   public boolean isHider() {
-    HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 
     return runningGame != null && runningGame.isHider(this);
   }
@@ -138,11 +133,13 @@ public class HideAndSeekPlayer {
    */
   public void teleportLobby() {
     getPlayer().teleportAsync(HideAndSeekManager.INSTANCE.getLobbyLocation())
-        .thenAcceptAsync(result -> {
-          getPlayer().playSound(
-              Sound.sound().type(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT).volume(.5f).build(),
-              Emitter.self());
-        });
+        .thenRun(() -> getPlayer().playSound(
+            Sound.sound()
+                .type(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT)
+                .volume(.5f)
+                .build(),
+            Emitter.self()
+        ));
   }
 
   /**
@@ -151,7 +148,7 @@ public class HideAndSeekPlayer {
    * @return the boolean
    */
   public boolean isSeeker() {
-    HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 
     return runningGame != null && runningGame.isSeeker(this);
   }
