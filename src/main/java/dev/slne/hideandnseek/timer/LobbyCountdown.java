@@ -1,20 +1,20 @@
 package dev.slne.hideandnseek.timer;
 
-import dev.slne.hideandnseek.HideAndSeekEndReason;
+import dev.slne.hideandnseek.HideAndSeek;
 import dev.slne.hideandnseek.Messages;
-import dev.slne.hideandnseek.step.steps.LobbyStep;
+import dev.slne.hideandnseek.step.GameStepManager.Continuation;
 import dev.slne.hideandnseek.util.TimeUtil;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * The type Lobby timer.
  */
-public class LobbyCountdown extends BukkitRunnable {
+public class LobbyCountdown implements Runnable {
 
   private static final int[] ANNOUNCEMENTS = {
       60,
@@ -28,10 +28,9 @@ public class LobbyCountdown extends BukkitRunnable {
       1
   };
 
-  private final LobbyStep lifecycle;
-  private final long startingSeconds;
-
+  private int taskId;
   private long currentSeconds;
+  private Continuation continuation;
 
   /**
    * Instantiates a new Hide and seek end timer.
@@ -40,18 +39,15 @@ public class LobbyCountdown extends BukkitRunnable {
    * @param timeUnit the time unit
    * @param maxTime  the max time
    */
-  public LobbyCountdown(LobbyStep step, TimeUnit timeUnit, long maxTime) {
-    this.lifecycle = step;
-
-    this.startingSeconds = timeUnit.toSeconds(maxTime);
-    this.currentSeconds = startingSeconds;
+  public LobbyCountdown(Duration maxTime) {
+    this.currentSeconds = maxTime.getSeconds();
   }
 
   @Override
   public void run() {
     if (currentSeconds <= 0) {
-      lifecycle.end(HideAndSeekEndReason.TIME_UP);
-
+      continuation.resume();
+      Bukkit.getScheduler().cancelTask(taskId);
       return;
     }
 
@@ -65,5 +61,11 @@ public class LobbyCountdown extends BukkitRunnable {
         TimeUtil.formatTimestamp(TimeUnit.SECONDS, currentSeconds, NamedTextColor.GOLD));
 
     currentSeconds--;
+  }
+
+  public void start(Continuation continuation) {
+    this.continuation = continuation;
+    this.taskId = Bukkit.getScheduler()
+        .runTaskTimerAsynchronously(HideAndSeek.getInstance(), this, 0, 20).getTaskId();
   }
 }

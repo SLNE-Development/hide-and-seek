@@ -4,6 +4,7 @@ import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.step.steps.IngameStep;
 import dev.slne.hideandnseek.util.TimeUtil;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.text.Component;
@@ -37,7 +38,6 @@ public class GameCountdown extends BukkitRunnable {
   };
 
   private final IngameStep step;
-  private final long startingSeconds;
 
   private long currentSeconds;
 
@@ -48,11 +48,10 @@ public class GameCountdown extends BukkitRunnable {
    * @param timeUnit the time unit
    * @param maxTime  the max time
    */
-  public GameCountdown(IngameStep step, TimeUnit timeUnit, long maxTime) {
+  public GameCountdown(IngameStep step, Duration maxTime) {
     this.step = step;
 
-    this.startingSeconds = timeUnit.toSeconds(maxTime);
-    this.currentSeconds = startingSeconds;
+    this.currentSeconds = maxTime.getSeconds();
   }
 
   @Override

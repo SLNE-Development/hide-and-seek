@@ -5,6 +5,7 @@ import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.step.GameStep;
+import dev.slne.hideandnseek.step.GameStepManager.GameData;
 import dev.slne.hideandnseek.timer.EndCountdown;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.sound.Sound;
@@ -34,8 +35,7 @@ public class EndingGameStep implements GameStep {
    * @param timeUnit the time unit
    * @param time     the time
    */
-  public EndingGameStep(HideAndSeekGame game, HideAndSeekEndReason reason, TimeUnit timeUnit,
-      long time) {
+  public EndingGameStep(HideAndSeekGame game, GameData gameData) {
     this.game = game;
     this.reason = reason;
     this.timeUnit = timeUnit;

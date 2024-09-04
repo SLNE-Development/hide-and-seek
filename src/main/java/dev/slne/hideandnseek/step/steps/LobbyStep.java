@@ -5,8 +5,11 @@ import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.step.GameStep;
+import dev.slne.hideandnseek.step.GameStepManager.Continuation;
+import dev.slne.hideandnseek.step.GameStepManager.GameData;
 import dev.slne.hideandnseek.timer.LobbyCountdown;
 import dev.slne.hideandnseek.util.TeamUtil;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
@@ -16,7 +19,7 @@ import org.bukkit.scoreboard.Team;
 /**
  * The type Hide and seek lobby step.
  */
-public class LobbyStep implements GameStep {
+public class LobbyStep extends GameStep {
 
   private HideAndSeekGame game;
   private LobbyCountdown countdown;
@@ -24,8 +27,7 @@ public class LobbyStep implements GameStep {
   private Team hidersTeam;
   private Team seekersTeam;
 
-  private final TimeUnit timeUnit;
-  private final long time;
+  private final Duration time;
 
   /**
    * Instantiates a new Lobby lifecycle.
@@ -34,42 +36,45 @@ public class LobbyStep implements GameStep {
    * @param timeUnit the time unit
    * @param time     the time
    */
-  public LobbyStep(HideAndSeekGame game, TimeUnit timeUnit, long time) {
+  public LobbyStep(HideAndSeekGame game, GameData gameData) {
+    super(HideAndSeekGameState.LOBBY);
+
     this.game = game;
-    this.timeUnit = timeUnit;
-    this.time = time;
+    this.time = gameData.getLobbyTime();
   }
 
   @Override
-  public HideAndSeekGameState getGameState() {
-    return HideAndSeekGameState.LOBBY;
-  }
+  public void load(Continuation continuation) {
+    super.load(continuation);
 
-  @Override
-  public void load() {
-    ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
+    final ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
 
     hidersTeam = TeamUtil.getOrCreateTeam(scoreboardManager, "hiders");
-    TeamUtil.prepareTeam(hidersTeam);
-
     seekersTeam = TeamUtil.getOrCreateTeam(scoreboardManager, "seekers");
+
+    TeamUtil.prepareTeam(hidersTeam);
     TeamUtil.prepareTeam(seekersTeam);
 
-    countdown = new LobbyCountdown(this, timeUnit, time);
+    countdown = new LobbyCountdown(time);
+
+    continuation.resume();
   }
 
   @Override
-  public void start() {
-    countdown.runTaskTimer(HideAndSeek.getInstance(), 0, 20);
+  public void start(Continuation continuation) {
+    super.start(continuation);
+    countdown.start(continuation);
   }
 
   @Override
-  public void end(HideAndSeekEndReason reason) {
-    countdown.cancel();
+  public void end(HideAndSeekEndReason reason, Continuation continuation) {
+    super.end(reason, continuation);
   }
 
   @Override
   public void reset() {
+    super.reset();
+
     Optional.ofNullable(hidersTeam).ifPresent(Team::unregister);
     Optional.ofNullable(seekersTeam).ifPresent(Team::unregister);
   }

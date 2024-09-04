@@ -1,27 +1,27 @@
 package dev.slne.hideandnseek.timer;
 
-import dev.slne.hideandnseek.HideAndSeekEndReason;
+import dev.slne.hideandnseek.HideAndSeek;
 import dev.slne.hideandnseek.Messages;
+import dev.slne.hideandnseek.step.GameStepManager.Continuation;
 import dev.slne.hideandnseek.step.steps.PreparationStep;
 import dev.slne.hideandnseek.util.TimeUtil;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * The type Hide and seek hider prep timer.
  */
-public class HiderPreparationCountdown extends BukkitRunnable {
+public class HiderPreparationCountdown implements Runnable {
 
   private static final int[] ANNOUNCEMENTS = {60, 30, 15, 10, 5, 4, 3, 2, 1};
 
-  private final PreparationStep lifecycle;
-  private final long startingSeconds;
-
+  private int taskId;
   private long currentSeconds;
+  private Continuation continuation;
 
   /**
    * Instantiates a new Hide and seek hider prep timer.
@@ -30,18 +30,15 @@ public class HiderPreparationCountdown extends BukkitRunnable {
    * @param timeUnit the time unit
    * @param maxTime  the max time
    */
-  public HiderPreparationCountdown(PreparationStep step, TimeUnit timeUnit,
-      long maxTime) {
-    this.lifecycle = step;
-    this.startingSeconds = timeUnit.toSeconds(maxTime);
-    this.currentSeconds = startingSeconds;
+  public HiderPreparationCountdown(Duration maxTime) {
+    this.currentSeconds = maxTime.getSeconds();
   }
 
   @Override
   public void run() {
     if (currentSeconds <= 0) {
-      lifecycle.end(HideAndSeekEndReason.TIME_UP);
-
+      continuation.resume();
+      Bukkit.getScheduler().cancelTask(taskId);
       return;
     }
 
@@ -56,5 +53,12 @@ public class HiderPreparationCountdown extends BukkitRunnable {
         TimeUtil.formatTimestamp(TimeUnit.SECONDS, currentSeconds, NamedTextColor.GOLD));
 
     currentSeconds--;
+  }
+
+  public void start(Continuation continuation) {
+    this.continuation = continuation;
+    this.taskId = Bukkit.getScheduler()
+        .runTaskTimerAsynchronously(HideAndSeek.getInstance(), this, 0L, 20L)
+        .getTaskId();
   }
 }

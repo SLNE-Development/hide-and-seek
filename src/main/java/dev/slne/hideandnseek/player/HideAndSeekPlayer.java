@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
 
 /**
  * The type Hide and seek player.
@@ -85,15 +86,19 @@ public class HideAndSeekPlayer {
    * Prepare for game.
    */
   public void prepareForGame() {
-    getPlayer().getInventory().clear();
-    getPlayer().getInventory().setArmorContents(null);
-    getPlayer().setHealth(20);
-    getPlayer().setFoodLevel(20);
-    getPlayer().setSaturation(20);
-    getPlayer().setFireTicks(0);
-    getPlayer().setFlying(false);
-    getPlayer().setAllowFlight(false);
-    getPlayer().setGameMode(GameMode.ADVENTURE);
+    final Player player = getPlayer();
+    final PlayerInventory playerInv = player.getInventory();
+
+    playerInv.clear();
+    playerInv.setArmorContents(null);
+
+    player.setHealth(20);
+    player.setFoodLevel(20);
+    player.setSaturation(20);
+    player.setFireTicks(0);
+    player.setFlying(false);
+    player.setAllowFlight(false);
+    player.setGameMode(GameMode.ADVENTURE);
   }
 
   /**

@@ -7,9 +7,10 @@ import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.step.GameStep;
+import dev.slne.hideandnseek.step.GameStepManager.Continuation;
+import dev.slne.hideandnseek.step.GameStepManager.GameData;
 import dev.slne.hideandnseek.timer.HiderPreparationCountdown;
-import java.security.SecureRandom;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
 import net.kyori.adventure.sound.Sound.Source;
@@ -21,14 +22,14 @@ import org.bukkit.World;
 /**
  * The type Preparation step.
  */
-public class PreparationStep implements GameStep {
+public class PreparationStep extends GameStep {
 
   private final HideAndSeekGame game;
-  private final TimeUnit timeUnit;
-  private final long time;
+  private final Duration time;
   private final HideAndSeekPlayer initialSeeker;
   private final World world;
   private final int finalRadius;
+  private int previousMaxPlayers;
 
   private HiderPreparationCountdown countdown;
 
@@ -39,60 +40,66 @@ public class PreparationStep implements GameStep {
    * @param timeUnit the time unit
    * @param time     the time
    */
-  public PreparationStep(HideAndSeekGame game, TimeUnit timeUnit, long time,
-      HideAndSeekPlayer initialSeeker, World world, int finalRadius) {
+  public PreparationStep(HideAndSeekGame game, GameData gameData) {
+    super(HideAndSeekGameState.PREPARING);
+
     this.game = game;
-    this.timeUnit = timeUnit;
-    this.time = time;
-    this.initialSeeker = initialSeeker;
-    this.world = world;
-    this.finalRadius = finalRadius;
+    this.time = gameData.getPreparationTime();
+    this.initialSeeker = gameData.getInitialSeeker();
+    this.world = gameData.getWorld();
+    this.finalRadius = gameData.getInitialRadius();
   }
 
   @Override
-  public HideAndSeekGameState getGameState() {
-    return HideAndSeekGameState.PREPARING;
+  public void load(Continuation continuation) {
+    super.load(continuation);
+
+    countdown = new HiderPreparationCountdown(time);
+
+    continuation.resume();
   }
 
   @Override
-  public void load() {
-    countdown = new HiderPreparationCountdown(this, timeUnit, time);
-  }
+  public void start(Continuation continuation) {
+    super.start(continuation);
 
-  @Override
-  public void start() {
+    previousMaxPlayers = Bukkit.getServer().getMaxPlayers();
     Bukkit.getServer().setMaxPlayers(0);
 
     printStartMessage();
     playStartSound();
 
-    HideAndSeekPlayer seeker = chooseSeeker();
+    final HideAndSeekPlayer seeker = chooseSeeker();
     game.addSeeker(seeker);
 
-    Bukkit.getOnlinePlayers().stream().map(HideAndSeekPlayer::get).forEach(onlinePlayer -> {
-      onlinePlayer.prepareForGame();
+    Bukkit.getOnlinePlayers().stream()
+        .map(HideAndSeekPlayer::get)
+        .forEach(onlinePlayer -> {
+          onlinePlayer.prepareForGame();
 
-      if (onlinePlayer.isSeeker()) {
-        onlinePlayer.teleportLobby();
-      } else {
-        game.addHider(onlinePlayer);
-        onlinePlayer.teleportSpawn();
-      }
-    });
+          if (onlinePlayer.isSeeker()) {
+            onlinePlayer.teleportLobby();
+          } else {
+            game.addHider(onlinePlayer);
+            onlinePlayer.teleportSpawn();
+          }
+        });
 
     world.getWorldBorder().setSize(finalRadius * 2);
 
-    countdown.runTaskTimer(HideAndSeek.getInstance(), 0, 20);
+    countdown.start(continuation);
   }
 
   @Override
-  public void end(HideAndSeekEndReason reason) {
-    countdown.cancel();
+  public void end(HideAndSeekEndReason reason, Continuation continuation) {
+    super.end(reason, continuation);
   }
 
   @Override
   public void reset() {
+    super.reset();
 
+    Bukkit.getServer().setMaxPlayers(previousMaxPlayers);
   }
 
   /**
@@ -105,10 +112,7 @@ public class PreparationStep implements GameStep {
       return initialSeeker;
     }
 
-    SecureRandom random = HideAndSeek.RANDOM;
-    int index = random.nextInt(game.getHiders().size());
-
-    return game.getHiders().get(index);
+    return game.getHiders().get(HideAndSeek.RANDOM.nextInt(game.getHiders().size()));
   }
 
   private void printStartMessage() {
@@ -129,7 +133,12 @@ public class PreparationStep implements GameStep {
 
   private void playStartSound() {
     Bukkit.getServer().playSound(
-        Sound.sound().type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL).volume(.5f).pitch(.75f)
-            .source(Source.MASTER).build(), Emitter.self());
+        Sound.sound().type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL)
+            .volume(0.5f)
+            .pitch(0.75f)
+            .source(Source.MASTER)
+            .build(),
+        Emitter.self()
+    );
   }
 }

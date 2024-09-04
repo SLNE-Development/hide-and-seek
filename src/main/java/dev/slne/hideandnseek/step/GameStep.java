@@ -2,39 +2,61 @@ package dev.slne.hideandnseek.step;
 
 import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGameState;
+import dev.slne.hideandnseek.step.GameStepManager.Continuation;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 /**
  * The interface Game step.
  */
-public interface GameStep {
+public abstract class GameStep {
+
+  private final HideAndSeekGameState gameState;
+
+  protected GameStep(HideAndSeekGameState gameState) {
+    this.gameState = gameState;
+  }
 
   /**
    * Gets game state.
    *
    * @return the game state
    */
-  HideAndSeekGameState getGameState();
+  public final HideAndSeekGameState getGameState() {
+    return gameState;
+  }
 
   /**
    * Load.
    */
-  void load();
+  @OverridingMethodsMustInvokeSuper
+  public void load(Continuation continuation) {
+
+  }
 
   /**
    * Start.
    */
-  void start();
+  @OverridingMethodsMustInvokeSuper
+  public void start(Continuation continuation) {
+
+  }
 
   /**
    * End.
    *
    * @param reason the reason
    */
-  void end(HideAndSeekEndReason reason);
+  @OverridingMethodsMustInvokeSuper
+  public void end(HideAndSeekEndReason reason, Continuation continuation) {
+
+  }
 
   /**
    * Reset.
    */
-  void reset();
+  @OverridingMethodsMustInvokeSuper
+  public void reset() {
+
+  }
 
 }

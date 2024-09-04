@@ -7,7 +7,10 @@ import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.step.GameStep;
+import dev.slne.hideandnseek.step.GameStepManager.Continuation;
+import dev.slne.hideandnseek.step.GameStepManager.GameData;
 import dev.slne.hideandnseek.timer.GameCountdown;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
@@ -20,15 +23,13 @@ import org.bukkit.World;
 /**
  * The type Ingame step.
  */
-public class IngameStep implements GameStep {
+public class IngameStep extends GameStep {
 
   private final HideAndSeekGame game;
-  private final TimeUnit timeUnit;
-  private final long time;
+  private final Duration time;
+  private final Duration shrinkTime;
   private final World world;
   private final int finalRadius;
-  private final TimeUnit shrinkTimeUnit;
-  private final long shrinkTime;
 
   private GameCountdown countdown;
 
@@ -43,29 +44,27 @@ public class IngameStep implements GameStep {
    * @param shrinkTimeUnit the shrink time unit
    * @param shrinkTime     the shrink time
    */
-  public IngameStep(HideAndSeekGame game, TimeUnit timeUnit, long time, World world,
-      int finalRadius, TimeUnit shrinkTimeUnit, long shrinkTime) {
+  public IngameStep(HideAndSeekGame game, GameData gameData) {
+    super(HideAndSeekGameState.INGAME);
+
     this.game = game;
-    this.timeUnit = timeUnit;
-    this.time = time;
-    this.world = world;
-    this.finalRadius = finalRadius;
-    this.shrinkTimeUnit = shrinkTimeUnit;
-    this.shrinkTime = shrinkTime;
+    this.time = gameData.getGameDuration();
+    this.world = gameData.getWorld();
+    this.finalRadius = gameData.getInitialRadius();
+    this.shrinkTime = gameData.getShrinkTime();
   }
 
   @Override
-  public HideAndSeekGameState getGameState() {
-    return HideAndSeekGameState.INGAME;
+  public void load(Continuation continuation) {
+    super.load(continuation);
+
+    countdown = new GameCountdown(this, time);
   }
 
   @Override
-  public void load() {
-    countdown = new GameCountdown(this, timeUnit, time);
-  }
+  public void start(Continuation continuation) {
+    super.start(continuation);
 
-  @Override
-  public void start() {
     TextComponent.Builder builder = Component.text();
 
     builder.append(Messages.prefix()).appendNewline();
