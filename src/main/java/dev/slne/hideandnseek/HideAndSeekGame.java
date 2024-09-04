@@ -55,10 +55,8 @@ public class HideAndSeekGame {
 
   public CompletableFuture<Void> prepare() {
     return GameStepManager.INSTANCE.prepareGame(this, gameData).thenRun(() -> {
-      final ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
-
-      this.hidersTeam = TeamUtil.getOrCreateTeam(scoreboardManager, "hiders");
-      this.seekersTeam = TeamUtil.getOrCreateTeam(scoreboardManager, "seekers");
+      this.hidersTeam = TeamUtil.getOrCreateTeam("hiders");
+      this.seekersTeam = TeamUtil.getOrCreateTeam("seekers");
 
       TeamUtil.prepareTeam(hidersTeam);
       TeamUtil.prepareTeam(seekersTeam);

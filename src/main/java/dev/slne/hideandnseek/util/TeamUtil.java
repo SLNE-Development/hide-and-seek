@@ -1,8 +1,15 @@
 package dev.slne.hideandnseek.util;
 
+import lombok.experimental.UtilityClass;
+import org.bukkit.Bukkit;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.Team.Option;
+import org.bukkit.scoreboard.Team.OptionStatus;
+import org.jetbrains.annotations.NotNull;
 
+@UtilityClass
 public class TeamUtil {
 
   /**
@@ -12,11 +19,12 @@ public class TeamUtil {
    * @param teamName          the team name
    * @return the team
    */
-  public static Team getOrCreateTeam(ScoreboardManager scoreboardManager, String teamName) {
-    Team team = scoreboardManager.getMainScoreboard().getTeam(teamName);
+  public @NotNull Team getOrCreateTeam(String teamName) {
+    final Scoreboard mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+    Team team = mainScoreboard.getTeam(teamName);
 
     if (team == null) {
-      team = scoreboardManager.getMainScoreboard().registerNewTeam(teamName);
+      team = mainScoreboard.registerNewTeam(teamName);
     }
 
     return team;
@@ -27,10 +35,10 @@ public class TeamUtil {
    *
    * @param team the team
    */
-  public static void prepareTeam(Team team) {
+  public void prepareTeam(@NotNull Team team) {
     team.setAllowFriendlyFire(false);
     team.setCanSeeFriendlyInvisibles(false);
-    team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
-    team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+    team.setOption(Option.COLLISION_RULE, OptionStatus.NEVER);
+    team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
   }
 }
