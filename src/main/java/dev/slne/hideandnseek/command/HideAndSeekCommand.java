@@ -22,7 +22,7 @@ public class HideAndSeekCommand extends CommandAPICommand {
 
     withPermission("hideandseek.command.use");
 
-    withAliases("hs", "hns");
+    withAliases("hns");
 
     withSubcommand(new HideAndSeekCreateCommand("create"));
     withSubcommand(new HideAndSeekStartCommand("start"));
