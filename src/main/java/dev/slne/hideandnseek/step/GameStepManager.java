@@ -3,6 +3,7 @@ package dev.slne.hideandnseek.step;
 import dev.slne.hideandnseek.GameData;
 import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGame;
+import dev.slne.hideandnseek.step.steps.EndGameStep;
 import dev.slne.hideandnseek.step.steps.EndingGameStep;
 import dev.slne.hideandnseek.step.steps.IngameStep;
 import dev.slne.hideandnseek.step.steps.LobbyStep;
@@ -35,7 +36,8 @@ public enum GameStepManager {
         new LobbyStep(game, gameData),
         new PreparationStep(game, gameData),
         new IngameStep(game, gameData),
-        new EndingGameStep(game, gameData)
+        new EndingGameStep(game, gameData),
+        new EndGameStep()
     );
 
     final CompletableFuture<Void> future = new CompletableFuture<>();
