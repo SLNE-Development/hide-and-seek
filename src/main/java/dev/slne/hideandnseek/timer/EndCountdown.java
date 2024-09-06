@@ -1,5 +1,6 @@
 package dev.slne.hideandnseek.timer;
 
+import dev.slne.hideandnseek.util.Continuation;
 import dev.slne.hideandnseek.util.TimeUtil;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -11,13 +12,8 @@ import org.bukkit.Bukkit;
  */
 public class EndCountdown extends AbstractCountdown {
 
-  /**
-   * Instantiates a new Hide and seek end timer.
-   *
-   * @param step     the step
-   * @param timeUnit the time unit
-   * @param maxTime  the max time
-   */
+  private Continuation continuation;
+
   public EndCountdown(Duration startingTime) {
     super(startingTime);
   }
@@ -26,5 +22,15 @@ public class EndCountdown extends AbstractCountdown {
   protected void onTick() {
     Bukkit.getServer().sendActionBar(
         TimeUtil.formatTimestamp(TimeUnit.SECONDS, getCurrentSeconds(), NamedTextColor.GOLD));
+  }
+
+  public void start(Continuation continuation) {
+    this.continuation = continuation;
+    start();
+  }
+
+  @Override
+  protected void onEnd() {
+    continuation.resume();
   }
 }

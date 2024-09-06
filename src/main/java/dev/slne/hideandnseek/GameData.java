@@ -17,6 +17,7 @@ public final class GameData {
   private final Duration preparationTime;
   private final Duration gameDuration;
   private final Duration shrinkTime;
+  private final Duration endingTime; // TODO: 06.09.2024 21:45 - set
   private final HideAndSeekPlayer initialSeeker;
   private final World world;
   private final int initialRadius;

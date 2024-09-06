@@ -86,7 +86,6 @@ public class IngameStep extends GameStep {
     }
 
     world.getWorldBorder().setSize(finalRadius * 2, shrinkTime.getSeconds());
-    countdown.start();
-    continuation.resume();
+    countdown.start(continuation);
   }
 }

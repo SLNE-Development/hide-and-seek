@@ -36,7 +36,7 @@ public enum GameStepManager {
         new LobbyStep(game, gameData),
         new PreparationStep(game, gameData),
         new IngameStep(game, gameData),
-        new EndingGameStep(game, gameData),
+        new EndingGameStep(gameData),
         new EndGameStep()
     );
 

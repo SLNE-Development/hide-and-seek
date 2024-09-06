@@ -1,14 +1,13 @@
 package dev.slne.hideandnseek.step.steps;
 
 import dev.slne.hideandnseek.HideAndSeekEndReason;
-import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.step.GameStep;
 import dev.slne.hideandnseek.GameData;
 import dev.slne.hideandnseek.timer.EndCountdown;
 import dev.slne.hideandnseek.util.Continuation;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
 import net.kyori.adventure.sound.Sound.Source;
@@ -19,42 +18,38 @@ import org.bukkit.Bukkit;
 /**
  * The type Ending game step.
  */
-public class EndingGameStep implements GameStep {
+public class EndingGameStep extends GameStep { // TODO: 06.09.2024 21:48 - move to one class with Ingame Step?
 
-  private final HideAndSeekGame game;
-  private final HideAndSeekEndReason reason;
-  private final TimeUnit timeUnit;
-  private final long time;
+  private final Duration endingTime;
 
   private EndCountdown countdown;
 
   /**
    * Instantiates a new Ending game step.
    *
-   * @param game     the game
    * @param reason   the reason
    * @param timeUnit the time unit
    * @param time     the time
    */
-  public EndingGameStep(HideAndSeekGame game, GameData gameData) {
-    this.game = game;
-    this.reason = reason;
-    this.timeUnit = timeUnit;
-    this.time = time;
+  public EndingGameStep(GameData gameData) {
+    super(HideAndSeekGameState.ENDING);
+    this.endingTime = gameData.getEndingTime();
+  }
+
+
+  @Override
+  public void load(Continuation continuation) {
+    countdown = new EndCountdown(endingTime);
+    continuation.resume();
   }
 
   @Override
-  public HideAndSeekGameState getGameState() {
-    return HideAndSeekGameState.ENDING;
+  public void start(Continuation continuation) {
+    countdown.start(continuation);
   }
 
   @Override
-  public void load() {
-    countdown = new EndCountdown(this, timeUnit, time);
-  }
-
-  @Override
-  public void start() {
+  public void end(HideAndSeekEndReason reason, Continuation continuation) {
     TextComponent.Builder builder = Component.text();
 
     builder.append(Messages.prefix()).appendNewline();
