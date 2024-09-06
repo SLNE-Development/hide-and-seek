@@ -57,7 +57,7 @@ public enum GameStepManager {
     return future;
   }
 
-  public CompletableFuture<Void> stopGame(HideAndSeekEndReason reason) {
+  public CompletableFuture<Void> stopGame(HideAndSeekEndReason reason) { // TODO: 06.09.2024 21:49 - call
     if (!running) {
       throw new IllegalStateException("Game is not running");
     }
