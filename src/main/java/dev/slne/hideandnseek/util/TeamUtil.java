@@ -41,4 +41,8 @@ public class TeamUtil {
     team.setOption(Option.COLLISION_RULE, OptionStatus.NEVER);
     team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
   }
+
+  public static void unregisterTeam(Team team) {
+    team.unregister();
+  }
 }

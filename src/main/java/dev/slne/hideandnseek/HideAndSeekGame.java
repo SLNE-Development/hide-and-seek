@@ -80,6 +80,12 @@ public class HideAndSeekGame {
     return GameStepManager.INSTANCE.resetGame();
   }
 
+  public CompletableFuture<Void> stop(HideAndSeekEndReason reason) {
+    return GameStepManager.INSTANCE.stopGame(reason).thenRun(() -> {
+      TeamUtil.unregisterTeam(hidersTeam);
+      TeamUtil.unregisterTeam(seekersTeam);
+    });
+  }
 
   /**
    * Add seeker.
@@ -180,11 +186,11 @@ public class HideAndSeekGame {
     }
 
     if (hidersTeam.getEntries().isEmpty()) {
-      end(HideAndSeekEndReason.SEEKER_WIN);
+      stop(HideAndSeekEndReason.SEEKER_WIN);
     }
 
     if (seekersTeam.getEntries().isEmpty()) {
-      end(HideAndSeekEndReason.HIDER_WIN);
+      stop(HideAndSeekEndReason.HIDER_WIN);
     }
   }
 
