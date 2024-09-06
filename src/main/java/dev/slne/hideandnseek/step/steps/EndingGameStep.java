@@ -87,14 +87,4 @@ public class EndingGameStep implements GameStep {
         Sound.sound().type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL).volume(.75f).pitch(.75f)
             .source(Source.MASTER).build(), Emitter.self());
   }
-
-  @Override
-  public void end(HideAndSeekEndReason reason) {
-
-  }
-
-  @Override
-  public void reset(Continuation continuation) {
-
-  }
 }

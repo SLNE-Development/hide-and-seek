@@ -3,7 +3,6 @@ package dev.slne.hideandnseek.step;
 import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.util.Continuation;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 /**
  * The interface Game step.
@@ -28,17 +27,15 @@ public abstract class GameStep {
   /**
    * Load.
    */
-  @OverridingMethodsMustInvokeSuper
   public void load(Continuation continuation) {
-
+    continuation.resume();
   }
 
   /**
    * Start.
    */
-  @OverridingMethodsMustInvokeSuper
   public void start(Continuation continuation) {
-
+    continuation.resume();
   }
 
   /**
@@ -46,17 +43,15 @@ public abstract class GameStep {
    *
    * @param reason the reason
    */
-  @OverridingMethodsMustInvokeSuper
   public void end(HideAndSeekEndReason reason, Continuation continuation) {
-
+    continuation.resume();
   }
 
   /**
    * Reset.
    */
-  @OverridingMethodsMustInvokeSuper
   public void reset(Continuation continuation) {
-
+    continuation.resume();
   }
 
 }

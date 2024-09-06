@@ -39,27 +39,12 @@ public class LobbyStep extends GameStep {
 
   @Override
   public void load(Continuation continuation) {
-    super.load(continuation);
     countdown = new LobbyCountdown(time);
     continuation.resume();
   }
 
   @Override
   public void start(Continuation continuation) {
-    super.start(continuation);
     countdown.start(continuation);
-  }
-
-  @Override
-  public void end(HideAndSeekEndReason reason, Continuation continuation) {
-    super.end(reason, continuation);
-  }
-
-  @Override
-  public void reset(Continuation continuation) {
-    super.reset(continuation);
-
-    Optional.ofNullable(hidersTeam).ifPresent(Team::unregister);
-    Optional.ofNullable(seekersTeam).ifPresent(Team::unregister);
   }
 }

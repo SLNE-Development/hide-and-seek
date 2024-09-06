@@ -52,8 +52,6 @@ public class PreparationStep extends GameStep {
 
   @Override
   public void load(Continuation continuation) {
-    super.load(continuation);
-
     countdown = new HiderPreparationCountdown(time);
 
     continuation.resume();
@@ -61,8 +59,6 @@ public class PreparationStep extends GameStep {
 
   @Override
   public void start(Continuation continuation) {
-    super.start(continuation);
-
     previousMaxPlayers = Bukkit.getServer().getMaxPlayers();
     Bukkit.getServer().setMaxPlayers(0);
 
@@ -91,15 +87,9 @@ public class PreparationStep extends GameStep {
   }
 
   @Override
-  public void end(HideAndSeekEndReason reason, Continuation continuation) {
-    super.end(reason, continuation);
-  }
-
-  @Override
   public void reset(Continuation continuation) {
-    super.reset(continuation);
-
     Bukkit.getServer().setMaxPlayers(previousMaxPlayers);
+    continuation.resume();
   }
 
   /**

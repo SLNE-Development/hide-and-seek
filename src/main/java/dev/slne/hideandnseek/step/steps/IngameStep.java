@@ -54,15 +54,12 @@ public class IngameStep extends GameStep {
 
   @Override
   public void load(Continuation continuation) {
-    super.load(continuation);
-
-    countdown = new GameCountdown(this, time);
+    countdown = new GameCountdown(time);
+    continuation.resume();
   }
 
   @Override
   public void start(Continuation continuation) {
-    super.start(continuation);
-
     TextComponent.Builder builder = Component.text();
 
     builder.append(Messages.prefix()).appendNewline();
@@ -90,14 +87,6 @@ public class IngameStep extends GameStep {
 
     world.getWorldBorder().setSize(finalRadius * 2, shrinkTime.getSeconds());
     countdown.start();
-  }
-
-  @Override
-  public void end(HideAndSeekEndReason reason) {
-
-  }
-
-  @Override
-  public void reset(Continuation continuation) {
+    continuation.resume();
   }
 }

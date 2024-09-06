@@ -17,8 +17,6 @@ public class EndGameStep extends GameStep {
 
   @Override
   public void reset(Continuation continuation) {
-    super.reset(continuation);
-
     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
       if (!onlinePlayer.hasPermission("hideandseek.kick.bypass")) {
         onlinePlayer.kick(Component.text("Das Spiel wurde beendet.", NamedTextColor.RED));
@@ -28,6 +26,7 @@ public class EndGameStep extends GameStep {
     }
 
 //    Bukkit.getServer().setMaxPlayers(Settings.MAX_PLAYERS); // TODO: not needed due to PreperationStep reset method
+    continuation.resume();
     HideAndSeekManager.INSTANCE.setRunningGame(null);
   }
 }
