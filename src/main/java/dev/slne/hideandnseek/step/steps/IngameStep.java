@@ -31,17 +31,6 @@ public class IngameStep extends GameStep {
 
   private GameCountdown countdown;
 
-  /**
-   * Instantiates a new Ingame step.
-   *
-   * @param game           the game
-   * @param timeUnit       the time unit
-   * @param time           the time
-   * @param world          the world
-   * @param finalRadius    the final radius
-   * @param shrinkTimeUnit the shrink time unit
-   * @param shrinkTime     the shrink time
-   */
   public IngameStep(HideAndSeekGame game, GameData gameData) {
     super(HideAndSeekGameState.INGAME);
 
@@ -87,5 +76,42 @@ public class IngameStep extends GameStep {
 
     world.getWorldBorder().setSize(finalRadius * 2, shrinkTime.getSeconds());
     countdown.start(continuation);
+  }
+
+  @Override
+  public void end(HideAndSeekEndReason reason, Continuation continuation) {
+    final TextComponent.Builder builder = Component.text();
+
+    builder.append(Messages.prefix()).appendNewline();
+    builder.append(Component.text("-".repeat(20))).appendNewline();
+    builder.append(Messages.prefix()).appendNewline();
+
+    builder.append(Messages.prefix().append(Component.text("Das Spiel ist vorbei!")))
+        .appendNewline();
+    builder.append(Messages.prefix()).appendNewline();
+
+    if (reason.equals(HideAndSeekEndReason.FORCED_END)) {
+      builder.append(Messages.prefix().append(Component.text("Das Spiel wurde vorzeitig beendet.")))
+          .appendNewline();
+    } else if (reason.equals(HideAndSeekEndReason.TIME_UP) || reason.equals(
+        HideAndSeekEndReason.HIDER_WIN)) {
+      builder.append(Messages.prefix().append(Component.text("Die Verstecker haben gewonnen.")))
+          .appendNewline();
+    } else if (reason.equals(HideAndSeekEndReason.SEEKER_WIN)) {
+      builder.append(Messages.prefix().append(Component.text("Die Sucher haben gewonnen.")))
+          .appendNewline();
+    }
+
+    builder.append(Messages.prefix()).appendNewline();
+    builder.append(Component.text("-".repeat(20))).appendNewline();
+    builder.append(Messages.prefix());
+
+    Bukkit.broadcast(builder.build());
+
+    Bukkit.getServer().playSound(
+        Sound.sound().type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL).volume(.75f).pitch(.75f)
+            .source(Source.MASTER).build(), Emitter.self());
+
+    continuation.resume();
   }
 }

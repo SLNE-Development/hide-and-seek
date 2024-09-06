@@ -4,7 +4,6 @@ import dev.slne.hideandnseek.GameData;
 import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.step.steps.EndGameStep;
-import dev.slne.hideandnseek.step.steps.EndingGameStep;
 import dev.slne.hideandnseek.step.steps.IngameStep;
 import dev.slne.hideandnseek.step.steps.LobbyStep;
 import dev.slne.hideandnseek.step.steps.PreparationStep;
@@ -36,7 +35,6 @@ public enum GameStepManager {
         new LobbyStep(game, gameData),
         new PreparationStep(game, gameData),
         new IngameStep(game, gameData),
-        new EndingGameStep(gameData),
         new EndGameStep()
     );
 
