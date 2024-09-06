@@ -1,24 +1,15 @@
 package dev.slne.hideandnseek;
 
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
-import dev.slne.hideandnseek.step.GameStep;
 import dev.slne.hideandnseek.step.GameStepManager;
-import dev.slne.hideandnseek.step.steps.LobbyStep;
-import dev.slne.hideandnseek.step.steps.PreparationStep;
-import dev.slne.hideandnseek.timer.GameCountdown;
-import dev.slne.hideandnseek.timer.HiderPreparationCountdown;
 import dev.slne.hideandnseek.util.TeamUtil;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 /**
@@ -34,21 +25,6 @@ public class HideAndSeekGame {
   private Team hidersTeam;
   private Team seekersTeam;
 
-  /**
-   * Instantiates a new Hide and seek game.
-   *
-   * @param timeUnit              the time unit
-   * @param maxTime               the max time
-   * @param prepTimeUnit          the prep time unit
-   * @param prepMaxTime           the prep max time
-   * @param doHidersBecomeSeekers the do hiders become seekers
-   * @param world                 the world
-   * @param finalRadius           the final radius
-   * @param initialRadius         the initial radius
-   * @param shrinkTimeUnit        the shrink time unit
-   * @param shrinkTime            the shrink time
-   * @param initialSeeker         the initial seeker
-   */
   public HideAndSeekGame(GameData gameData) {
     this.gameData = gameData;
   }
@@ -69,7 +45,7 @@ public class HideAndSeekGame {
     return GameStepManager.INSTANCE.startGame();
   }
 
-  public CompletableFuture<Void> reset() {
+  public CompletableFuture<Void> reset() { // TODO: 06.09.2024 21:59 - call when? via command?+
     hidersTeam.unregister();
     seekersTeam.unregister();
 
