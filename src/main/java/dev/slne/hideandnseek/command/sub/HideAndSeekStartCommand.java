@@ -22,7 +22,7 @@ public class HideAndSeekStartCommand extends CommandAPICommand {
     super(commandName);
 
     withPermission("hideandseek.command.start");
-
+    
     executesPlayer((player, args) -> {
       HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 

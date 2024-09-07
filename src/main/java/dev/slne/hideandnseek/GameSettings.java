@@ -19,19 +19,19 @@ import org.bukkit.World;
 @Setter
 public final class GameSettings {
 
-  private @Default Duration lobbyTime = Duration.ofSeconds(5);
-  private @Default Duration preparationTime = Duration.ofSeconds(5);
-  private @Default Duration gameDuration = Duration.ofSeconds(5);
+  private @Default Duration lobbyTime = Duration.ofSeconds(10);
+  private @Default Duration preparationTime = Duration.ofSeconds(30);
+  private @Default Duration gameDuration = Duration.ofMinutes(5);
   private HideAndSeekPlayer initialSeeker;
   private World world;
-  private @Default int initialRadius = 100;
-  private @Default int finalRadius = 10;
+  private @Default int initialRadius = 1000;
+  private @Default int finalRadius = 100;
   private @Default boolean hidersBecomeSeekers = false;
   private @Default double worldBorderDamageAmount = 1;
   private @Default double worldBorderDamageBuffer = 0;
   private Location2D worldBorderCenter;
   private @Default boolean ohko = true;
-  private @Default Duration endDuration = Duration.ofSeconds(5);
+  private @Default Duration endDuration = Duration.ofSeconds(15);
 
   public static GameSettings defaultSettings() {
     final World overworld = Bukkit.getWorlds().getFirst();

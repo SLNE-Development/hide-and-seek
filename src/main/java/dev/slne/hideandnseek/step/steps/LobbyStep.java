@@ -8,6 +8,7 @@ import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.step.GameStep;
 import dev.slne.hideandnseek.timer.LobbyCountdown;
 import dev.slne.hideandnseek.util.Continuation;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.WorldBorder;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
  * The type Hide and seek lobby step.
  */
 public class LobbyStep extends GameStep {
+
+  private static final ComponentLogger LOGGER = ComponentLogger.logger(LobbyStep.class);
 
   private final HideAndSeekGame game;
   private LobbyCountdown countdown;
@@ -33,19 +36,23 @@ public class LobbyStep extends GameStep {
   public void load(@NotNull Continuation continuation) {
     countdown = new LobbyCountdown(gameSettings.getLobbyTime());
 
-    game.teleportLobby()
-        .thenCompose(runSyncF(() -> {
-          final WorldBorder worldBorder = gameSettings.getWorld().getWorldBorder();
-          final Location2D center = gameSettings.getWorldBorderCenter();
+    runSync(() -> {
+      final WorldBorder worldBorder = gameSettings.getWorld().getWorldBorder();
+      final Location2D center = gameSettings.getWorldBorderCenter();
 
-          worldBorder.setCenter(center.getX(), center.getZ());
-          worldBorder.setSize(HideAndSeekManager.INSTANCE.getLobbyWorldBorderRadius() * 2);
-          worldBorder.setDamageAmount(gameSettings.getWorldBorderDamageAmount());
-          worldBorder.setDamageBuffer(gameSettings.getWorldBorderDamageBuffer());
-          worldBorder.setWarningDistance(0);
-          worldBorder.setWarningTime(5);
-        }))
-        .thenRun(continuation::resume);
+      worldBorder.setCenter(center.getX(), center.getZ());
+      worldBorder.setSize(HideAndSeekManager.INSTANCE.getLobbyWorldBorderRadius() * 2);
+      worldBorder.setDamageAmount(gameSettings.getWorldBorderDamageAmount());
+      worldBorder.setDamageBuffer(gameSettings.getWorldBorderDamageBuffer());
+      worldBorder.setWarningDistance(0);
+      worldBorder.setWarningTime(5);
+    })
+        .thenComposeAsync(v -> game.teleportLobby())
+        .thenRun(continuation::resume)
+        .exceptionally(exception -> {
+          LOGGER.error("Error while loading lobby", exception);
+          return null;
+        });
   }
 
   @Override

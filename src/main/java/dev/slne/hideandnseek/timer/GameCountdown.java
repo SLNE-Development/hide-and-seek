@@ -36,7 +36,7 @@ public class GameCountdown extends AbstractAnnounceCountdown {
     Bukkit.broadcast(Messages.prefix()
         .append(Component.text("Das Spiel endet in ", NamedTextColor.GRAY))
         .append(TimeUtil.formatLongTimestamp(TimeUnit.SECONDS, getCurrentSeconds(),
-            NamedTextColor.GOLD)));
+            NamedTextColor.YELLOW)).append(Component.text(".", NamedTextColor.GRAY)));
   }
 
   public void start(Continuation continuation) {

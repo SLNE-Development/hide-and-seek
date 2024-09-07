@@ -17,6 +17,8 @@ import net.kyori.adventure.sound.Sound.Emitter;
 import net.kyori.adventure.sound.Sound.Source;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -25,6 +27,8 @@ import org.bukkit.entity.Player;
  * The type Preparation step.
  */
 public class PreparationStep extends GameStep {
+
+  private static final ComponentLogger LOGGER = ComponentLogger.logger(PreparationStep.class);
 
   private final HideAndSeekGame game;
   private final Duration time;
@@ -38,7 +42,7 @@ public class PreparationStep extends GameStep {
   /**
    * Instantiates a new Preparation step.
    *
-   * @param game     the game
+   * @param game the game
    */
   public PreparationStep(HideAndSeekGame game, GameSettings gameSettings) {
     super(HideAndSeekGameState.PREPARING);
@@ -84,7 +88,10 @@ public class PreparationStep extends GameStep {
           });
 
       world.getWorldBorder().setSize(finalRadius * 2);
-    }).thenRun(() -> countdown.start(continuation));
+    }).thenRun(() -> countdown.start(continuation)).exceptionally(exception -> {
+      LOGGER.error("An error occurred while starting the game", exception);
+      return null;
+    });
   }
 
   @Override
@@ -112,13 +119,17 @@ public class PreparationStep extends GameStep {
     TextComponent.Builder builder = Component.text();
 
     builder.append(Messages.prefix()).appendNewline();
-    builder.append(Component.text("-".repeat(20))).appendNewline();
+    builder.append(Messages.prefix().append(Component.text("-".repeat(20), NamedTextColor.GRAY)))
+        .appendNewline();
     builder.append(Messages.prefix()).appendNewline();
 
-    builder.append(Messages.prefix().append(Component.text("Das Spiel beginnt!"))).appendNewline();
+    builder.append(
+            Messages.prefix().append(Component.text("Das Spiel beginnt!", NamedTextColor.GOLD)))
+        .appendNewline();
     builder.append(Messages.prefix()).appendNewline();
 
-    builder.append(Component.text("-".repeat(20))).appendNewline();
+    builder.append(Messages.prefix().append(Component.text("-".repeat(20), NamedTextColor.GRAY)))
+        .appendNewline();
     builder.append(Messages.prefix());
 
     Bukkit.broadcast(builder.build());

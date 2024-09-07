@@ -56,4 +56,12 @@ public enum HideAndSeekGameState {
     return this.equals(INGAME);
   }
 
+  /**
+   * Is damagable boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isDamagable() {
+    return this.equals(INGAME) || this.equals(PREPARING);
+  }
 }

@@ -44,7 +44,7 @@ public class HiderPreparationCountdown extends AbstractAnnounceCountdown {
     Bukkit.broadcast(Messages.prefix()
         .append(Component.text("Die Verstecker haben noch ", NamedTextColor.GRAY))
         .append(TimeUtil.formatLongTimestamp(TimeUnit.SECONDS, getCurrentSeconds(),
-            NamedTextColor.GOLD))
+            NamedTextColor.YELLOW))
         .append(Component.text(" Vorbereitungszeit!", NamedTextColor.GRAY)));
   }
 }

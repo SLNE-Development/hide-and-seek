@@ -139,11 +139,7 @@ public class HideAndSeekPlayer {
   public boolean isSeeker() {
     final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 
-    try {
-      return runningGame != null && runningGame.isSeeker(this);
-    } catch (Exception e) {
-      return false;
-    }
+    return runningGame != null && runningGame.isSeeker(this);
   }
 
   /**
@@ -154,10 +150,6 @@ public class HideAndSeekPlayer {
   public boolean isHider() {
     final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 
-    try {
-      return runningGame != null && runningGame.isHider(this);
-    } catch (Exception e) {
-      return false;
-    }
+    return runningGame != null && runningGame.isHider(this);
   }
 }

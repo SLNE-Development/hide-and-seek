@@ -15,6 +15,8 @@ import net.kyori.adventure.sound.Sound.Emitter;
 import net.kyori.adventure.sound.Sound.Source;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
@@ -23,6 +25,8 @@ import org.bukkit.WorldBorder;
  * The type Ingame step.
  */
 public class IngameStep extends GameStep {
+
+  private static final ComponentLogger LOGGER = ComponentLogger.logger(IngameStep.class);
 
   private final HideAndSeekGame game;
   private final Duration time;
@@ -53,15 +57,18 @@ public class IngameStep extends GameStep {
     TextComponent.Builder builder = Component.text(); // TODO: 06.09.2024 21:58 - extract to HiderPreparationCountdown#onEnd() ?
 
     builder.append(Messages.prefix()).appendNewline();
-    builder.append(Component.text("-".repeat(20))).appendNewline();
-    builder.append(Messages.prefix()).appendNewline();
-
-    builder.append(
-            Messages.prefix().append(Component.text("Die Vorbereitungszeit ist abgelaufen")))
+    builder.append(Messages.prefix().append(Component.text("-".repeat(20), NamedTextColor.GRAY)))
         .appendNewline();
     builder.append(Messages.prefix()).appendNewline();
 
-    builder.append(Component.text("-".repeat(20))).appendNewline();
+    builder.append(
+            Messages.prefix().append(Component.text("Die Vorbereitungszeit ist abgelaufen",
+                NamedTextColor.GOLD)))
+        .appendNewline();
+    builder.append(Messages.prefix()).appendNewline();
+
+    builder.append(Messages.prefix().append(Component.text("-".repeat(20), NamedTextColor.GRAY)))
+        .appendNewline();
     builder.append(Messages.prefix());
 
     Bukkit.broadcast(builder.build());
@@ -79,7 +86,10 @@ public class IngameStep extends GameStep {
       }
 
       world.getWorldBorder().setSize(finalRadius * 2, shrinkTime.getSeconds());
-    }).thenRun(() -> countdown.start(continuation));
+    }).thenRun(() -> countdown.start(continuation)).exceptionally(exception -> {
+      LOGGER.error("An error occurred while starting the game", exception);
+      return null;
+    });
   }
 
   @Override
@@ -87,27 +97,33 @@ public class IngameStep extends GameStep {
     final TextComponent.Builder builder = Component.text();
 
     builder.append(Messages.prefix()).appendNewline();
-    builder.append(Component.text("-".repeat(20))).appendNewline();
+    builder.append(Messages.prefix().append(Component.text("-".repeat(20), NamedTextColor.GRAY)))
+        .appendNewline();
     builder.append(Messages.prefix()).appendNewline();
 
-    builder.append(Messages.prefix().append(Component.text("Das Spiel ist vorbei!")))
+    builder.append(
+            Messages.prefix().append(Component.text("Das Spiel ist vorbei!", NamedTextColor.GOLD)))
         .appendNewline();
     builder.append(Messages.prefix()).appendNewline();
 
     if (reason.equals(HideAndSeekEndReason.FORCED_END)) {
-      builder.append(Messages.prefix().append(Component.text("Das Spiel wurde vorzeitig beendet.")))
+      builder.append(Messages.prefix()
+              .append(Component.text("Das Spiel wurde vorzeitig beendet.", NamedTextColor.GRAY)))
           .appendNewline();
     } else if (reason.equals(HideAndSeekEndReason.TIME_UP) || reason.equals(
         HideAndSeekEndReason.HIDER_WIN)) {
-      builder.append(Messages.prefix().append(Component.text("Die Verstecker haben gewonnen.")))
+      builder.append(Messages.prefix()
+              .append(Component.text("Die Verstecker haben gewonnen.", NamedTextColor.GRAY)))
           .appendNewline();
     } else if (reason.equals(HideAndSeekEndReason.SEEKER_WIN)) {
-      builder.append(Messages.prefix().append(Component.text("Die Sucher haben gewonnen.")))
+      builder.append(Messages.prefix()
+              .append(Component.text("Die Sucher haben gewonnen.", NamedTextColor.GRAY)))
           .appendNewline();
     }
 
     builder.append(Messages.prefix()).appendNewline();
-    builder.append(Component.text("-".repeat(20))).appendNewline();
+    builder.append(Messages.prefix().append(Component.text("-".repeat(20), NamedTextColor.GRAY)))
+        .appendNewline();
     builder.append(Messages.prefix());
 
     Bukkit.broadcast(builder.build());
@@ -119,11 +135,8 @@ public class IngameStep extends GameStep {
 
       final WorldBorder worldBorder = world.getWorldBorder();
       worldBorder.setSize((int) worldBorder.getSize());
-    }).thenRun(() -> {
-      System.err.println("Continuation resume 5165654");
-      continuation.resume();
-    }).exceptionally(ex -> {
-      System.err.println("An error occurred while ending the game 5165654");
+    }).thenRun(continuation::resume).exceptionally(exception -> {
+      LOGGER.error("An error occurred while ending the game", exception);
       return null;
     });
   }

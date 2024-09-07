@@ -16,8 +16,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+/**
+ * The type Connection listener.
+ */
 public class ConnectionListener implements Listener {
 
+  /**
+   * On join.
+   *
+   * @param event the event
+   */
   @EventHandler
   public void onJoin(PlayerJoinEvent event) {
     final Player player = event.getPlayer();
@@ -26,6 +34,9 @@ public class ConnectionListener implements Listener {
     event.joinMessage(Messages.prefix()
         .append(Messages.displayName(HideAndSeekPlayer.get(player)))
         .append(Component.text(" hat das Spiel betreten.", NamedTextColor.GRAY)));
+
+    player.teleportAsync(
+        HideAndSeekManager.INSTANCE.getGameSettings().getWorld().getSpawnLocation());
 
     player.setVisibleByDefault(true);
     if (runningGame != null && runningGame.getGameState().isIngame()) {
@@ -41,6 +52,11 @@ public class ConnectionListener implements Listener {
         .runTaskLater(HideAndSeek.getInstance(), () -> player.getInventory().clear(), 5L);
   }
 
+  /**
+   * On quit.
+   *
+   * @param event the event
+   */
   @EventHandler
   public void onQuit(PlayerQuitEvent event) {
     final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
@@ -54,6 +70,9 @@ public class ConnectionListener implements Listener {
     if (runningGame == null) {
       return;
     }
+
+    player.setFlying(false);
+    player.setAllowFlight(false);
 
     runningGame.removeSeeker(hideAndSeekPlayer);
     runningGame.removeHider(hideAndSeekPlayer);

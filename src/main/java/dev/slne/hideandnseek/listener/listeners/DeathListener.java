@@ -6,6 +6,7 @@ import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -59,17 +60,19 @@ public class DeathListener implements Listener {
     final HideAndSeekPlayer diedPlayer = HideAndSeekPlayer.get(died);
     final Component diedDisplayName = Messages.displayName(diedPlayer);
 
+    event.deathMessage(null);
+
     if (killer != null) {
       final HideAndSeekPlayer killerPlayer = HideAndSeekPlayer.get(killer.getUniqueId());
       final Component killerDisplayName = Messages.displayName(killerPlayer);
 
-      event.deathMessage(Messages.prefix()
+      Bukkit.broadcast(Messages.prefix()
           .append(diedDisplayName)
           .append(Component.text(" wurde von ", NamedTextColor.GRAY))
           .append(killerDisplayName)
           .append(Component.text(" getötet.", NamedTextColor.GRAY)));
     } else {
-      event.deathMessage(Messages.prefix()
+      Bukkit.broadcast(Messages.prefix()
           .append(diedDisplayName)
           .append(Component.text(" ist gestorben.", NamedTextColor.GRAY)));
     }

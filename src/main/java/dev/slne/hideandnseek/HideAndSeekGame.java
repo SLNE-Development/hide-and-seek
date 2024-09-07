@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Team;
 
@@ -18,15 +19,27 @@ import org.bukkit.scoreboard.Team;
 @Getter
 public class HideAndSeekGame {
 
+  private static final ComponentLogger LOGGER = ComponentLogger.logger(HideAndSeekGame.class);
+
   private final GameSettings gameSettings;
 
   private Team hidersTeam;
   private Team seekersTeam;
 
+  /**
+   * Instantiates a new Hide and seek game.
+   *
+   * @param gameSettings the game settings
+   */
   public HideAndSeekGame(GameSettings gameSettings) {
     this.gameSettings = gameSettings;
   }
 
+  /**
+   * Prepare completable future.
+   *
+   * @return the completable future
+   */
   public CompletableFuture<Void> prepare() {
     this.hidersTeam = TeamUtil.getOrCreateTeam("hiders");
     this.seekersTeam = TeamUtil.getOrCreateTeam("seekers");
@@ -37,10 +50,20 @@ public class HideAndSeekGame {
     return GameStepManager.INSTANCE.prepareGame(this, gameSettings);
   }
 
+  /**
+   * Start completable future.
+   *
+   * @return the completable future
+   */
   public CompletableFuture<Void> start() {
     return GameStepManager.INSTANCE.startGame();
   }
 
+  /**
+   * Reset completable future.
+   *
+   * @return the completable future
+   */
   public CompletableFuture<Void> reset() { // TODO: 06.09.2024 21:59 - call when? via command?+
     hidersTeam.unregister();
     seekersTeam.unregister();
@@ -50,25 +73,33 @@ public class HideAndSeekGame {
 
     return GameStepManager.INSTANCE.resetGame()
         .thenRun(() -> HideAndSeekManager.INSTANCE.setRunningGame(null))
-        .thenRun(() -> {
-          System.err.println("Game reset");
-        }).exceptionally(ex -> {
-          System.err.println("Error while resetting game");
-          ex.printStackTrace();
+        .exceptionally(exception -> {
+          LOGGER.error("An error occurred while resetting the game", exception);
           return null;
         });
   }
 
+  /**
+   * Stop completable future.
+   *
+   * @param reason    the reason
+   * @param interrupt the interrupt
+   * @return the completable future
+   */
   public CompletableFuture<Void> stop(HideAndSeekEndReason reason, boolean interrupt) {
     return GameStepManager.INSTANCE.stopGame(reason, interrupt)
         .thenComposeAsync(unused -> reset())
-        .exceptionally(ex -> {
-          System.err.println("Error while stopping game");
-          ex.printStackTrace();
+        .exceptionally(exception -> {
+          LOGGER.error("An error occurred while stopping the game", exception);
           return null;
         });
   }
 
+  /**
+   * Forcestop completable future.
+   *
+   * @return the completable future
+   */
   public CompletableFuture<Void> forcestop() {
     return GameStepManager.INSTANCE.forceStop()
         .thenComposeAsync(unused -> reset());
@@ -117,7 +148,7 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isHider(HideAndSeekPlayer player) {
-    return hidersTeam.hasPlayer(player.getPlayer());
+    return hidersTeam != null && hidersTeam.hasPlayer(player.getPlayer());
   }
 
   /**
@@ -127,7 +158,7 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isSeeker(HideAndSeekPlayer player) {
-    return seekersTeam.hasPlayer(player.getPlayer());
+    return seekersTeam != null && seekersTeam.hasPlayer(player.getPlayer());
   }
 
   /**
@@ -163,11 +194,14 @@ public class HideAndSeekGame {
     return gameSettings.isHidersBecomeSeekers();
   }
 
-
   /**
    * Perform player check.
    */
   public void performPlayerCheck() {
+    if (!getGameState().isIngame()) {
+      return;
+    }
+
     if (seekersTeam.getEntries().isEmpty() && !hidersTeam.getEntries().isEmpty()) {
       assignNewSeeker();
     }
@@ -208,6 +242,11 @@ public class HideAndSeekGame {
         .toArray(CompletableFuture[]::new));
   }
 
+  /**
+   * Gets game state.
+   *
+   * @return the game state
+   */
   public HideAndSeekGameState getGameState() {
     final GameStep step = GameStepManager.INSTANCE.getCurrentStep();
 

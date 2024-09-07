@@ -35,15 +35,15 @@ public class Items {
   public void prepareSeekerInventory(Player player) {
     final PlayerInventory inventory = player.getInventory();
 
-    final ItemStack sword = item(
+    final ItemStack sword = unbreakable(item(
         Material.WOODEN_SWORD,
         1,
         0,
         Component.text("Schwert"),
         Component.text("Ein Schwert zum Kämpfen")
-    );
+    ));
 
-    final ItemStack bow = enchant(
+    final ItemStack bow = unbreakable(enchant(
         item(
             Material.BOW,
             1,
@@ -52,7 +52,7 @@ public class Items {
             Component.text("Ein Bogen")
         ),
         Object2IntMaps.singleton(Enchantment.INFINITY.key(), 1)
-    );
+    ));
 
     final ItemStack arrow = item(
         Material.ARROW,
@@ -62,7 +62,7 @@ public class Items {
         Component.text("Ein Pfeil zum Schießen")
     );
 
-    final ItemStack helmet = dyeLeather(
+    final ItemStack helmet = unbreakable(dyeLeather(
         item(
             Material.LEATHER_HELMET,
             1,
@@ -71,8 +71,8 @@ public class Items {
             Component.text("Ein Helm zum Schutz")
         ),
         Color.AQUA
-    );
-    final ItemStack chestplate = dyeLeather(
+    ));
+    final ItemStack chestplate = unbreakable(dyeLeather(
         item(
             Material.LEATHER_CHESTPLATE,
             1,
@@ -81,8 +81,8 @@ public class Items {
             Component.text("Eine Brustplatte zum Schutz")
         ),
         Color.AQUA
-    );
-    final ItemStack leggings = dyeLeather(
+    ));
+    final ItemStack leggings = unbreakable(dyeLeather(
         item(
             Material.LEATHER_LEGGINGS,
             1,
@@ -91,8 +91,8 @@ public class Items {
             Component.text("Eine Hose zum Schutz")
         ),
         Color.AQUA
-    );
-    final ItemStack boots = dyeLeather(
+    ));
+    final ItemStack boots = unbreakable(dyeLeather(
         item(
             Material.LEATHER_BOOTS,
             1,
@@ -101,7 +101,7 @@ public class Items {
             Component.text("Schuhe zum Schutz")
         ),
         Color.AQUA
-    );
+    ));
 
     inventory.clear();
     inventory.setItem(0, sword);
@@ -112,6 +112,11 @@ public class Items {
     inventory.setChestplate(chestplate);
     inventory.setLeggings(leggings);
     inventory.setBoots(boots);
+  }
+
+  public ItemStack unbreakable(ItemStack itemStack) {
+    itemStack.editMeta(meta -> meta.setUnbreakable(true));
+    return itemStack;
   }
 
   public ItemStack dyeLeather(ItemStack itemStack, Color color) {

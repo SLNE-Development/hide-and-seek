@@ -46,6 +46,6 @@ public class LobbyCountdown extends AbstractAnnounceCountdown {
         .append(Component.text("Das Spiel beginnt in ", NamedTextColor.GRAY))
         .append(
             TimeUtil.formatLongTimestamp(TimeUnit.SECONDS, getCurrentSeconds(),
-                NamedTextColor.GOLD)));
+                NamedTextColor.YELLOW)).append(Component.text(".", NamedTextColor.GRAY)));
   }
 }

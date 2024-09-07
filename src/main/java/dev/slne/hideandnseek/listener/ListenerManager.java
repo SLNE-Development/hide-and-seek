@@ -7,6 +7,7 @@ import dev.slne.hideandnseek.listener.listeners.DeathListener;
 import dev.slne.hideandnseek.listener.listeners.HungerListener;
 import dev.slne.hideandnseek.listener.listeners.InteractListener;
 import dev.slne.hideandnseek.listener.listeners.InventoryListener;
+import dev.slne.hideandnseek.listener.listeners.PlayerMoveListener;
 import dev.slne.hideandnseek.listener.listeners.RegenerationListener;
 import dev.slne.hideandnseek.listener.listeners.RespawnListener;
 import org.bukkit.Bukkit;
@@ -31,6 +32,7 @@ public enum ListenerManager {
     register(new InteractListener());
     register(new DamageListener());
     register(new ConnectionListener());
+    register(new PlayerMoveListener());
   }
 
   private void register(Listener listener) {

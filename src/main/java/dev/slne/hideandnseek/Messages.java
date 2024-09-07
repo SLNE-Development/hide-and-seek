@@ -19,11 +19,10 @@ public class Messages {
    */
   public Component displayName(HideAndSeekPlayer player) {
     final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
-    final boolean isHider = runningGame != null && runningGame.isHider(player);
+    final boolean isSeeker = runningGame != null && runningGame.isSeeker(player);
 
     return Component.text(player.getPlayer().getName(),
-        isHider ? NamedTextColor.YELLOW
-            : NamedTextColor.AQUA); // TODO: 04.09.2024 22:33 - just use team display name?
+        isSeeker ? NamedTextColor.AQUA : NamedTextColor.YELLOW);
   }
 
   /**

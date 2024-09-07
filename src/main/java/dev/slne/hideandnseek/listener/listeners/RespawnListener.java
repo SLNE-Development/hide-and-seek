@@ -28,7 +28,10 @@ public class RespawnListener implements Listener {
     event.setRespawnLocation(HideAndSeekManager.INSTANCE.getLobbyLocation());
 
     if (runningGame != null && runningGame.getGameState().isIngame()) {
-      player.giveSeekerInventory();
+      if (player.isSeeker()) {
+        player.giveSeekerInventory();
+      }
+
       event.setRespawnLocation(HideAndSeekManager.INSTANCE.getSpawnLocation());
     }
   }

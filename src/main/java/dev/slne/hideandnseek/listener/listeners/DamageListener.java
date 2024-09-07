@@ -10,22 +10,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 
 public class DamageListener implements Listener {
 
   @EventHandler
-  public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-    if (!(event.getEntity() instanceof Player target)) {
+  public void onProjectileHit(ProjectileHitEvent event) {
+    if (!(event.getEntity().getShooter() instanceof Player damager)) {
       return;
     }
 
-    if (!(event.getDamager() instanceof Player damager)) {
-      return;
-    }
-
-    final HideAndSeekGame game = HideAndSeekManager.INSTANCE.getRunningGame();
-    if (game == null || !game.getGameState().isIngame() || game.isHider(HideAndSeekPlayer.get(damager))) {
-      event.setCancelled(true);
+    if (!(event.getHitEntity() instanceof Player target)) {
       return;
     }
 
@@ -33,6 +28,32 @@ public class DamageListener implements Listener {
       Bukkit.getScheduler()
           .runTaskLater(HideAndSeek.getInstance(), () -> target.damage(Float.MAX_VALUE, damager),
               1L);
+    }
+  }
+
+  @EventHandler
+  public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+    if (!(event.getEntity() instanceof Player target)) {
+      return;
+    }
+
+    final HideAndSeekGame game = HideAndSeekManager.INSTANCE.getRunningGame();
+    if (game == null || !game.getGameState().isDamagable()) {
+      event.setCancelled(true);
+      return;
+    }
+
+    if (event.getDamager() instanceof Player damager) {
+      if (game.isHider(HideAndSeekPlayer.get(damager))) {
+        event.setCancelled(true);
+        return;
+      }
+
+      if (HideAndSeekManager.INSTANCE.getGameSettings().isOhko()) {
+        Bukkit.getScheduler()
+            .runTaskLater(HideAndSeek.getInstance(), () -> target.damage(Float.MAX_VALUE, damager),
+                1L);
+      }
     }
   }
 

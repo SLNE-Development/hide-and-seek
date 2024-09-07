@@ -1,0 +1,30 @@
+package dev.slne.hideandnseek.listener.listeners;
+
+import dev.slne.hideandnseek.HideAndSeekGame;
+import dev.slne.hideandnseek.HideAndSeekManager;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
+
+/**
+ * The type Player move listener.
+ */
+public class PlayerMoveListener implements Listener {
+
+  @EventHandler
+  public void onPlayerMove(PlayerMoveEvent event) {
+    final HideAndSeekGame game = HideAndSeekManager.INSTANCE.getRunningGame();
+
+    if (game == null || !game.getGameState().isIngame()) {
+      return;
+    }
+
+    Player player = event.getPlayer();
+    if (player.getLocation().getBlock().getType().equals(Material.WATER)) {
+      player.damage(1);
+    }
+  }
+
+}

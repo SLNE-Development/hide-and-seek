@@ -39,7 +39,7 @@ public class TimeUtil {
       formatted += seconds + " Sekunde" + (seconds > 1 ? "n" : "") + " ";
     }
 
-    return Component.text(formatted, textColor);
+    return Component.text(formatted.trim(), textColor);
   }
 
   /**

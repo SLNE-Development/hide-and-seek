@@ -4,6 +4,8 @@ import dev.slne.hideandnseek.GameSettings;
 import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
+import dev.slne.hideandnseek.HideAndSeekManager;
+import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.step.GameStep;
 import dev.slne.hideandnseek.timer.EndCountdown;
 import dev.slne.hideandnseek.util.Continuation;
@@ -51,6 +53,9 @@ public class EndGameStep extends GameStep {
 
         onlinePlayer.getInventory().clear();
         onlinePlayer.setVisibleByDefault(true);
+        onlinePlayer.teleportAsync(HideAndSeekManager.INSTANCE.getLobbyLocation());
+
+        HideAndSeekPlayer.get(onlinePlayer).prepareForGame();
       }
     }).thenRun(continuation::resume);
   }

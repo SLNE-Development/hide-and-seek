@@ -54,9 +54,9 @@ public enum GameStepManager {
     final CompletableFuture<Void> future = new CompletableFuture<>();
     executeStepsSequentially(gameSteps.iterator(), GameStep::load, future, false);
 
-    return future.exceptionally(ex -> {
+    return future.exceptionally(exception -> {
       running = false;
-      LOGGER.error("An error occurred while preparing the game", ex);
+      LOGGER.error("An error occurred while preparing the game", exception);
 
       return null;
     });
@@ -70,9 +70,9 @@ public enum GameStepManager {
     final CompletableFuture<Void> future = new CompletableFuture<>();
     executeStepsSequentially(gameSteps.iterator(), GameStep::start, future, false);
 
-    return future.exceptionally(ex -> {
+    return future.exceptionally(exception -> {
       running = false;
-      LOGGER.error("An error occurred while starting the game", ex);
+      LOGGER.error("An error occurred while starting the game", exception);
 
       return null;
     });
@@ -85,16 +85,12 @@ public enum GameStepManager {
     }
 
     if (interrupt) {
-      System.err.println("stop Interrupting game");
       this.interrupt = true;
+
       if (currentStep != null) {
         currentStep.interrupt();
       }
     }
-
-//    if (currentFuture != null) {
-//      currentFuture.cancel(true);
-//    }
 
     final CompletableFuture<Void> future = new CompletableFuture<>();
     executeStepsSequentially(
@@ -105,13 +101,10 @@ public enum GameStepManager {
     );
 
     return future.thenRun(() -> running = false)
-        .thenRun(() -> {
-          System.err.println("Game stopped 3507387095");
-        })
-        .exceptionally(ex -> {
-      LOGGER.error("An error occurred while stopping the game", ex);
-      return null;
-    });
+        .exceptionally(exception -> {
+          LOGGER.error("An error occurred while stopping the game", exception);
+          return null;
+        });
   }
 
   public CompletableFuture<Void> forceStop() {
@@ -121,11 +114,7 @@ public enum GameStepManager {
 
     interrupt = true;
 
-//    if (currentFuture != null) {
-//      currentFuture.cancel(true);
-//    }
-
-    return stopGame(HideAndSeekEndReason.FORCED_END, interrupt);
+    return stopGame(HideAndSeekEndReason.FORCED_END, true);
   }
 
   public CompletableFuture<Void> resetGame() {
@@ -136,8 +125,8 @@ public enum GameStepManager {
       currentStep = null;
       running = false;
       interrupt = false;
-    }).exceptionally(ex -> {
-      LOGGER.error("An error occurred while resetting the game", ex);
+    }).exceptionally(exception -> {
+      LOGGER.error("An error occurred while resetting the game", exception);
       return null;
     });
   }
@@ -165,9 +154,9 @@ public enum GameStepManager {
 
       executor.accept(step, continuation);
 
-//      currentFuture =
-          continuation.getFuture()
-          .thenRun(() -> executeStepsSequentially(stepsIterator, executor, finalFuture, ignoreInterrupt))
+      continuation.getFuture()
+          .thenRun(
+              () -> executeStepsSequentially(stepsIterator, executor, finalFuture, ignoreInterrupt))
           .exceptionally(ex -> {
             finalFuture.completeExceptionally(ex);
             return null;
