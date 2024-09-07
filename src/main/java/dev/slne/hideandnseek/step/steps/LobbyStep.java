@@ -36,17 +36,19 @@ public class LobbyStep extends GameStep {
   public void load(@NotNull Continuation continuation) {
     countdown = new LobbyCountdown(gameSettings.getLobbyTime());
 
-    game.teleportLobby().thenComposeAsync(runSyncF(() -> {
-          final WorldBorder worldBorder = gameSettings.getWorld().getWorldBorder();
-          final Location2D center = gameSettings.getWorldBorderCenter();
+    runSync(() -> {
+      game.teleportLobby();
+      
+      final WorldBorder worldBorder = gameSettings.getWorld().getWorldBorder();
+      final Location2D center = gameSettings.getWorldBorderCenter();
 
-          worldBorder.setCenter(center.getX(), center.getZ());
-          worldBorder.setSize(HideAndSeekManager.INSTANCE.getLobbyWorldBorderRadius() * 2);
-          worldBorder.setDamageAmount(gameSettings.getWorldBorderDamageAmount());
-          worldBorder.setDamageBuffer(gameSettings.getWorldBorderDamageBuffer());
-          worldBorder.setWarningDistance(0);
-          worldBorder.setWarningTime(5);
-        }))
+      worldBorder.setCenter(center.getX(), center.getZ());
+      worldBorder.setSize(HideAndSeekManager.INSTANCE.getLobbyWorldBorderRadius() * 2);
+      worldBorder.setDamageAmount(gameSettings.getWorldBorderDamageAmount());
+      worldBorder.setDamageBuffer(gameSettings.getWorldBorderDamageBuffer());
+      worldBorder.setWarningDistance(0);
+      worldBorder.setWarningTime(5);
+    })
         .thenRun(continuation::resume)
         .exceptionally(exception -> {
           LOGGER.error("Error while loading lobby", exception);

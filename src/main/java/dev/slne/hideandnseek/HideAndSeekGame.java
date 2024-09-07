@@ -224,14 +224,11 @@ public class HideAndSeekGame {
   }
 
   /**
-   * Teleport lobby completable future.
-   *
-   * @return the completable future
+   * Teleport lobby.
    */
-  public CompletableFuture<Void> teleportLobby() {
-    return CompletableFuture.allOf(Bukkit.getOnlinePlayers().stream()
-        .map(player -> player.teleportAsync(HideAndSeekManager.INSTANCE.getLobbyLocation()))
-        .toArray(CompletableFuture[]::new));
+  public void teleportLobby() {
+    Bukkit.getOnlinePlayers()
+        .forEach(player -> player.teleport(HideAndSeekManager.INSTANCE.getLobbyLocation()));
   }
 
   /**
