@@ -3,7 +3,8 @@ package dev.slne.hideandnseek;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.step.GameStep;
 import dev.slne.hideandnseek.step.GameStepManager;
-import dev.slne.hideandnseek.util.TeamUtil;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -11,7 +12,6 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
-import org.bukkit.scoreboard.Team;
 
 /**
  * The type Hide and seek game.
@@ -23,8 +23,8 @@ public class HideAndSeekGame {
 
   private final GameSettings gameSettings;
 
-  private Team hidersTeam;
-  private Team seekersTeam;
+  private ObjectSet<UUID> hidersTeam;
+  private ObjectSet<UUID> seekersTeam;
 
   /**
    * Instantiates a new Hide and seek game.
@@ -41,11 +41,8 @@ public class HideAndSeekGame {
    * @return the completable future
    */
   public CompletableFuture<Void> prepare() {
-    this.hidersTeam = TeamUtil.getOrCreateTeam("hiders");
-    this.seekersTeam = TeamUtil.getOrCreateTeam("seekers");
-
-    TeamUtil.prepareTeam(hidersTeam);
-    TeamUtil.prepareTeam(seekersTeam);
+    this.hidersTeam = new ObjectArraySet<>();
+    this.seekersTeam = new ObjectArraySet<>();
 
     return GameStepManager.INSTANCE.prepareGame(this, gameSettings);
   }
@@ -64,10 +61,7 @@ public class HideAndSeekGame {
    *
    * @return the completable future
    */
-  public CompletableFuture<Void> reset() { // TODO: 06.09.2024 21:59 - call when? via command?+
-    hidersTeam.unregister();
-    seekersTeam.unregister();
-
+  public CompletableFuture<Void> reset() {
     this.hidersTeam = null;
     this.seekersTeam = null;
 
@@ -111,7 +105,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void addSeeker(HideAndSeekPlayer player) {
-    seekersTeam.addPlayer(player.getPlayer());
+    seekersTeam.add(player.getUuid());
   }
 
   /**
@@ -120,7 +114,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void addHider(HideAndSeekPlayer player) {
-    hidersTeam.addPlayer(player.getPlayer());
+    hidersTeam.add(player.getUuid());
   }
 
   /**
@@ -129,7 +123,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void removeSeeker(HideAndSeekPlayer player) {
-    seekersTeam.removePlayer(player.getPlayer());
+    seekersTeam.remove(player.getUuid());
   }
 
   /**
@@ -138,7 +132,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void removeHider(HideAndSeekPlayer player) {
-    hidersTeam.removePlayer(player.getPlayer());
+    hidersTeam.remove(player.getUuid());
   }
 
   /**
@@ -148,7 +142,7 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isHider(HideAndSeekPlayer player) {
-    return hidersTeam != null && hidersTeam.hasPlayer(player.getPlayer());
+    return hidersTeam != null && hidersTeam.contains(player.getUuid());
   }
 
   /**
@@ -158,7 +152,7 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isSeeker(HideAndSeekPlayer player) {
-    return seekersTeam != null && seekersTeam.hasPlayer(player.getPlayer());
+    return seekersTeam != null && seekersTeam.contains(player.getUuid());
   }
 
   /**
@@ -167,8 +161,7 @@ public class HideAndSeekGame {
    * @return the seekers
    */
   public List<HideAndSeekPlayer> getSeekers() {
-    return seekersTeam.getEntries().stream()
-        .map(s -> Bukkit.getOfflinePlayer(s).getUniqueId())
+    return seekersTeam.stream()
         .map(HideAndSeekPlayer::get)
         .toList();
   }
@@ -179,8 +172,7 @@ public class HideAndSeekGame {
    * @return the hiders
    */
   public List<HideAndSeekPlayer> getHiders() {
-    return hidersTeam.getEntries().stream()
-        .map(s -> Bukkit.getOfflinePlayer(s).getUniqueId())
+    return hidersTeam.stream()
         .map(HideAndSeekPlayer::get)
         .toList();
   }
@@ -202,15 +194,15 @@ public class HideAndSeekGame {
       return;
     }
 
-    if (seekersTeam.getEntries().isEmpty() && !hidersTeam.getEntries().isEmpty()) {
+    if (seekersTeam.isEmpty() && !hidersTeam.isEmpty()) {
       assignNewSeeker();
     }
 
-    if (hidersTeam.getEntries().isEmpty()) {
+    if (hidersTeam.isEmpty()) {
       stop(HideAndSeekEndReason.SEEKER_WIN, true);
     }
 
-    if (seekersTeam.getEntries().isEmpty()) {
+    if (seekersTeam.isEmpty()) {
       stop(HideAndSeekEndReason.HIDER_WIN, true);
     }
   }
@@ -219,8 +211,8 @@ public class HideAndSeekGame {
    * Assign new seeker.
    */
   private void assignNewSeeker() {
-    final String newSeekerStringUuid = hidersTeam.getEntries().stream().findAny().orElseThrow();
-    final HideAndSeekPlayer newSeeker = HideAndSeekPlayer.get(UUID.fromString(newSeekerStringUuid));
+    final UUID newSeekerUuid = hidersTeam.stream().findAny().orElseThrow();
+    final HideAndSeekPlayer newSeeker = HideAndSeekPlayer.get(newSeekerUuid);
 
     removeHider(newSeeker);
     addSeeker(newSeeker);
