@@ -17,7 +17,7 @@ public class PlayerMoveListener implements Listener {
   public void onPlayerMove(PlayerMoveEvent event) {
     final HideAndSeekGame game = HideAndSeekManager.INSTANCE.getRunningGame();
 
-    if (game == null || !game.getGameState().isIngame()) {
+    if (game == null || !game.getGameState().isDamagable()) {
       return;
     }
 
