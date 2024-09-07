@@ -1,50 +1,60 @@
 package dev.slne.hideandnseek.step.steps;
 
-import dev.slne.hideandnseek.HideAndSeekEndReason;
+import dev.jorel.commandapi.wrappers.Location2D;
+import dev.slne.hideandnseek.GameSettings;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
+import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.step.GameStep;
-import dev.slne.hideandnseek.util.Continuation;
-import dev.slne.hideandnseek.GameData;
 import dev.slne.hideandnseek.timer.LobbyCountdown;
-import java.time.Duration;
-import java.util.Optional;
-import org.bukkit.scoreboard.Team;
+import dev.slne.hideandnseek.util.Continuation;
+import org.bukkit.WorldBorder;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The type Hide and seek lobby step.
  */
 public class LobbyStep extends GameStep {
 
-  private HideAndSeekGame game;
+  private final HideAndSeekGame game;
   private LobbyCountdown countdown;
 
 
+  private final GameSettings gameSettings;
 
-  private final Duration time;
-
-  /**
-   * Instantiates a new Lobby lifecycle.
-   *
-   * @param game     the game
-   * @param timeUnit the time unit
-   * @param time     the time
-   */
-  public LobbyStep(HideAndSeekGame game, GameData gameData) {
+  public LobbyStep(HideAndSeekGame game, GameSettings gameSettings) {
     super(HideAndSeekGameState.LOBBY);
 
     this.game = game;
-    this.time = gameData.getLobbyTime();
+    this.gameSettings = gameSettings;
   }
 
   @Override
-  public void load(Continuation continuation) {
-    countdown = new LobbyCountdown(time);
-    continuation.resume();
+  public void load(@NotNull Continuation continuation) {
+    countdown = new LobbyCountdown(gameSettings.getLobbyTime());
+
+    game.teleportLobby()
+        .thenCompose(runSyncF(() -> {
+          final WorldBorder worldBorder = gameSettings.getWorld().getWorldBorder();
+          final Location2D center = gameSettings.getWorldBorderCenter();
+
+          worldBorder.setCenter(center.getX(), center.getZ());
+          worldBorder.setSize(HideAndSeekManager.INSTANCE.getLobbyWorldBorderRadius() * 2);
+          worldBorder.setDamageAmount(gameSettings.getWorldBorderDamageAmount());
+          worldBorder.setDamageBuffer(gameSettings.getWorldBorderDamageBuffer());
+          worldBorder.setWarningDistance(0);
+          worldBorder.setWarningTime(5);
+        }))
+        .thenRun(continuation::resume);
   }
 
   @Override
   public void start(Continuation continuation) {
     countdown.start(continuation);
+  }
+
+  @Override
+  public void interrupt() {
+    countdown.interrupt();
   }
 }

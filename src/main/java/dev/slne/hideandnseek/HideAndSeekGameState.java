@@ -9,7 +9,7 @@ public enum HideAndSeekGameState {
   PREPARING,
   INGAME,
   ENDING,
-  END;
+  END, UNKNOWN;
 
   /**
    * Is preparing boolean.

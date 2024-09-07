@@ -27,14 +27,12 @@ public class HideAndSeekSetLobbyCommand extends CommandAPICommand {
 
     withArguments(
         new LocationArgument("location", LocationType.BLOCK_POSITION, true),
-        new IntegerArgument("radius"),
-        new IntegerArgument("countdown")
+        new IntegerArgument("radius")
     );
 
     executes((sender, args) -> {
       final Location location = args.getUnchecked("location");
       final int radius = args.getOrDefaultUnchecked("radius", 0);
-      final int countdown = args.getOrDefaultUnchecked("countdown", 0);
 
       HideAndSeekManager.INSTANCE.setLobbyLocation(location);
       HideAndSeekManager.INSTANCE.setLobbyWorldBorderRadius(radius);

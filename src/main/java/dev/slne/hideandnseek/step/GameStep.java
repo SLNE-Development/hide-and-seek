@@ -1,8 +1,12 @@
 package dev.slne.hideandnseek.step;
 
+import dev.slne.hideandnseek.HideAndSeek;
 import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.util.Continuation;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import org.bukkit.Bukkit;
 
 /**
  * The interface Game step.
@@ -54,4 +58,22 @@ public abstract class GameStep {
     continuation.resume();
   }
 
+  public void interrupt() {
+
+  }
+
+  protected final CompletableFuture<Void> runSync(Runnable runnable) {
+    final CompletableFuture<Void> future = new CompletableFuture<>();
+
+    Bukkit.getScheduler().runTask(HideAndSeek.getInstance(), () -> {
+      runnable.run();
+      future.complete(null);
+    });
+
+    return future;
+  }
+
+  protected final Function<Object, CompletableFuture<Void>> runSyncF(Runnable runnable) {
+    return o -> runSync(runnable);
+  }
 }

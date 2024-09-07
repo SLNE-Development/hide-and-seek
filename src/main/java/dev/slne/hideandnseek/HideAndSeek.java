@@ -43,9 +43,9 @@ public final class HideAndSeek extends JavaPlugin {
     saveDefaultConfig();
 
     ListenerManager.INSTANCE.onEnable();
+    HideAndSeekManager.INSTANCE.onEnable();
     new HideAndSeekCommand("hideandseek").register();
 
-    HideAndSeekManager.INSTANCE.onEnable();
   }
 
   @Override

@@ -43,4 +43,9 @@ public class GameCountdown extends AbstractAnnounceCountdown {
     this.continuation = continuation;
     start();
   }
+
+  @Override
+  protected void onEnd() {
+    continuation.resume();
+  }
 }

@@ -26,14 +26,22 @@ public class HideAndSeekStartCommand extends CommandAPICommand {
     executesPlayer((player, args) -> {
       HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 
-      if (runningGame == null) {
-        throw CommandAPI.failWithString("Es wurde noch kein Spiel erstellt.");
+      if (runningGame != null) {
+        throw CommandAPI.failWithString("Es läuft bereits ein Spiel.");
       }
 
-      runningGame.start();
+      final HideAndSeekGame game = new HideAndSeekGame(
+          HideAndSeekManager.INSTANCE.getGameSettings());
+      HideAndSeekManager.INSTANCE.setRunningGame(game);
 
-      player.sendMessage(Messages.prefix().append(Component.text("Das Spiel wurde gestartet.",
-          NamedTextColor.GREEN)));
+      player.sendMessage(Messages.prefix()
+          .append(Component.text("Das Spiel wird vorbereitet...", NamedTextColor.GREEN)));
+
+      game.prepare()
+          .thenRun(() -> player.sendMessage(Messages.prefix()
+              .append(Component.text("Das Spiel wurde vorbereitet und wird jetzt gestartet.",
+                  NamedTextColor.GREEN))))
+          .thenRun(game::start);
     });
   }
 }

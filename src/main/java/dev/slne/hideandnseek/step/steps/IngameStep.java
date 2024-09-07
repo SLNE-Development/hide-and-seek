@@ -1,6 +1,6 @@
 package dev.slne.hideandnseek.step.steps;
 
-import dev.slne.hideandnseek.GameData;
+import dev.slne.hideandnseek.GameSettings;
 import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
@@ -17,6 +17,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 
 /**
  * The type Ingame step.
@@ -31,14 +32,14 @@ public class IngameStep extends GameStep {
 
   private GameCountdown countdown;
 
-  public IngameStep(HideAndSeekGame game, GameData gameData) {
+  public IngameStep(HideAndSeekGame game, GameSettings gameSettings) {
     super(HideAndSeekGameState.INGAME);
 
     this.game = game;
-    this.time = gameData.getGameDuration();
-    this.world = gameData.getWorld();
-    this.finalRadius = gameData.getInitialRadius();
-    this.shrinkTime = gameData.getShrinkTime();
+    this.time = gameSettings.getGameDuration();
+    this.world = gameSettings.getWorld();
+    this.finalRadius = gameSettings.getFinalRadius();
+    this.shrinkTime = gameSettings.getGameDuration();
   }
 
   @Override
@@ -65,20 +66,20 @@ public class IngameStep extends GameStep {
 
     Bukkit.broadcast(builder.build());
 
-    Bukkit.getServer().playSound(Sound.sound()
-        .type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL)
-        .volume(.75f)
-        .pitch(.75f)
-        .source(Source.MASTER)
-        .build(), Emitter.self());
+    runSync(() -> {
+      Bukkit.getServer().playSound(Sound.sound()
+          .type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL)
+          .volume(.75f)
+          .pitch(.75f)
+          .source(Source.MASTER)
+          .build(), Emitter.self());
 
-    for (HideAndSeekPlayer seeker : game.getSeekers()) {
-      seeker.prepareForGame();
-      seeker.teleportSpawn();
-    }
+      for (HideAndSeekPlayer seeker : game.getSeekers()) {
+        seeker.teleportSpawn();
+      }
 
-    world.getWorldBorder().setSize(finalRadius * 2, shrinkTime.getSeconds());
-    countdown.start(continuation);
+      world.getWorldBorder().setSize(finalRadius * 2, shrinkTime.getSeconds());
+    }).thenRun(() -> countdown.start(continuation));
   }
 
   @Override
@@ -111,10 +112,24 @@ public class IngameStep extends GameStep {
 
     Bukkit.broadcast(builder.build());
 
-    Bukkit.getServer().playSound(
-        Sound.sound().type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL).volume(.75f).pitch(.75f)
-            .source(Source.MASTER).build(), Emitter.self());
+    runSync(() -> {
+      Bukkit.getServer().playSound(
+          Sound.sound().type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL).volume(.75f).pitch(.75f)
+              .source(Source.MASTER).build(), Emitter.self());
 
-    continuation.resume();
+      final WorldBorder worldBorder = world.getWorldBorder();
+      worldBorder.setSize((int) worldBorder.getSize());
+    }).thenRun(() -> {
+      System.err.println("Continuation resume 5165654");
+      continuation.resume();
+    }).exceptionally(ex -> {
+      System.err.println("An error occurred while ending the game 5165654");
+      return null;
+    });
+  }
+
+  @Override
+  public void interrupt() {
+    countdown.interrupt();
   }
 }

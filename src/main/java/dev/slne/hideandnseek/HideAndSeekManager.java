@@ -17,6 +17,9 @@ public enum HideAndSeekManager {
 
   private final ObjectSet<UUID> bypassing;
 
+  @Getter(lazy = true)
+  private final GameSettings gameSettings = GameSettings.defaultSettings();
+
   @Setter
   @Getter
   private HideAndSeekGame runningGame;

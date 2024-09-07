@@ -1,16 +1,17 @@
 package dev.slne.hideandnseek.step.steps;
 
+import dev.slne.hideandnseek.GameSettings;
 import dev.slne.hideandnseek.HideAndSeek;
-import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.step.GameStep;
-import dev.slne.hideandnseek.util.Continuation;
-import dev.slne.hideandnseek.GameData;
 import dev.slne.hideandnseek.timer.HiderPreparationCountdown;
+import dev.slne.hideandnseek.util.Continuation;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
 import net.kyori.adventure.sound.Sound.Source;
@@ -18,6 +19,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 /**
  * The type Preparation step.
@@ -37,17 +39,15 @@ public class PreparationStep extends GameStep {
    * Instantiates a new Preparation step.
    *
    * @param game     the game
-   * @param timeUnit the time unit
-   * @param time     the time
    */
-  public PreparationStep(HideAndSeekGame game, GameData gameData) {
+  public PreparationStep(HideAndSeekGame game, GameSettings gameSettings) {
     super(HideAndSeekGameState.PREPARING);
 
     this.game = game;
-    this.time = gameData.getPreparationTime();
-    this.initialSeeker = gameData.getInitialSeeker();
-    this.world = gameData.getWorld();
-    this.finalRadius = gameData.getInitialRadius();
+    this.time = gameSettings.getPreparationTime();
+    this.initialSeeker = gameSettings.getInitialSeeker();
+    this.world = gameSettings.getWorld();
+    this.finalRadius = gameSettings.getInitialRadius();
   }
 
   @Override
@@ -68,22 +68,23 @@ public class PreparationStep extends GameStep {
     final HideAndSeekPlayer seeker = chooseSeeker();
     game.addSeeker(seeker);
 
-    Bukkit.getOnlinePlayers().stream()
-        .map(HideAndSeekPlayer::get)
-        .forEach(onlinePlayer -> {
-          onlinePlayer.prepareForGame();
+    runSync(() -> {
+      Bukkit.getOnlinePlayers().stream()
+          .map(HideAndSeekPlayer::get)
+          .forEach(onlinePlayer -> {
+            onlinePlayer.prepareForGame();
 
-          if (onlinePlayer.isSeeker()) {
-            onlinePlayer.teleportLobby();
-          } else {
-            game.addHider(onlinePlayer);
-            onlinePlayer.teleportSpawn();
-          }
-        });
+            if (onlinePlayer.isSeeker()) {
+              onlinePlayer.giveSeekerInventory();
+              onlinePlayer.teleportLobby();
+            } else {
+              game.addHider(onlinePlayer);
+              onlinePlayer.teleportSpawn();
+            }
+          });
 
-    world.getWorldBorder().setSize(finalRadius * 2);
-
-    countdown.start(continuation);
+      world.getWorldBorder().setSize(finalRadius * 2);
+    }).thenRun(() -> countdown.start(continuation));
   }
 
   @Override
@@ -102,7 +103,9 @@ public class PreparationStep extends GameStep {
       return initialSeeker;
     }
 
-    return game.getHiders().get(HideAndSeek.RANDOM.nextInt(game.getHiders().size()));
+    final List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+    return HideAndSeekPlayer.get(
+        players.get(HideAndSeek.RANDOM.nextInt(players.size())).getUniqueId());
   }
 
   private void printStartMessage() {
@@ -122,13 +125,20 @@ public class PreparationStep extends GameStep {
   }
 
   private void playStartSound() {
-    Bukkit.getServer().playSound(
-        Sound.sound().type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL)
-            .volume(0.5f)
-            .pitch(0.75f)
-            .source(Source.MASTER)
-            .build(),
-        Emitter.self()
-    );
+    runSync(() -> {
+      Bukkit.getServer().playSound(
+          Sound.sound().type(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL)
+              .volume(0.5f)
+              .pitch(0.75f)
+              .source(Source.MASTER)
+              .build(),
+          Emitter.self()
+      );
+    });
+  }
+
+  @Override
+  public void interrupt() {
+    countdown.interrupt();
   }
 }

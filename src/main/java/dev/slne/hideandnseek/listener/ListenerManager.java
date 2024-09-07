@@ -1,6 +1,8 @@
 package dev.slne.hideandnseek.listener;
 
 import dev.slne.hideandnseek.HideAndSeek;
+import dev.slne.hideandnseek.listener.listeners.ConnectionListener;
+import dev.slne.hideandnseek.listener.listeners.DamageListener;
 import dev.slne.hideandnseek.listener.listeners.DeathListener;
 import dev.slne.hideandnseek.listener.listeners.HungerListener;
 import dev.slne.hideandnseek.listener.listeners.InteractListener;
@@ -27,6 +29,8 @@ public enum ListenerManager {
     register(new RespawnListener());
     register(new HungerListener());
     register(new InteractListener());
+    register(new DamageListener());
+    register(new ConnectionListener());
   }
 
   private void register(Listener listener) {

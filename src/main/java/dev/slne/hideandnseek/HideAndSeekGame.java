@@ -1,13 +1,13 @@
 package dev.slne.hideandnseek;
 
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
+import dev.slne.hideandnseek.step.GameStep;
 import dev.slne.hideandnseek.step.GameStepManager;
 import dev.slne.hideandnseek.util.TeamUtil;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
-import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Team;
@@ -18,30 +18,26 @@ import org.bukkit.scoreboard.Team;
 @Getter
 public class HideAndSeekGame {
 
-  private final GameData gameData;
+  private final GameSettings gameSettings;
 
-  @Setter
-  private HideAndSeekGameState gameState;
   private Team hidersTeam;
   private Team seekersTeam;
 
-  public HideAndSeekGame(GameData gameData) {
-    this.gameData = gameData;
+  public HideAndSeekGame(GameSettings gameSettings) {
+    this.gameSettings = gameSettings;
   }
 
   public CompletableFuture<Void> prepare() {
-    return GameStepManager.INSTANCE.prepareGame(this, gameData).thenRun(() -> {
-      this.hidersTeam = TeamUtil.getOrCreateTeam("hiders");
-      this.seekersTeam = TeamUtil.getOrCreateTeam("seekers");
+    this.hidersTeam = TeamUtil.getOrCreateTeam("hiders");
+    this.seekersTeam = TeamUtil.getOrCreateTeam("seekers");
 
-      TeamUtil.prepareTeam(hidersTeam);
-      TeamUtil.prepareTeam(seekersTeam);
-    });
+    TeamUtil.prepareTeam(hidersTeam);
+    TeamUtil.prepareTeam(seekersTeam);
+
+    return GameStepManager.INSTANCE.prepareGame(this, gameSettings);
   }
 
   public CompletableFuture<Void> start() {
-//    this.gameState = state;
-
     return GameStepManager.INSTANCE.startGame();
   }
 
@@ -49,18 +45,33 @@ public class HideAndSeekGame {
     hidersTeam.unregister();
     seekersTeam.unregister();
 
-    this.gameState = null;
     this.hidersTeam = null;
     this.seekersTeam = null;
 
-    return GameStepManager.INSTANCE.resetGame();
+    return GameStepManager.INSTANCE.resetGame()
+        .thenRun(() -> HideAndSeekManager.INSTANCE.setRunningGame(null))
+        .thenRun(() -> {
+          System.err.println("Game reset");
+        }).exceptionally(ex -> {
+          System.err.println("Error while resetting game");
+          ex.printStackTrace();
+          return null;
+        });
   }
 
-  public CompletableFuture<Void> stop(HideAndSeekEndReason reason) {
-    return GameStepManager.INSTANCE.stopGame(reason).thenRun(() -> {
-      TeamUtil.unregisterTeam(hidersTeam);
-      TeamUtil.unregisterTeam(seekersTeam);
-    });
+  public CompletableFuture<Void> stop(HideAndSeekEndReason reason, boolean interrupt) {
+    return GameStepManager.INSTANCE.stopGame(reason, interrupt)
+        .thenComposeAsync(unused -> reset())
+        .exceptionally(ex -> {
+          System.err.println("Error while stopping game");
+          ex.printStackTrace();
+          return null;
+        });
+  }
+
+  public CompletableFuture<Void> forcestop() {
+    return GameStepManager.INSTANCE.forceStop()
+        .thenComposeAsync(unused -> reset());
   }
 
   /**
@@ -69,7 +80,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void addSeeker(HideAndSeekPlayer player) {
-    seekersTeam.addEntity(player.getPlayer());
+    seekersTeam.addPlayer(player.getPlayer());
   }
 
   /**
@@ -78,7 +89,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void addHider(HideAndSeekPlayer player) {
-    hidersTeam.addEntity(player.getPlayer());
+    hidersTeam.addPlayer(player.getPlayer());
   }
 
   /**
@@ -87,7 +98,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void removeSeeker(HideAndSeekPlayer player) {
-    seekersTeam.removeEntity(player.getPlayer());
+    seekersTeam.removePlayer(player.getPlayer());
   }
 
   /**
@@ -96,7 +107,7 @@ public class HideAndSeekGame {
    * @param player the player
    */
   public void removeHider(HideAndSeekPlayer player) {
-    hidersTeam.removeEntity(player.getPlayer());
+    hidersTeam.removePlayer(player.getPlayer());
   }
 
   /**
@@ -106,7 +117,7 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isHider(HideAndSeekPlayer player) {
-    return hidersTeam.hasEntity(player.getPlayer());
+    return hidersTeam.hasPlayer(player.getPlayer());
   }
 
   /**
@@ -116,7 +127,7 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isSeeker(HideAndSeekPlayer player) {
-    return seekersTeam.hasEntity(player.getPlayer());
+    return seekersTeam.hasPlayer(player.getPlayer());
   }
 
   /**
@@ -126,7 +137,7 @@ public class HideAndSeekGame {
    */
   public List<HideAndSeekPlayer> getSeekers() {
     return seekersTeam.getEntries().stream()
-        .map(UUID::fromString)
+        .map(s -> Bukkit.getOfflinePlayer(s).getUniqueId())
         .map(HideAndSeekPlayer::get)
         .toList();
   }
@@ -138,7 +149,7 @@ public class HideAndSeekGame {
    */
   public List<HideAndSeekPlayer> getHiders() {
     return hidersTeam.getEntries().stream()
-        .map(UUID::fromString)
+        .map(s -> Bukkit.getOfflinePlayer(s).getUniqueId())
         .map(HideAndSeekPlayer::get)
         .toList();
   }
@@ -149,7 +160,7 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean doHidersBecomeSeekers() {
-    return gameData.isHidersBecomeSeekers();
+    return gameSettings.isHidersBecomeSeekers();
   }
 
 
@@ -162,11 +173,11 @@ public class HideAndSeekGame {
     }
 
     if (hidersTeam.getEntries().isEmpty()) {
-      stop(HideAndSeekEndReason.SEEKER_WIN);
+      stop(HideAndSeekEndReason.SEEKER_WIN, true);
     }
 
     if (seekersTeam.getEntries().isEmpty()) {
-      stop(HideAndSeekEndReason.HIDER_WIN);
+      stop(HideAndSeekEndReason.HIDER_WIN, true);
     }
   }
 
@@ -195,5 +206,11 @@ public class HideAndSeekGame {
     return CompletableFuture.allOf(Bukkit.getOnlinePlayers().stream()
         .map(player -> player.teleportAsync(HideAndSeekManager.INSTANCE.getLobbyLocation()))
         .toArray(CompletableFuture[]::new));
+  }
+
+  public HideAndSeekGameState getGameState() {
+    final GameStep step = GameStepManager.INSTANCE.getCurrentStep();
+
+    return step == null ? HideAndSeekGameState.UNKNOWN : step.getGameState();
   }
 }

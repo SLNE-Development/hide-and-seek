@@ -1,5 +1,6 @@
 package dev.slne.hideandnseek.listener.listeners;
 
+import dev.slne.hideandnseek.HideAndSeek;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Messages;
@@ -7,6 +8,7 @@ import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class OnlineListener implements Listener {
+public class ConnectionListener implements Listener {
 
   @EventHandler
   public void onJoin(PlayerJoinEvent event) {
@@ -25,6 +27,7 @@ public class OnlineListener implements Listener {
         .append(Messages.displayName(HideAndSeekPlayer.get(player)))
         .append(Component.text(" hat das Spiel betreten.", NamedTextColor.GRAY)));
 
+    player.setVisibleByDefault(true);
     if (runningGame != null && runningGame.getGameState().isIngame()) {
       player.setGameMode(GameMode.SPECTATOR);
 
@@ -33,6 +36,9 @@ public class OnlineListener implements Listener {
               "Du hast das Spiel betreten, während es bereits läuft. Du bist nun ein Zuschauer. Bitte versetz dich NICHT manuell in einen anderen Spielmodus.",
               NamedTextColor.RED, TextDecoration.BOLD)));
     }
+
+    Bukkit.getScheduler()
+        .runTaskLater(HideAndSeek.getInstance(), () -> player.getInventory().clear(), 5L);
   }
 
   @EventHandler

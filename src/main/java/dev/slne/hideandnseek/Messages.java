@@ -22,8 +22,8 @@ public class Messages {
     final boolean isHider = runningGame != null && runningGame.isHider(player);
 
     return Component.text(player.getPlayer().getName(),
-        isHider ? NamedTextColor.AQUA
-            : NamedTextColor.GRAY); // TODO: 04.09.2024 22:33 - just use team display name?
+        isHider ? NamedTextColor.YELLOW
+            : NamedTextColor.AQUA); // TODO: 04.09.2024 22:33 - just use team display name?
   }
 
   /**

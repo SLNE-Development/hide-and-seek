@@ -2,7 +2,6 @@ package dev.slne.hideandnseek.command.sub;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.slne.hideandnseek.HideAndSeekEndReason;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Messages;
@@ -31,12 +30,8 @@ public class HideAndSeekForcestopCommand extends CommandAPICommand {
         throw CommandAPI.failWithString("Es wurde noch kein Spiel erstellt.");
       }
 
-
-      runningGame.stop(HideAndSeekEndReason.FORCED_END); // TODO: 04.09.2024 22:04 - stop current running step
-      HideAndSeekManager.INSTANCE.setRunningGame(null);
-
-      player.sendMessage(Messages.prefix().append(Component.text("Das Spiel wurde gestoppt.",
-          NamedTextColor.GREEN)));
+      runningGame.forcestop().thenRun(() -> player.sendMessage(Messages.prefix()
+          .append(Component.text("Das Spiel wurde gestoppt.", NamedTextColor.GREEN))));
     });
   }
 }

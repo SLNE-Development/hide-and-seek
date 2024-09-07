@@ -118,17 +118,6 @@ public class HideAndSeekPlayer {
   }
 
   /**
-   * Is hider boolean.
-   *
-   * @return the boolean
-   */
-  public boolean isHider() {
-    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
-
-    return runningGame != null && runningGame.isHider(this);
-  }
-
-  /**
    * Teleport lobby.
    */
   public void teleportLobby() {
@@ -150,6 +139,25 @@ public class HideAndSeekPlayer {
   public boolean isSeeker() {
     final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 
-    return runningGame != null && runningGame.isSeeker(this);
+    try {
+      return runningGame != null && runningGame.isSeeker(this);
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  /**
+   * Is hider boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isHider() {
+    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+
+    try {
+      return runningGame != null && runningGame.isHider(this);
+    } catch (Exception e) {
+      return false;
+    }
   }
 }

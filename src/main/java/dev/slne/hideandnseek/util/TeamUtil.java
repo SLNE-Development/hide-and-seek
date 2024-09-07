@@ -3,7 +3,6 @@ package dev.slne.hideandnseek.util;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.scoreboard.Team.Option;
 import org.bukkit.scoreboard.Team.OptionStatus;
@@ -15,7 +14,6 @@ public class TeamUtil {
   /**
    * Gets or create team.
    *
-   * @param scoreboardManager the scoreboard manager
    * @param teamName          the team name
    * @return the team
    */
@@ -40,6 +38,7 @@ public class TeamUtil {
     team.setCanSeeFriendlyInvisibles(false);
     team.setOption(Option.COLLISION_RULE, OptionStatus.NEVER);
     team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+    team.getEntries().forEach(team::removeEntry);
   }
 
   public static void unregisterTeam(Team team) {

@@ -6,7 +6,6 @@ import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +24,8 @@ public class DeathListener implements Listener {
    */
   @EventHandler
   public void onPlayerDeath(PlayerDeathEvent event) {
-    final HideAndSeekPlayer player = HideAndSeekPlayer.get(event.getPlayer());
+    final Player bukkitPlayer = event.getPlayer();
+    final HideAndSeekPlayer player = HideAndSeekPlayer.get(bukkitPlayer);
 
     event.getDrops().clear();
 
@@ -45,9 +45,6 @@ public class DeathListener implements Listener {
     }
 
     runningGame.performPlayerCheck();
-
-    player.getPlayer().spigot()
-        .respawn(); // TODO: 04.09.2024 22:11 - replace with gamerule doImmediateRespawn?
   }
 
   /**
@@ -66,13 +63,13 @@ public class DeathListener implements Listener {
       final HideAndSeekPlayer killerPlayer = HideAndSeekPlayer.get(killer.getUniqueId());
       final Component killerDisplayName = Messages.displayName(killerPlayer);
 
-      Bukkit.broadcast(Messages.prefix()
+      event.deathMessage(Messages.prefix()
           .append(diedDisplayName)
           .append(Component.text(" wurde von ", NamedTextColor.GRAY))
           .append(killerDisplayName)
           .append(Component.text(" getötet.", NamedTextColor.GRAY)));
     } else {
-      Bukkit.broadcast(Messages.prefix()
+      event.deathMessage(Messages.prefix()
           .append(diedDisplayName)
           .append(Component.text(" ist gestorben.", NamedTextColor.GRAY)));
     }

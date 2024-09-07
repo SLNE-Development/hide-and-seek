@@ -46,4 +46,9 @@ public abstract class AbstractCountdown implements Runnable {
   protected void onTick() {
 
   }
+
+  public final void interrupt() {
+    Bukkit.getScheduler().cancelTask(taskId);
+//    onEnd();
+  }
 }
