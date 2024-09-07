@@ -29,6 +29,7 @@ public class ConnectionListener implements Listener {
   @EventHandler
   public void onJoin(PlayerJoinEvent event) {
     final Player player = event.getPlayer();
+    HideAndSeekPlayer hideAndSeekPlayer = HideAndSeekPlayer.get(player);
     final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 
     event.joinMessage(Messages.prefix()
@@ -37,8 +38,10 @@ public class ConnectionListener implements Listener {
 
     player.teleportAsync(
         HideAndSeekManager.INSTANCE.getGameSettings().getWorld().getSpawnLocation());
-
     player.setVisibleByDefault(true);
+
+    hideAndSeekPlayer.prepareForGame();
+
     if (runningGame != null && runningGame.getGameState().isIngame()) {
       player.setGameMode(GameMode.SPECTATOR);
 
