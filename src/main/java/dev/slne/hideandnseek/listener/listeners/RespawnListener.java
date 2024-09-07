@@ -4,7 +4,6 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,9 +44,12 @@ public class RespawnListener implements Listener {
       return;
     }
 
-    bukkitPlayer.setAllowFlight(true);
-    bukkitPlayer.setGameMode(GameMode.ADVENTURE);
+    final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+    if (runningGame != null && runningGame.getGameState().isIngame()) {
+      bukkitPlayer.setAllowFlight(true);
+      bukkitPlayer.setFlying(true);
 
-    bukkitPlayer.setVisibleByDefault(false);
+      bukkitPlayer.setVisibleByDefault(false);
+    }
   }
 }
