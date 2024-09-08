@@ -31,6 +31,11 @@ public class DamageListener implements Listener {
       return;
     }
 
+    if (HideAndSeekPlayer.get(target).isSeeker()) {
+      event.setCancelled(true);
+      return;
+    }
+
     if (HideAndSeekManager.INSTANCE.getGameSettings().isOhko()) {
       Bukkit.getScheduler()
           .runTaskLater(HideAndSeek.getInstance(), () -> target.damage(Float.MAX_VALUE, damager),
