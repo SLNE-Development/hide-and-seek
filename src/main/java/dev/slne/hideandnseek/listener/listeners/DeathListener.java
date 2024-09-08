@@ -66,7 +66,7 @@ public class DeathListener implements Listener {
     event.deathMessage(null);
 
     HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
-    int hidersRemaining = runningGame != null ? runningGame.getHiders().size() : 0;
+    int hidersRemaining = runningGame != null ? runningGame.getHiders().size() - 1 : 0;
 
     Component hidersRemainingComponent = Component.text("Noch ", NamedTextColor.GRAY)
         .append(Component.text(hidersRemaining, NamedTextColor.YELLOW))
