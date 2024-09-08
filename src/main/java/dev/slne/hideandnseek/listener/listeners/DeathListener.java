@@ -31,10 +31,13 @@ public class DeathListener implements Listener {
     event.getDrops().clear();
 
     final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
-    printDeathMessage(event);
 
     if (runningGame == null) {
       return;
+    }
+
+    if(runningGame.isHider(player) || runningGame.isSeeker(player)) {
+      printDeathMessage(event);
     }
 
     if (runningGame.isHider(player)) {
@@ -62,6 +65,13 @@ public class DeathListener implements Listener {
 
     event.deathMessage(null);
 
+    HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
+    int hidersRemaining = runningGame != null ? runningGame.getHiders().size() : 0;
+
+    Component hidersRemainingComponent = Component.text("Noch ", NamedTextColor.GRAY)
+        .append(Component.text(hidersRemaining, NamedTextColor.YELLOW))
+        .append(Component.text(" Verstecker verbleibend.", NamedTextColor.GRAY));
+
     if (killer != null) {
       final HideAndSeekPlayer killerPlayer = HideAndSeekPlayer.get(killer.getUniqueId());
       final Component killerDisplayName = Messages.displayName(killerPlayer);
@@ -70,11 +80,11 @@ public class DeathListener implements Listener {
           .append(diedDisplayName)
           .append(Component.text(" wurde von ", NamedTextColor.GRAY))
           .append(killerDisplayName)
-          .append(Component.text(" getötet.", NamedTextColor.GRAY)));
+          .append(Component.text(" getötet. ", NamedTextColor.GRAY)).append(hidersRemainingComponent));
     } else {
       Bukkit.broadcast(Messages.prefix()
           .append(diedDisplayName)
-          .append(Component.text(" ist gestorben.", NamedTextColor.GRAY)));
+          .append(Component.text(" ist gestorben. ", NamedTextColor.GRAY)).append(hidersRemainingComponent));
     }
   }
 
