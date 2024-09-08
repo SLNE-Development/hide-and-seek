@@ -43,6 +43,13 @@ public class DeathListener implements Listener {
     if (runningGame.isHider(player)) {
       runningGame.removeHider(player);
 
+      if(!bukkitPlayer.hasPermission("hideandseek.bypass")) {
+
+        if (!runningGame.getGameSettings().isHidersBecomeSeekers()) {
+          bukkitPlayer.kick(Component.text("Du bist ausgeschieden!"));
+        }
+      }
+
       if (runningGame.doHidersBecomeSeekers()) {
         runningGame.addSeeker(player);
       }
