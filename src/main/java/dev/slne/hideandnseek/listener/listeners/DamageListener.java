@@ -69,5 +69,11 @@ public class DamageListener implements Listener {
     if (game == null || !game.getGameState().isIngame()) {
       event.setCancelled(true);
     }
+
+    HideAndSeekPlayer player = HideAndSeekPlayer.get(event.getPlayer());
+    if (!player.isHider() && !player.isSeeker()) {
+      event.setCancelled(true);
+    }
+
   }
 }
