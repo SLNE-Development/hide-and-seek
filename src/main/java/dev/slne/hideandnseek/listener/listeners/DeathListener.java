@@ -70,7 +70,7 @@ public class DeathListener implements Listener {
 
     Component hidersRemainingComponent = Component.empty();
 
-    if (diedPlayer.isHider()) {
+    if (diedPlayer.isHider() && runningGame.getGameState().isIngame()) {
        hidersRemainingComponent = Component.text("Noch ", NamedTextColor.GRAY)
               .append(Component.text(hidersRemaining, NamedTextColor.YELLOW))
               .append(Component.text(" Verstecker verbleibend.", NamedTextColor.GRAY));
