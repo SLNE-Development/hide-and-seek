@@ -68,9 +68,13 @@ public class DeathListener implements Listener {
     HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
     int hidersRemaining = runningGame != null ? runningGame.getHiders().size() - 1 : 0;
 
-    Component hidersRemainingComponent = Component.text("Noch ", NamedTextColor.GRAY)
-        .append(Component.text(hidersRemaining, NamedTextColor.YELLOW))
-        .append(Component.text(" Verstecker verbleibend.", NamedTextColor.GRAY));
+    Component hidersRemainingComponent = Component.empty();
+
+    if (diedPlayer.isHider()) {
+       hidersRemainingComponent = Component.text("Noch ", NamedTextColor.GRAY)
+              .append(Component.text(hidersRemaining, NamedTextColor.YELLOW))
+              .append(Component.text(" Verstecker verbleibend.", NamedTextColor.GRAY));
+    }
 
     if (killer != null) {
       final HideAndSeekPlayer killerPlayer = HideAndSeekPlayer.get(killer.getUniqueId());
