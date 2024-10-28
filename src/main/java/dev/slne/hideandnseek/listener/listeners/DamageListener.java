@@ -2,6 +2,7 @@ package dev.slne.hideandnseek.listener.listeners;
 
 import dev.slne.hideandnseek.HideAndSeek;
 import dev.slne.hideandnseek.HideAndSeekGame;
+import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 public class DamageListener implements Listener {
@@ -75,5 +77,14 @@ public class DamageListener implements Listener {
       event.setCancelled(true);
     }
 
+  }
+
+  @EventHandler
+  public void onEntityDamage(EntityDamageEvent event) {
+    if(event.getEntity() instanceof Player) {
+      if(HideAndSeekManager.INSTANCE.getRunningGame().getGameState().equals(HideAndSeekGameState.PREPARING)){
+        event.setCancelled(true);
+      }
+    }
   }
 }
