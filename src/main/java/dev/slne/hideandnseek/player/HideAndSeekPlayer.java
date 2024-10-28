@@ -3,8 +3,10 @@ package dev.slne.hideandnseek.player;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Items;
+import dev.slne.hideandnseek.role.Role;
 import java.util.UUID;
 import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
 import org.bukkit.Bukkit;
@@ -17,9 +19,11 @@ import org.bukkit.inventory.PlayerInventory;
  * The type Hide and seek player.
  */
 @Getter
+@Setter
 public class HideAndSeekPlayer {
 
   private final UUID uuid;
+  private Role role;
 
   /**
    * Instantiates a new Hide and seek player.

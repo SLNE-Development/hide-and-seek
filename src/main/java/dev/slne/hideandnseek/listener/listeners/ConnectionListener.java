@@ -5,6 +5,7 @@ import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
+import dev.slne.hideandnseek.role.Role;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -77,8 +78,7 @@ public class ConnectionListener implements Listener {
     player.setFlying(false);
     player.setAllowFlight(false);
 
-    runningGame.removeSeeker(hideAndSeekPlayer);
-    runningGame.removeHider(hideAndSeekPlayer);
+    hideAndSeekPlayer.setRole(Role.UNDEFINED);
     runningGame.performPlayerCheck();
   }
 

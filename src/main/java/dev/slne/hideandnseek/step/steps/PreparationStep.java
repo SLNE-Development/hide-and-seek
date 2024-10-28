@@ -6,6 +6,7 @@ import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
+import dev.slne.hideandnseek.role.Role;
 import dev.slne.hideandnseek.step.GameStep;
 import dev.slne.hideandnseek.timer.HiderPreparationCountdown;
 import dev.slne.hideandnseek.util.Continuation;
@@ -69,8 +70,8 @@ public class PreparationStep extends GameStep {
     printStartMessage();
     playStartSound();
 
-    final HideAndSeekPlayer seeker = chooseSeeker();
-    game.addSeeker(seeker);
+    final HideAndSeekPlayer chosenSeeker = chooseSeeker();
+    chosenSeeker.setRole(Role.SEEKER);
 
     runSync(() -> {
       Bukkit.getOnlinePlayers().stream()
@@ -82,7 +83,7 @@ public class PreparationStep extends GameStep {
               onlinePlayer.giveSeekerInventory();
               onlinePlayer.teleportLobby();
             } else {
-              game.addHider(onlinePlayer);
+              onlinePlayer.setRole(Role.HIDER);
               onlinePlayer.teleportSpawn();
             }
           });
