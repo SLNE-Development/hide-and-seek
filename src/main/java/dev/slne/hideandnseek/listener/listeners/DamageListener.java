@@ -51,16 +51,13 @@ public class DamageListener implements Listener {
         return;
       }
 
-      if (game.isSeeker(HideAndSeekPlayer.get(damager)) && game.isSeeker(
-          HideAndSeekPlayer.get(target))) {
+      if (game.isSeeker(HideAndSeekPlayer.get(damager)) && game.isSeeker(HideAndSeekPlayer.get(target))) {
         event.setCancelled(true);
         return;
       }
 
       if (HideAndSeekManager.INSTANCE.getGameSettings().isOhko()) {
-        Bukkit.getScheduler()
-            .runTaskLater(HideAndSeek.getInstance(), () -> target.damage(Float.MAX_VALUE, damager),
-                1L);
+        Bukkit.getScheduler().runTaskLater(HideAndSeek.getInstance(), () -> target.damage(Float.MAX_VALUE, damager), 1L);
       }
     }
   }
