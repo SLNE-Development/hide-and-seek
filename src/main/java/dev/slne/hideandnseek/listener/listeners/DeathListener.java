@@ -44,6 +44,9 @@ public class DeathListener implements Listener {
     if (runningGame.isHider(player)) {
       if (runningGame.doHidersBecomeSeekers()) {
         player.setRole(Role.SEEKER);
+        player.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Sucher!").color(NamedTextColor.GREEN)));
+      }else{
+        player.setRole(Role.SPECTATOR);
       }
     }
 

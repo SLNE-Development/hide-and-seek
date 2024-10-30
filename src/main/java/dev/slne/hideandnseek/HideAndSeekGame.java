@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 
@@ -102,6 +103,10 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isHider(HideAndSeekPlayer player) {
+    if(player.getRole() == null){
+      player.setRole(Role.UNDEFINED);
+    }
+
     return player.getRole().equals(Role.HIDER);
   }
 
@@ -112,6 +117,10 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isSeeker(HideAndSeekPlayer player) {
+    if(player.getRole() == null){
+      player.setRole(Role.UNDEFINED);
+    }
+
     return player.getRole().equals(Role.SEEKER);
   }
 
@@ -122,6 +131,10 @@ public class HideAndSeekGame {
    * @return the boolean
    */
   public boolean isSpectator(HideAndSeekPlayer player) {
+    if(player.getRole() == null){
+      player.setRole(Role.UNDEFINED);
+    }
+
     return player.getRole().equals(Role.SPECTATOR);
   }
 
@@ -198,7 +211,7 @@ public class HideAndSeekGame {
     final HideAndSeekPlayer seeker = this.getHiders().stream().findAny().orElseThrow();
 
     seeker.setRole(Role.SEEKER);
-    seeker.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist jetzt ein Sucher!")));
+    seeker.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist jetzt ein Sucher!").color(NamedTextColor.GREEN)));
     seeker.prepareForGame();
     seeker.teleportSpawn();
   }

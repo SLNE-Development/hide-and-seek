@@ -4,9 +4,10 @@ import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Items;
 import dev.slne.hideandnseek.role.Role;
+
 import java.util.UUID;
+
 import lombok.Getter;
-import lombok.Setter;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
 import org.bukkit.Bukkit;
@@ -19,7 +20,6 @@ import org.bukkit.inventory.PlayerInventory;
  * The type Hide and seek player.
  */
 @Getter
-@Setter
 public class HideAndSeekPlayer {
 
   private final UUID uuid;
@@ -83,7 +83,11 @@ public class HideAndSeekPlayer {
    * Prepare for game.
    */
   public void prepareForGame() {
-    final Player player = getPlayer();
+    final Player player = this.getPlayer();
+   if(player == null) {
+     return;
+   }
+
     final PlayerInventory playerInv = player.getInventory();
 
     playerInv.clear();
@@ -155,5 +159,26 @@ public class HideAndSeekPlayer {
     final HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
 
     return runningGame != null && runningGame.isHider(this);
+  }
+
+  public void setRole(Role role){
+    this.role = role;
+
+    if(role.equals(Role.HIDER)) {
+      this.getPlayer().getInventory().clear();
+      this.getPlayer().setGameMode(GameMode.ADVENTURE);
+    }else if(role.equals(Role.SEEKER)) {
+      this.giveSeekerInventory();
+      this.getPlayer().setGameMode(GameMode.ADVENTURE);
+    }else if(role.equals(Role.SPECTATOR)) {
+      setSpectator();
+    }
+  }
+
+  public void setSpectator(){
+    Player player = this.getPlayer();
+
+    player.setGameMode(GameMode.SPECTATOR);
+    player.getInventory().clear();
   }
 }

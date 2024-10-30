@@ -11,6 +11,7 @@ import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.role.Role;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
 public class RoleGetCommand extends CommandAPICommand {
@@ -29,7 +30,7 @@ public class RoleGetCommand extends CommandAPICommand {
       }
 
 
-      player.sendMessage(Messages.prefix().append(Component.text(String.format("Der Spieler %s besitzt die Rolle %s", target.getName(), hnsTarget.getRole()))));
+      player.sendMessage(Messages.prefix().append(Component.text(String.format("Der Spieler %s besitzt die Rolle %s", target.getName(), hnsTarget.getRole())).color(NamedTextColor.GREEN)));
     });
   }
 }

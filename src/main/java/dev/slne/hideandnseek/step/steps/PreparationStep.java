@@ -73,6 +73,8 @@ public class PreparationStep extends GameStep {
     final HideAndSeekPlayer chosenSeeker = chooseSeeker();
     chosenSeeker.setRole(Role.SEEKER);
 
+    chosenSeeker.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Sucher!").color(NamedTextColor.GREEN)));
+
     runSync(() -> {
       Bukkit.getOnlinePlayers().stream()
           .map(HideAndSeekPlayer::get)
@@ -84,6 +86,7 @@ public class PreparationStep extends GameStep {
               onlinePlayer.teleportLobby();
             } else {
               onlinePlayer.setRole(Role.HIDER);
+              onlinePlayer.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Verstecker!").color(NamedTextColor.GREEN)));
               onlinePlayer.teleportSpawn();
             }
           });

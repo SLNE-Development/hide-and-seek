@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
+import dev.slne.hideandnseek.role.Role;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,7 +50,9 @@ public class RespawnListener implements Listener {
       bukkitPlayer.setAllowFlight(true);
       bukkitPlayer.setFlying(true);
 
-      bukkitPlayer.setVisibleByDefault(false);
+      player.setRole(Role.SPECTATOR);
+
+      //bukkitPlayer.setVisibleByDefault(false);
     }
   }
 }
