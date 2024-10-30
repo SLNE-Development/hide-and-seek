@@ -71,11 +71,12 @@ public class PreparationStep extends GameStep {
     playStartSound();
 
     final HideAndSeekPlayer chosenSeeker = chooseSeeker();
-    chosenSeeker.setRole(Role.SEEKER);
-
-    chosenSeeker.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Sucher!").color(NamedTextColor.GREEN)));
 
     runSync(() -> {
+
+      chosenSeeker.setRole(Role.SEEKER);
+      chosenSeeker.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Sucher!").color(NamedTextColor.GREEN)));
+
       Bukkit.getOnlinePlayers().stream()
           .map(HideAndSeekPlayer::get)
           .forEach(onlinePlayer -> {
