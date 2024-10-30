@@ -37,17 +37,19 @@ public class DeathListener implements Listener {
       return;
     }
 
-    if(runningGame.isHider(player) || runningGame.isSeeker(player)) {
-      printDeathMessage(event);
-    }
-
     if (runningGame.isHider(player)) {
       if (runningGame.doHidersBecomeSeekers()) {
         player.setRole(Role.SEEKER);
         player.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Sucher!").color(NamedTextColor.GREEN)));
       }else{
         player.setRole(Role.SPECTATOR);
+
+        player.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Zuschauer!").color(NamedTextColor.GREEN)));
       }
+    }
+
+    if(runningGame.isHider(player) || runningGame.isSeeker(player)) {
+      printDeathMessage(event);
     }
 
     runningGame.performPlayerCheck();
