@@ -6,6 +6,7 @@ import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 
+import dev.slne.hideandnseek.role.Role;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 
 import org.bukkit.Bukkit;
@@ -25,6 +26,11 @@ public class DamageListener implements Listener {
     }
 
     if (!(event.getHitEntity() instanceof Player target)) {
+      return;
+    }
+
+    if(HideAndSeekPlayer.get(damager).getRole().equals(Role.SEEKER) && HideAndSeekPlayer.get(target).getRole().equals(Role.SEEKER)){
+      event.setCancelled(true);
       return;
     }
 
