@@ -11,6 +11,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 /**
  * The type Interact listener.
  */
+
+@SuppressWarnings("deprecation")
 public class InteractListener implements Listener {
 
   /**
@@ -31,7 +33,7 @@ public class InteractListener implements Listener {
       return;
     }
 
-    if(player.getActiveItem().getType().equals(Material.AIR) && player.getActiveItem().getType().equals(Material.BOW)){
+    if(player.getItemInHand().getType().equals(Material.AIR) && player.getItemInHand().getType().equals(Material.BOW)){
       return;
     }
 

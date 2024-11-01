@@ -1,5 +1,6 @@
 package dev.slne.hideandnseek;
 
+import dev.jorel.commandapi.wrappers.Location2D;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import dev.slne.hideandnseek.role.Role;
 import dev.slne.hideandnseek.step.GameStep;
@@ -8,14 +9,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  * The type Hide and seek game.
@@ -25,7 +30,7 @@ public class HideAndSeekGame {
 
   private static final ComponentLogger LOGGER = ComponentLogger.logger(HideAndSeekGame.class);
 
-  private final GameSettings gameSettings;
+  private GameSettings gameSettings;
 
   /**
    * Instantiates a new Hide and seek game.
