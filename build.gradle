@@ -49,6 +49,10 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+tasks.shadowJar {
+    archiveClassifier = ""
+}
+
 processResources {
     def props = [version: version]
     inputs.properties props

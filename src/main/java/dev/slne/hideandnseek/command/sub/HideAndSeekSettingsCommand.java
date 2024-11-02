@@ -149,7 +149,8 @@ public class HideAndSeekSettingsCommand extends CommandAPICommand {
                 .append(Component.text("Der Wert von ").color(NamedTextColor.GREEN))
                 .append(Component.text(setting.settingName).color(NamedTextColor.AQUA))
                 .append(Component.text(" wurde auf ").color(NamedTextColor.GREEN))
-                .append(Component.text(Objects.toString(value)).color(NamedTextColor.AQUA)));
+                .append(Component.text(Objects.toString(value)).color(NamedTextColor.AQUA))
+                .append(Component.text(" gesetzt.").color(NamedTextColor.GREEN)));
           }));
     }
 

@@ -35,73 +35,14 @@ public class Items {
   public void prepareSeekerInventory(Player player) {
     final PlayerInventory inventory = player.getInventory();
 
-    final ItemStack sword = unbreakable(item(
-        Material.WOODEN_SWORD,
-        1,
-        0,
-        Component.text("Schwert"),
-        Component.text("Ein Schwert zum Kämpfen")
-    ));
+    final ItemStack sword = unbreakable(item(Material.WOODEN_SWORD, 1, 0, Component.text("Schwert"), Component.text("Ein Schwert zum Kämpfen")));
+    final ItemStack bow = unbreakable(enchant(item(Material.BOW, 1, 0, Component.text("Bogen"), Component.text("Ein Bogen")), Object2IntMaps.singleton(Enchantment.INFINITY.key(), 1)));
+    final ItemStack arrow = item(Material.ARROW, 1, 0, Component.text("Pfeil"), Component.text("Ein Pfeil zum Schießen"));
 
-    final ItemStack bow = unbreakable(enchant(
-        item(
-            Material.BOW,
-            1,
-            0,
-            Component.text("Bogen"),
-            Component.text("Ein Bogen")
-        ),
-        Object2IntMaps.singleton(Enchantment.INFINITY.key(), 1)
-    ));
-
-    final ItemStack arrow = item(
-        Material.ARROW,
-        1,
-        0,
-        Component.text("Pfeil"),
-        Component.text("Ein Pfeil zum Schießen")
-    );
-
-    final ItemStack helmet = unbreakable(dyeLeather(
-        item(
-            Material.LEATHER_HELMET,
-            1,
-            0,
-            Component.text("Helm"),
-            Component.text("Ein Helm zum Schutz")
-        ),
-        Color.AQUA
-    ));
-    final ItemStack chestplate = unbreakable(dyeLeather(
-        item(
-            Material.LEATHER_CHESTPLATE,
-            1,
-            0,
-            Component.text("Brustplatte"),
-            Component.text("Eine Brustplatte zum Schutz")
-        ),
-        Color.AQUA
-    ));
-    final ItemStack leggings = unbreakable(dyeLeather(
-        item(
-            Material.LEATHER_LEGGINGS,
-            1,
-            0,
-            Component.text("Hose"),
-            Component.text("Eine Hose zum Schutz")
-        ),
-        Color.AQUA
-    ));
-    final ItemStack boots = unbreakable(dyeLeather(
-        item(
-            Material.LEATHER_BOOTS,
-            1,
-            0,
-            Component.text("Schuhe"),
-            Component.text("Schuhe zum Schutz")
-        ),
-        Color.AQUA
-    ));
+    final ItemStack helmet = unbreakable(dyeLeather(item(Material.LEATHER_HELMET, 1, 0, Component.text("Helm"), Component.text("Ein Helm zum Schutz")), Color.AQUA));
+    final ItemStack chestplate = unbreakable(dyeLeather(item(Material.LEATHER_CHESTPLATE, 1, 0, Component.text("Brustplatte"), Component.text("Eine Brustplatte zum Schutz")), Color.AQUA));
+    final ItemStack leggings = unbreakable(dyeLeather(item(Material.LEATHER_LEGGINGS, 1, 0, Component.text("Hose"), Component.text("Eine Hose zum Schutz")), Color.AQUA));
+    final ItemStack boots = unbreakable(dyeLeather(item(Material.LEATHER_BOOTS, 1, 0, Component.text("Schuhe"), Component.text("Schuhe zum Schutz")), Color.AQUA));
 
     inventory.clear();
     inventory.setItem(0, sword);
@@ -156,7 +97,7 @@ public class Items {
       Component displayName,
       Component... lore
   ) {
-    final ItemStack itemStack = ItemStack.of(material, amount);
+    final ItemStack itemStack = new ItemStack(material, amount);
 
     itemStack.editMeta(meta -> {
       if (meta instanceof Damageable damageable) {

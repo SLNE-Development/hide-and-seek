@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.util.Vector;
 
 /**
  * The type Player move listener.
@@ -23,8 +24,7 @@ public class PlayerMoveListener implements Listener {
 
     Player player = event.getPlayer();
     if (player.getLocation().getBlock().getType().equals(Material.WATER)) {
-      player.damage(1);
+      player.setVelocity(player.getLocation().getDirection().multiply(-1).setY(0.5));
     }
   }
-
 }

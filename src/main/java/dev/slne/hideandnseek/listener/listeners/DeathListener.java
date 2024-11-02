@@ -4,6 +4,7 @@ import dev.slne.hideandnseek.HideAndSeekGame;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.Messages;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
+import dev.slne.hideandnseek.role.Role;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -36,8 +37,15 @@ public class DeathListener implements Listener {
       return;
     }
 
-    if(runningGame.isHider(player) || runningGame.isSeeker(player)) {
-      printDeathMessage(event);
+    if (runningGame.isHider(player)) {
+      if (runningGame.doHidersBecomeSeekers()) {
+        player.setRole(Role.SEEKER);
+        player.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Sucher!").color(NamedTextColor.GREEN)));
+      }else{
+        player.setRole(Role.SPECTATOR);
+
+        player.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Zuschauer!").color(NamedTextColor.GREEN)));
+      }
     }
 
     if (runningGame.isHider(player)) {

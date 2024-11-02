@@ -2,14 +2,19 @@ package dev.slne.hideandnseek.listener.listeners;
 
 import dev.slne.hideandnseek.HideAndSeek;
 import dev.slne.hideandnseek.HideAndSeekGame;
+import dev.slne.hideandnseek.HideAndSeekGameState;
 import dev.slne.hideandnseek.HideAndSeekManager;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
+
+import dev.slne.hideandnseek.role.Role;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 public class DamageListener implements Listener {
@@ -25,6 +30,7 @@ public class DamageListener implements Listener {
       return;
     }
 
+    if(HideAndSeekPlayer.get(damager).getRole().equals(Role.SEEKER) && HideAndSeekPlayer.get(target).getRole().equals(Role.SEEKER)){
     final HideAndSeekGame game = HideAndSeekManager.INSTANCE.getRunningGame();
     if (game == null || !game.getGameState().isIngame()) {
       event.setCancelled(true);
@@ -61,16 +67,13 @@ public class DamageListener implements Listener {
         return;
       }
 
-      if (game.isSeeker(HideAndSeekPlayer.get(damager)) && game.isSeeker(
-          HideAndSeekPlayer.get(target))) {
+      if (game.isSeeker(HideAndSeekPlayer.get(damager)) && game.isSeeker(HideAndSeekPlayer.get(target))) {
         event.setCancelled(true);
         return;
       }
 
       if (HideAndSeekManager.INSTANCE.getGameSettings().isOhko()) {
-        Bukkit.getScheduler()
-            .runTaskLater(HideAndSeek.getInstance(), () -> target.damage(Float.MAX_VALUE, damager),
-                1L);
+        Bukkit.getScheduler().runTaskLater(HideAndSeek.getInstance(), () -> target.damage(Float.MAX_VALUE, damager), 1L);
       }
     }
   }
@@ -87,5 +90,19 @@ public class DamageListener implements Listener {
       event.setCancelled(true);
     }
 
+  }
+
+  @EventHandler
+  public void onEntityDamage(EntityDamageEvent event) {
+    if(event.getEntity() instanceof Player) {
+      if(HideAndSeekManager.INSTANCE.getRunningGame() == null){
+        event.setCancelled(true);
+        return;
+      }
+
+      if(HideAndSeekManager.INSTANCE.getRunningGame().getGameState().equals(HideAndSeekGameState.PREPARING)){
+        event.setCancelled(true);
+      }
+    }
   }
 }

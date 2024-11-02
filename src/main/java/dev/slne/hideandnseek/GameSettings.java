@@ -32,7 +32,11 @@ public final class GameSettings {
 
   public static GameSettings defaultSettings() {
     final World overworld = Bukkit.getWorlds().getFirst();
-    final Location spawnLocation = HideAndSeekManager.INSTANCE.getLobbyLocation();
+    Location spawnLocation = HideAndSeekManager.INSTANCE.getLobbyLocation();
+
+    if(spawnLocation == null){
+      spawnLocation = overworld.getSpawnLocation();
+    }
 
     return GameSettings.builder()
         .world(overworld)

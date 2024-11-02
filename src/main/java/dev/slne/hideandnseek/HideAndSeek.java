@@ -1,6 +1,7 @@
 package dev.slne.hideandnseek;
 
 import dev.slne.hideandnseek.command.HideAndSeekCommand;
+import dev.slne.hideandnseek.command.RoleCommand;
 import dev.slne.hideandnseek.listener.ListenerManager;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -45,6 +46,7 @@ public final class HideAndSeek extends JavaPlugin {
     ListenerManager.INSTANCE.onEnable();
     HideAndSeekManager.INSTANCE.onEnable();
     new HideAndSeekCommand("hideandseek").register();
+    new RoleCommand("role").register();
 
   }
 
