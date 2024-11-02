@@ -181,6 +181,8 @@ public enum HideAndSeekManager {
       double z = config.getDouble("settings.worldBorderCenter.z");
 
       worldBorderCenter = new Location2D(world, x, z);
+    }else{
+      worldBorderCenter = new Location2D(world, world.getSpawnLocation().x(), world.getSpawnLocation().z());
     }
 
     return GameSettings.builder()

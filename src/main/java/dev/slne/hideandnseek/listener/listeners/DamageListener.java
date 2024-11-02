@@ -30,22 +30,24 @@ public class DamageListener implements Listener {
       return;
     }
 
-    if(HideAndSeekPlayer.get(damager).getRole().equals(Role.SEEKER) && HideAndSeekPlayer.get(target).getRole().equals(Role.SEEKER)){
-    final HideAndSeekGame game = HideAndSeekManager.INSTANCE.getRunningGame();
-    if (game == null || !game.getGameState().isIngame()) {
-      event.setCancelled(true);
-      return;
-    }
+    if (HideAndSeekPlayer.get(damager).getRole().equals(Role.SEEKER) && HideAndSeekPlayer.get(
+        target).getRole().equals(Role.SEEKER)) {
+      final HideAndSeekGame game = HideAndSeekManager.INSTANCE.getRunningGame();
+      if (game == null || !game.getGameState().isIngame()) {
+        event.setCancelled(true);
+        return;
+      }
 
-    if (HideAndSeekPlayer.get(target).isSeeker()) {
-      event.setCancelled(true);
-      return;
-    }
+      if (HideAndSeekPlayer.get(target).isSeeker()) {
+        event.setCancelled(true);
+        return;
+      }
 
-    if (HideAndSeekManager.INSTANCE.getGameSettings().isOhko()) {
-      Bukkit.getScheduler()
-          .runTaskLater(HideAndSeek.getInstance(), () -> target.damage(Float.MAX_VALUE, damager),
-              1L);
+      if (HideAndSeekManager.INSTANCE.getGameSettings().isOhko()) {
+        Bukkit.getScheduler()
+            .runTaskLater(HideAndSeek.getInstance(), () -> target.damage(Float.MAX_VALUE, damager),
+                1L);
+      }
     }
   }
 
