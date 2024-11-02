@@ -16,11 +16,23 @@ public class DamageListener implements Listener {
 
   @EventHandler
   public void onProjectileHit(ProjectileHitEvent event) {
+
     if (!(event.getEntity().getShooter() instanceof Player damager)) {
       return;
     }
 
     if (!(event.getHitEntity() instanceof Player target)) {
+      return;
+    }
+
+    final HideAndSeekGame game = HideAndSeekManager.INSTANCE.getRunningGame();
+    if (game == null || !game.getGameState().isIngame()) {
+      event.setCancelled(true);
+      return;
+    }
+
+    if (HideAndSeekPlayer.get(target).isSeeker()) {
+      event.setCancelled(true);
       return;
     }
 

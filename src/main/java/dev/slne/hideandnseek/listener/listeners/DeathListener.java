@@ -43,6 +43,13 @@ public class DeathListener implements Listener {
     if (runningGame.isHider(player)) {
       runningGame.removeHider(player);
 
+      if(!bukkitPlayer.hasPermission("hideandseek.bypass")) {
+
+        if (!runningGame.getGameSettings().isHidersBecomeSeekers()) {
+          bukkitPlayer.kick(Component.text("Du bist ausgeschieden!"));
+        }
+      }
+
       if (runningGame.doHidersBecomeSeekers()) {
         runningGame.addSeeker(player);
       }
@@ -66,11 +73,15 @@ public class DeathListener implements Listener {
     event.deathMessage(null);
 
     HideAndSeekGame runningGame = HideAndSeekManager.INSTANCE.getRunningGame();
-    int hidersRemaining = runningGame != null ? runningGame.getHiders().size() : 0;
+    int hidersRemaining = runningGame != null ? runningGame.getHiders().size() - 1 : 0;
 
-    Component hidersRemainingComponent = Component.text("Noch ", NamedTextColor.GRAY)
-        .append(Component.text(hidersRemaining, NamedTextColor.YELLOW))
-        .append(Component.text(" Verstecker verbleibend.", NamedTextColor.GRAY));
+    Component hidersRemainingComponent = Component.empty();
+
+    if (diedPlayer.isHider() && runningGame.getGameState().isIngame()) {
+       hidersRemainingComponent = Component.text("Noch ", NamedTextColor.GRAY)
+              .append(Component.text(hidersRemaining, NamedTextColor.YELLOW))
+              .append(Component.text(" Verstecker verbleibend.", NamedTextColor.GRAY));
+    }
 
     if (killer != null) {
       final HideAndSeekPlayer killerPlayer = HideAndSeekPlayer.get(killer.getUniqueId());
