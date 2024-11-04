@@ -25,6 +25,7 @@ public class PlayerMoveListener implements Listener {
     Player player = event.getPlayer();
     if (player.getLocation().getBlock().getType().equals(Material.WATER)) {
       player.setVelocity(player.getLocation().getDirection().multiply(-1).setY(0.5));
+      player.damage(5);
     }
   }
 }
