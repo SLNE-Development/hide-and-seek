@@ -168,7 +168,7 @@ public enum HideAndSeekManager {
     double worldBorderDamageBuffer = config.getDouble("settings.worldBorderDamageBuffer", 0);
     boolean ohko = config.getBoolean("settings.ohko", true);
 
-    World world = Bukkit.getWorld(config.getString("settings.world", "world"));
+    World world = Bukkit.getWorld(config.getString("settings.world", Bukkit.getWorlds().getFirst().getName()).replace("%first_world_name%", Bukkit.getWorlds().getFirst().getName()));
     HideAndSeekPlayer initialSeeker = null;
     Location2D worldBorderCenter = null;
 
@@ -181,6 +181,8 @@ public enum HideAndSeekManager {
       double z = config.getDouble("settings.worldBorderCenter.z");
 
       worldBorderCenter = new Location2D(world, x, z);
+    }else{
+      worldBorderCenter = new Location2D(world, world.getSpawnLocation().x(), world.getSpawnLocation().z());
     }
 
     return GameSettings.builder()
