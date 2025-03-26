@@ -5,6 +5,7 @@ import dev.slne.hideandnseek.command.sub.HideAndSeekBypassCommand;
 import dev.slne.hideandnseek.command.sub.HideAndSeekForcestopCommand;
 import dev.slne.hideandnseek.command.sub.HideAndSeekSetLobbyCommand;
 import dev.slne.hideandnseek.command.sub.HideAndSeekSetSpawnCommand;
+import dev.slne.hideandnseek.command.sub.HideAndSeekSettingSaveCommand;
 import dev.slne.hideandnseek.command.sub.HideAndSeekSettingsCommand;
 import dev.slne.hideandnseek.command.sub.HideAndSeekStartCommand;
 
@@ -31,5 +32,6 @@ public class HideAndSeekCommand extends CommandAPICommand {
     withSubcommand(new HideAndSeekSetSpawnCommand("setspawn"));
     withSubcommand(new HideAndSeekForcestopCommand("forcestop"));
     withSubcommand(new HideAndSeekSetLobbyCommand("setlobby"));
+    withSubcommand(new HideAndSeekSettingSaveCommand("savesettings"));
   }
 }

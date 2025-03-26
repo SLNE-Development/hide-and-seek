@@ -9,6 +9,7 @@ import dev.slne.hideandnseek.step.GameStep;
 import dev.slne.hideandnseek.timer.LobbyCountdown;
 import dev.slne.hideandnseek.util.Continuation;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import org.bukkit.GameRule;
 import org.bukkit.WorldBorder;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,6 +49,8 @@ public class LobbyStep extends GameStep {
       worldBorder.setDamageBuffer(gameSettings.getWorldBorderDamageBuffer());
       worldBorder.setWarningDistance(0);
       worldBorder.setWarningTime(5);
+
+      worldBorder.getWorld().setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
     })
         .thenRun(continuation::resume)
         .exceptionally(exception -> {

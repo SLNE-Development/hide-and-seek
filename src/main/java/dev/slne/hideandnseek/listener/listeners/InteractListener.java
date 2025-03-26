@@ -33,7 +33,7 @@ public class InteractListener implements Listener {
       return;
     }
 
-    if(player.getItemInHand().getType().equals(Material.AIR) && player.getItemInHand().getType().equals(Material.BOW)){
+    if(!player.getItemInHand().isEmpty() && player.getItemInHand().getType().equals(Material.BOW)){
       return;
     }
 

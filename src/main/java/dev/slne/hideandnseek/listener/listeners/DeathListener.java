@@ -37,6 +37,8 @@ public class DeathListener implements Listener {
       return;
     }
 
+    printDeathMessage(event);
+
     if (runningGame.isHider(player)) {
       if (runningGame.doHidersBecomeSeekers()) {
         player.setRole(Role.SEEKER);
@@ -44,22 +46,11 @@ public class DeathListener implements Listener {
       }else{
         player.setRole(Role.SPECTATOR);
 
-        player.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Zuschauer!").color(NamedTextColor.GREEN)));
-      }
-    }
-
-    if (runningGame.isHider(player)) {
-      runningGame.removeHider(player);
-
-      if(!bukkitPlayer.hasPermission("hideandseek.bypass")) {
-
-        if (!runningGame.getGameSettings().isHidersBecomeSeekers()) {
+        if(!bukkitPlayer.hasPermission("hideandseek.bypass")) {
           bukkitPlayer.kick(Component.text("Du bist ausgeschieden!"));
+        }else{
+          player.getPlayer().sendMessage(Messages.prefix().append(Component.text("Du bist nun Zuschauer!").color(NamedTextColor.GREEN)));
         }
-      }
-
-      if (runningGame.doHidersBecomeSeekers()) {
-        runningGame.addSeeker(player);
       }
     }
 
