@@ -1,6 +1,6 @@
 name: hide-and-seek
 version: '1.21.1.0.0-SNAPSHOT'
-main: dev.slne.hideandnseek.HideAndSeek
+main: dev.slne.hideandnseek.old.HideAndSeek
 api-version: '1.21'
 authors: [ SLNE Development ]
 dependencies:
