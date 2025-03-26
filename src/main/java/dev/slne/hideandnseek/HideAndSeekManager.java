@@ -1,10 +1,13 @@
 package dev.slne.hideandnseek;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import dev.jorel.commandapi.wrappers.Location2D;
 import dev.slne.hideandnseek.player.HideAndSeekPlayer;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -168,7 +171,13 @@ public enum HideAndSeekManager {
     double worldBorderDamageBuffer = config.getDouble("settings.worldBorderDamageBuffer", 0);
     boolean ohko = config.getBoolean("settings.ohko", true);
 
-    World world = Bukkit.getWorld(config.getString("settings.world", Bukkit.getWorlds().getFirst().getName()).replace("%first_world_name%", Bukkit.getWorlds().getFirst().getName()));
+    final List<World> worlds = Bukkit.getWorlds();
+    final String overworld = worlds.getFirst().getName();
+    final String worldName = config.getString("settings.world", overworld);
+    final World world = Bukkit.getWorld(worldName.replace("%first_world_name%", overworld));
+
+    checkNotNull(world, "World not found: " + worldName);
+
     HideAndSeekPlayer initialSeeker = null;
     Location2D worldBorderCenter = null;
 
@@ -176,13 +185,15 @@ public enum HideAndSeekManager {
       initialSeeker = HideAndSeekPlayer.get(UUID.fromString(seeker));
     }
 
-    if (config.contains("settings.worldBorderCenter.x") && config.contains("settings.worldBorderCenter.z")) {
+    if (config.contains("settings.worldBorderCenter.x") && config.contains(
+        "settings.worldBorderCenter.z")) {
       double x = config.getDouble("settings.worldBorderCenter.x");
       double z = config.getDouble("settings.worldBorderCenter.z");
 
       worldBorderCenter = new Location2D(world, x, z);
-    }else{
-      worldBorderCenter = new Location2D(world, world.getSpawnLocation().x(), world.getSpawnLocation().z());
+    } else {
+      worldBorderCenter = new Location2D(world, world.getSpawnLocation().x(),
+          world.getSpawnLocation().z());
     }
 
     return GameSettings.builder()

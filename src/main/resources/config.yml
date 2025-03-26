@@ -16,7 +16,7 @@ settings:
   worldBorderDamageBuffer: 0.0  # Buffer zone around the world border before damage is applied
   ohko: true  # Enable or disable "One Hit Knockout" (instant defeat when hit)
 
-  world: "%first_world_name%"  # Name of the world; will use the default world if left blank
+  #world: "%first_world_name%"
   worldBorderCenter:
     x: 0.0  # Default X-coordinate for the world border center
     z: 0.0  # Default Z-coordinate for the world border center
