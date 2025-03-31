@@ -16,5 +16,6 @@ object HASListenerManager {
         HASPotteryProtectionListener.register()
         HASRegenerationListener.register()
         HASRespawnListener.register()
+        HASEntityDestroyListener.register()
     }
 }
