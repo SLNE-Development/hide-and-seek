@@ -107,7 +107,6 @@ class PreparationPhase(val game: HASGame) : GamePhase {
             spacer("-".repeat(20))
             appendNewPrefixedLine()
             appendNewPrefixedLine()
-            appendPrefix()
             info("Das Spiel beginnt!")
             appendNewPrefixedLine()
             appendNewPrefixedLine()
