@@ -5,7 +5,7 @@ import dev.slne.hideandnseek.util.tp
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
 
-object HASHiderRole : HASRole("Verstecker", TextColor.color(0x00FF00)) {
+object HASHiderRole : HASRole("Verstecker", TextColor.color(0x3498DB)) {
     override suspend fun teleportStartPosition(player: Player) {
         player.tp(HASManager.settings.spawnLocation)
     }

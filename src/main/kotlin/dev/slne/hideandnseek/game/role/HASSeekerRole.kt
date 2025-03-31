@@ -15,7 +15,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.LeatherArmorMeta
 
-object HASSeekerRole : HASRole("Sucher", TextColor.color(0xFF0000)) {
+object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
     override suspend fun giveInventory(player: Player) =
         withContext(plugin.entityDispatcher(player)) {
 //            Items.prepareSeekerInventory(player)
