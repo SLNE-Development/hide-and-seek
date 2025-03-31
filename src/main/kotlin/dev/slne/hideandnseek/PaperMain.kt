@@ -5,6 +5,7 @@ import com.mojang.serialization.Dynamic
 import dev.jorel.commandapi.wrappers.Location2D
 import dev.slne.hideandnseek.command.hasCommand
 import dev.slne.hideandnseek.game.HASGameRules
+import dev.slne.hideandnseek.listener.HASListenerManager
 import dev.slne.hideandnseek.storage.HASData
 import dev.slne.hideandnseek.storage.HASDataFixers
 import dev.slne.hideandnseek.storage.HASStorageSource
@@ -68,6 +69,7 @@ class PaperMain : SuspendingJavaPlugin() {
             }
         }
 
+        HASListenerManager.register()
         hasCommand()
     }
 }
