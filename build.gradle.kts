@@ -23,5 +23,10 @@ surfPaperPluginApi {
 
     runServer {
         withSurfApiBukkit()
+        jvmArgs("-XX:+AllowEnhancedClassRedefinition -Dpaper.playerconnection.keepalive=9999999")
+        javaLauncher = javaToolchains.launcherFor {
+            vendor = JvmVendorSpec.JETBRAINS
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
     }
 }

@@ -1,21 +1,58 @@
 package dev.slne.hideandnseek.game.role
 
 import com.github.shynixn.mccoroutine.folia.entityDispatcher
+import com.github.shynixn.mccoroutine.folia.launch
+import com.jeff_media.morepersistentdatatypes.DataType
 import dev.slne.hideandnseek.HASManager
+import dev.slne.hideandnseek.game.HASGameRules
+import dev.slne.hideandnseek.old.util.TimeUtil
 import dev.slne.hideandnseek.plugin
+import dev.slne.hideandnseek.util.HAS
 import dev.slne.hideandnseek.util.tp
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.buildLore
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.bukkit.api.builder.meta
+import dev.slne.surf.surfapi.bukkit.api.event.listen
+import dev.slne.surf.surfapi.bukkit.api.util.forEachPlayerInRegion
+import dev.slne.surf.surfapi.bukkit.api.util.key
+import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.util.Ticks
 import org.bukkit.Color
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffectType
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
+
+private val specialItemCooldownGroup = key("has_special_item_cooldown")
 
 object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
+    val specialItemKey = key("has_special_item")
+
+    init {
+        listen<PlayerInteractEvent> {
+            val item = item
+            val type = item?.persistentDataContainer
+                ?.get(specialItemKey, SpecialItemType.pdcType)
+                ?: return@listen
+
+            plugin.launch { type.handle(player, item) }
+        }
+    }
+
     override suspend fun giveInventory(player: Player) =
         withContext(plugin.entityDispatcher(player)) {
 //            Items.prepareSeekerInventory(player)
@@ -99,11 +136,49 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
                 }
             }
 
+            val glowItem = buildItem(Material.GLOWSTONE_DUST) {
+                displayName { primary("Leuchtendes Item") }
+                buildLore {
+                    line { secondary("Ein Item, das leuchtet.") }
+                    line { info("Es ist ein Platzhalter.") }
+                }
+
+                editPersistentDataContainer {
+                    it.set(specialItemKey, SpecialItemType.pdcType, SpecialItemType.GLOW)
+                }
+            }
+            val shrinkItem = buildItem(Material.BARRIER) {
+                displayName { primary("Verstecktes Item") }
+                buildLore {
+                    line { secondary("Ein Item, das nicht sichtbar ist.") }
+                    line { info("Es ist ein Platzhalter.") }
+                }
+
+//                editPersistentDataContainer {
+//                    it.set(specialItemKey, SpecialItemType.pdcType, SpecialItemType.SHRINK)
+//                }
+
+
+                @Suppress("UnstableApiUsage")
+                setData(
+                    DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes()
+                        .addModifier(
+                            Attribute.SCALE, AttributeModifier(
+                                key("shrink"),
+                                plugin.data.settings.gameRules.getDouble(HASGameRules.RULE_PLAYER_SCALE) - 1,
+                                AttributeModifier.Operation.MULTIPLY_SCALAR_1
+                            )
+                        )
+                )
+            }
+
             with(player.inventory) {
                 clear()
                 setItem(0, sword)
                 setItem(1, bow)
                 setItem(8, arrow)
+                setItem(3, glowItem)
+                setItem(4, shrinkItem)
 
                 this.helmet = helmet
                 this.chestplate = chestplate
@@ -118,4 +193,115 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
 
     override fun canDamage(role: HASRole) = role != this
 
+    private enum class SpecialItemType() {
+        GLOW {
+            override suspend fun handle(
+                player: Player,
+                item: ItemStack
+            ) {
+                val duration = plugin.data.settings.gameRules
+                    .getDuration(HASGameRules.RULE_GLOW_ITEM_EFFECT_DURATION)
+
+                if (runPreCheck(player, item, duration)) {
+                    val effect = PotionEffectType.GLOWING.createEffect(
+                        (duration.inWholeMilliseconds / Ticks.SINGLE_TICK_DURATION_MS).toInt(),
+                        255
+                    ).withIcon(false).withParticles(false).withAmbient(false)
+
+                    forEachPlayerInRegion({
+                        if (it.HAS.hider) {
+                            it.addPotionEffect(effect)
+                        }
+                    })
+                    player.sendText {
+                        appendPrefix()
+                        info("Die Versteckten Spieler sind nun für ")
+                        append(
+                            TimeUtil.formatLongTimestamp(
+                                TimeUnit.SECONDS,
+                                duration.inWholeSeconds,
+                                Colors.VARIABLE_VALUE
+                            )
+                        )
+                        info(" sichtbar.")
+                    }
+                }
+            }
+        },
+        SHRINK {
+            override suspend fun handle(
+                player: Player,
+                item: ItemStack
+            ) {
+                val cooldown =
+                    plugin.data.settings.gameRules.getDuration(HASGameRules.RULE_SPECIAL_ITEM_COOLDOWN)
+
+                if (runPreCheck(player, item, cooldown)) {
+                    withContext(plugin.entityDispatcher(player)) {
+                        val scale = player.getAttribute(Attribute.SCALE)
+                            ?: error("Scale attribute is null for player ${player.name}")
+                        val currentScale = scale.baseValue
+                        val newScale = plugin.data.settings.gameRules
+                            .getDouble(HASGameRules.RULE_PLAYER_SCALE)
+
+                        scale.baseValue = newScale
+                        player.sendText {
+                            appendPrefix()
+                            info("Du bist nun auf ")
+                            variableValue(newScale)
+                            info(" geschrumpft.")
+                        }
+
+                        delay(cooldown)
+                        scale.baseValue = currentScale
+                        player.sendText {
+                            appendPrefix()
+                            info("Du bist nun wieder auf ")
+                            variableValue(currentScale)
+                            info(" gewachsen.")
+                        }
+                    }
+                }
+            }
+        };
+
+        abstract suspend fun handle(player: Player, item: ItemStack)
+
+
+        private var lastUseTime = 0L
+
+        /**
+         * Checks if the item can be used and updates the last use time.
+         *
+         * @param player The player who used the item.
+         * @param item The item that was used.
+         * @param cooldown The cooldown duration.
+         * @return true if the item can be used, false otherwise.
+         */
+        suspend fun runPreCheck(
+            player: Player,
+            item: ItemStack,
+            cooldown: Duration
+        ): Boolean {
+            val currentTime = System.currentTimeMillis()
+            val remainingTime = cooldown.inWholeMilliseconds - (currentTime - lastUseTime)
+
+
+            if (remainingTime <= 0) {
+                lastUseTime = currentTime
+                return true
+            }
+
+            withContext(plugin.entityDispatcher(player)) {
+                val ticks = (remainingTime / Ticks.SINGLE_TICK_DURATION_MS).toInt()
+                player.setCooldown(item, ticks)
+            }
+            return false
+        }
+
+        companion object {
+            val pdcType: PersistentDataType<String, SpecialItemType> =
+                DataType.asEnum(SpecialItemType::class.java)
+        }
+    }
 }

@@ -62,6 +62,18 @@ class HASPlayer(val uuid: UUID) {
         }
     }
 
+    suspend fun setScale(scale: Double) {
+        val player = player ?: return
+        withContext(plugin.entityDispatcher(player)) {
+            with(player) {
+                val attribute = getAttribute(Attribute.SCALE)
+                if (attribute != null) {
+                    attribute.baseValue = scale
+                }
+            }
+        }
+    }
+
     suspend fun reset() {
         val player = player ?: return
         withContext(plugin.entityDispatcher(player)) {

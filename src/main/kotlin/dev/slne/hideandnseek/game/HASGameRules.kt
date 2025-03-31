@@ -1,8 +1,13 @@
 package dev.slne.hideandnseek.game
 
+import com.github.shynixn.mccoroutine.folia.launch
 import com.mojang.serialization.DynamicLike
 import dev.jorel.commandapi.arguments.*
 import dev.jorel.commandapi.executors.CommandArguments
+import dev.slne.hideandnseek.HASManager
+import dev.slne.hideandnseek.plugin
+import dev.slne.hideandnseek.util.HAS
+import dev.slne.surf.surfapi.bukkit.api.util.forEachPlayerInRegion
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import io.papermc.paper.util.Tick
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap
@@ -10,6 +15,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap
 import net.querz.nbt.tag.CompoundTag
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toKotlinDuration
 
@@ -31,7 +37,21 @@ class HASGameRules {
         val RULE_IS_ONE_HIT_KNOCK_OUT = register("isOneHitKnockOut", BooleanValue.create(false), "Ob die Spieler mit einem Schlag rausfliegen")
         val RULE_LOBBY_BORDER_RADIUS = register("lobbyBorderRadius", IntegerValue.create(512, 1, Int.MAX_VALUE), "Wartezeitradius")
         val RULE_SEEKER_AMOUNT = register("seekerAmount", IntegerValue.create(1, 1, Int.MAX_VALUE), "Anzahl der Suchenden")
+        val RULE_SPECIAL_ITEM_COOLDOWN = register("specialItemCooldown", DurationValue.create(3.minutes), "Cooldown für die Spezialgegenstände")
+        val RULE_GLOW_ITEM_EFFECT_DURATION = register("glowItemEffectDuration", DurationValue.create(30.seconds), "Dauer des Glow-Effekts")
         // @formatter:on
+
+        val RULE_PLAYER_SCALE = register("playerScale", DoubleValue.create(1.0, 0.0, 10.0) { game, value ->
+            plugin.launch {
+                forEachPlayerInRegion({
+                    val has = it.HAS
+                    if (has.hider) {
+                        has.setScale(value.get())
+                    }
+                    has.role.giveInventory(it)
+                })
+            }
+        }, "Skalierung der Spieler")
 
         private fun<T: Value<T>> register(name: String, type: Type<T>, description: String): Key<T> {
             val key = Key<T>(name, description)
@@ -180,6 +200,7 @@ class HASGameRules {
             gameRuleKey: Key<BooleanValue>
         ) {
             value = args.get(name) as Boolean
+            onChanged(HASManager.currentGame)
         }
 
         fun get() = value
@@ -236,6 +257,7 @@ class HASGameRules {
             gameRuleKey: Key<IntegerValue>
         ) {
             value = args.get(name) as Int
+            onChanged(HASManager.currentGame)
         }
 
         fun get() = value
@@ -312,7 +334,7 @@ class HASGameRules {
                 changeCallback: (HASGame, DoubleValue) -> Unit
             ): Type<DoubleValue> {
                 return Type(
-                    { IntegerArgument(it) },
+                    { DoubleArgument(it) },
                     { DoubleValue(it, initialValue) },
                     changeCallback,
                     GameRuleTypeVisitor::visitDouble
@@ -326,7 +348,7 @@ class HASGameRules {
                 changeCallback: (HASGame, DoubleValue) -> Unit
             ): Type<DoubleValue> {
                 return Type(
-                    { IntegerArgument(it, min.toInt(), max.toInt()) },
+                    { DoubleArgument(it, min, max) },
                     { DoubleValue(it, initialValue) },
                     changeCallback,
                     GameRuleTypeVisitor::visitDouble
@@ -347,6 +369,7 @@ class HASGameRules {
             gameRuleKey: Key<DoubleValue>
         ) {
             value = args.get(name) as Double
+            onChanged(HASManager.currentGame)
         }
 
         fun get() = value
@@ -425,6 +448,7 @@ class HASGameRules {
             gameRuleKey: Key<LongValue>
         ) {
             value = args.get(name) as Long
+            onChanged(HASManager.currentGame)
         }
 
         fun get() = value
@@ -484,6 +508,7 @@ class HASGameRules {
         ) {
             val ticks = args.get(name) as Int
             value = Tick.of(ticks.toLong()).toKotlinDuration()
+            onChanged(HASManager.currentGame)
         }
 
         fun get() = value
