@@ -2,7 +2,6 @@ package dev.slne.hideandnseek.player
 
 import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import dev.slne.hideandnseek.HASManager
-import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.game.role.HASHiderRole
 import dev.slne.hideandnseek.game.role.HASRole
 import dev.slne.hideandnseek.game.role.HASSeekerRole
@@ -98,7 +97,7 @@ class HASPlayer(val uuid: UUID) {
         val player = player ?: return
         role.giveInventory(player)
         role.teleportStartPosition(player)
-        setScale(plugin.data.settings.gameRules.getDouble(HASGameRules.RULE_PLAYER_SCALE))
+        role.applyScale(player)
     }
 
     suspend fun teleportToSpawn() {

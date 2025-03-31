@@ -11,6 +11,7 @@ abstract class HASRole(
 ) {
     open suspend fun giveInventory(player: Player) {}
     open suspend fun teleportStartPosition(player: Player) {}
+    open suspend fun applyScale(player: Player) {}
 
     open fun canDamage(role: HASRole): Boolean = true
 
