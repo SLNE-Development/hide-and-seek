@@ -32,7 +32,7 @@ public class Items {
    *
    * @param player the player
    */
-  public void prepareSeekerInventory(Player player) {
+  public static void prepareSeekerInventory(Player player) {
     final PlayerInventory inventory = player.getInventory();
 
     final ItemStack sword = unbreakable(item(Material.WOODEN_SWORD, 1, 0, Component.text("Schwert"), Component.text("Ein Schwert zum Kämpfen")));

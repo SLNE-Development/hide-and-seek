@@ -1,7 +1,6 @@
 package dev.slne.hideandnseek.old.util;
 
 import java.util.concurrent.TimeUnit;
-import lombok.experimental.UtilityClass;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 /**
  * The type Time util.
  */
-@UtilityClass
 public class TimeUtil {
 
   /**
@@ -20,7 +18,7 @@ public class TimeUtil {
    * @param textColor the text color
    * @return the component
    */
-  public Component formatLongTimestamp(@NotNull TimeUnit timeUnit, long time, TextColor textColor) {
+  public static Component formatLongTimestamp(@NotNull TimeUnit timeUnit, long time, TextColor textColor) {
     final long hours = timeUnit.toHours(time);
     final long minutes = timeUnit.toMinutes(time) % 60;
     final long seconds = timeUnit.toSeconds(time) % 60;
@@ -50,7 +48,7 @@ public class TimeUtil {
    * @param textColor the text color
    * @return the component
    */
-  public Component formatTimestamp(@NotNull TimeUnit timeUnit, long time, TextColor textColor) {
+  public static Component formatTimestamp(@NotNull TimeUnit timeUnit, long time, TextColor textColor) {
     long hours = timeUnit.toHours(time);
     long minutes = timeUnit.toMinutes(time) % 60;
     long seconds = timeUnit.toSeconds(time) % 60;

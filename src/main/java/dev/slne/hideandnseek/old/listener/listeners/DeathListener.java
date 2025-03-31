@@ -63,10 +63,10 @@ public class DeathListener implements Listener {
    * @param event the event
    */
   private void printDeathMessage(PlayerDeathEvent event) {
-    final Player died = event.getPlayer();
-    final Entity killer = died.getKiller();
+    final Player player = event.getPlayer();
+    final Entity killer = player.getKiller();
 
-    final HideAndSeekPlayer diedPlayer = HideAndSeekPlayer.get(died);
+    final HideAndSeekPlayer diedPlayer = HideAndSeekPlayer.get(player);
     final Component diedDisplayName = Messages.displayName(diedPlayer);
 
     event.deathMessage(null);
