@@ -2,7 +2,8 @@ package dev.slne.hideandnseek.game
 
 import dev.slne.hideandnseek.HASManager
 import dev.slne.hideandnseek.game.phase.GamePhaseManager
-import dev.slne.hideandnseek.game.role.HASRole
+import dev.slne.hideandnseek.game.role.HASSeekerRole
+import dev.slne.hideandnseek.game.role.HASUndefinedRole
 import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.HAS
 import dev.slne.hideandnseek.util.tp
@@ -61,7 +62,7 @@ class HASGame {
 
     suspend fun reset() {
         forEachPlayerInRegion(
-            { it.HAS.setRole(HASRole.Undefined, sendMessage = false) },
+            { it.HAS.setRole(HASUndefinedRole, sendMessage = false) },
             concurrent = true
         )
     }
@@ -86,7 +87,7 @@ class HASGame {
     private suspend fun assignNewSeeker() {
         val newSeeker = hiders.random(random.asKotlinRandom())
 
-        newSeeker.setRole(HASRole.Seeker)
+        newSeeker.setRole(HASSeekerRole)
         newSeeker.prepare()
     }
 

@@ -4,7 +4,7 @@ import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import com.github.shynixn.mccoroutine.folia.ticks
 import dev.slne.hideandnseek.HASManager
-import dev.slne.hideandnseek.game.role.HASRole
+import dev.slne.hideandnseek.game.role.HASUndefinedRole
 import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.HAS
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
@@ -74,7 +74,7 @@ object HASConnectionListener: Listener {
                     }
                 }
 
-                hasPlayer.setRole(HASRole.Undefined)
+                hasPlayer.setRole(HASUndefinedRole)
             } finally {
                 runningGame.performPlayerCheck()
             }

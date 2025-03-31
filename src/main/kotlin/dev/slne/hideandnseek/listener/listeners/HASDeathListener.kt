@@ -5,7 +5,8 @@ import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.hideandnseek.HASManager
 import dev.slne.hideandnseek.HASPermissions
 import dev.slne.hideandnseek.game.HASGameRules
-import dev.slne.hideandnseek.game.role.HASRole
+import dev.slne.hideandnseek.game.role.HASSeekerRole
+import dev.slne.hideandnseek.game.role.HASSpectatorRole
 import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.HAS
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
@@ -51,9 +52,9 @@ object HASDeathListener : Listener {
             try {
                 if (hasPlayer.hider) {
                     if (game.rules.getBoolean(HASGameRules.RULE_DO_HIDERS_BECOME_SEEKERS)) {
-                        hasPlayer.setRole(HASRole.Seeker)
+                        hasPlayer.setRole(HASSeekerRole)
                     } else {
-                        hasPlayer.setRole(HASRole.Spectator)
+                        hasPlayer.setRole(HASSpectatorRole)
 
                         withContext(plugin.entityDispatcher(player)) {
                             if (!player.hasPermission(HASPermissions.BYPASS_ELIMINATION_KICK)) {

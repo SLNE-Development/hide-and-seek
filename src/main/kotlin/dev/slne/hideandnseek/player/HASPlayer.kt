@@ -2,7 +2,9 @@ package dev.slne.hideandnseek.player
 
 import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import dev.slne.hideandnseek.HASManager
+import dev.slne.hideandnseek.game.role.HASHiderRole
 import dev.slne.hideandnseek.game.role.HASRole
+import dev.slne.hideandnseek.game.role.HASUndefinedRole
 import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.tp
 import dev.slne.surf.surfapi.core.api.messages.adventure.Sound
@@ -20,11 +22,11 @@ import org.bukkit.Sound as BukkitSound
 
 class HASPlayer(val uuid: UUID) {
     val online get() = player?.isOnline == true
-    val seeker get() = role == HASRole.Seeker
-    val hider get() = role == HASRole.Hider
+    val seeker get() = role == HASHiderRole
+    val hider get() = role == HASHiderRole
     val player: Player? get() = Bukkit.getPlayer(uuid)
 
-    var role: HASRole = HASRole.Undefined
+    var role: HASRole = HASUndefinedRole
         private set
 
     suspend fun setRole(role: HASRole, sendMessage: Boolean = true) {
@@ -39,7 +41,7 @@ class HASPlayer(val uuid: UUID) {
             }
 
             if (sendMessage) {
-                val roleChanged = previousRole != HASRole.Undefined
+                val roleChanged = previousRole != HASUndefinedRole
                 player.sendText {
                     appendPrefix()
                     info("Du bist ")

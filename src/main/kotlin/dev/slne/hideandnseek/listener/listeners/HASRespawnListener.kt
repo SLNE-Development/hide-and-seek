@@ -3,7 +3,7 @@ package dev.slne.hideandnseek.listener.listeners
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.hideandnseek.HASManager
-import dev.slne.hideandnseek.game.role.HASRole
+import dev.slne.hideandnseek.game.role.HASSpectatorRole
 import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.HAS
 import org.bukkit.event.EventHandler
@@ -35,7 +35,7 @@ object HASRespawnListener : Listener {
             val game = HASManager.currentGame ?: return@launch
 
             if (!game.canPlayersJoin) {
-                hasPlayer.setRole(HASRole.Spectator)
+                hasPlayer.setRole(HASSpectatorRole)
             }
         }
     }

@@ -4,7 +4,9 @@ import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import dev.slne.hideandnseek.game.HASGame
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.game.phase.GamePhase
-import dev.slne.hideandnseek.game.role.HASRole
+import dev.slne.hideandnseek.game.role.HASHiderRole
+import dev.slne.hideandnseek.game.role.HASSeekerRole
+import dev.slne.hideandnseek.game.role.HASUndefinedRole
 import dev.slne.hideandnseek.old.util.TimeUtil
 import dev.slne.hideandnseek.player.HASPlayer
 import dev.slne.hideandnseek.plugin
@@ -46,13 +48,13 @@ class PreparationPhase(val game: HASGame) : GamePhase {
         playStartSound()
 
         val seekers = chooseSeekers(game.rules.getInteger(HASGameRules.RULE_SEEKER_AMOUNT))
-        seekers.map { async { it.setRole(HASRole.Seeker) } }.awaitAll()
+        seekers.map { async { it.setRole(HASSeekerRole) } }.awaitAll()
 
         forEachPlayerInRegion({
             val player = HASPlayer[it.uniqueId]
 
             if (!player.seeker) {
-                player.setRole(HASRole.Hider)
+                player.setRole(HASHiderRole)
             }
 
             player.prepare()
@@ -92,7 +94,7 @@ class PreparationPhase(val game: HASGame) : GamePhase {
         val players = withContext(plugin.globalRegionDispatcher) { Bukkit.getOnlinePlayers() }
         return players.asSequence()
             .map { it.HAS }
-            .filter { it.role == HASRole.Undefined }
+            .filter { it.role == HASUndefinedRole }
             .shuffled(random.asKotlinRandom())
             .take(seekerAmount)
             .toObjectSet()
