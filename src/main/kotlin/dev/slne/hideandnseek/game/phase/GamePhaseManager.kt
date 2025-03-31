@@ -78,9 +78,9 @@ object GamePhaseManager {
                 try {
                     currentPhase = phase
                     action(phase)
-                } catch (_: CancellationException) {
+                } catch (e: CancellationException) {
                     currentPhase = null
-                    break
+                    throw e
                 }
 
                 yield()

@@ -44,7 +44,7 @@ class IngamePhase(val game: HASGame) : GamePhase {
             val worldBorder = game.settings.world.worldBorder
             previousWorldBoarderSize = worldBorder.size
             worldBorder.setSize(
-                game.rules.getInteger(HASGameRules.RULE_GAME_START_RADIUS) * 2.0,
+                game.rules.getInteger(HASGameRules.RULE_GAME_END_RADIUS) * 2.0,
                 game.rules.getDuration(HASGameRules.RULE_GAME_TIME).inWholeSeconds
             )
         }

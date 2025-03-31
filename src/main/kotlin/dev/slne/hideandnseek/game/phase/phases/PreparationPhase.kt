@@ -39,6 +39,8 @@ class PreparationPhase(val game: HASGame) : GamePhase {
             previousMaxPlayers = server.maxPlayers
             server.maxPlayers = 0
 
+            // TODO: 31.03.2025 16:46 - change difficulty to peaceful
+
             val worldBorder = game.settings.world.worldBorder
             previousWorldBorderSize = worldBorder.size
             worldBorder.size = game.rules.getInteger(HASGameRules.RULE_GAME_START_RADIUS) * 2.0
