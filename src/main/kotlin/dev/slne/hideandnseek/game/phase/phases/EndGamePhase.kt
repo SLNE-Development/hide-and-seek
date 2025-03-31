@@ -6,7 +6,6 @@ import dev.slne.hideandnseek.game.HASEndReason
 import dev.slne.hideandnseek.game.HASGame
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.game.phase.GamePhase
-import dev.slne.hideandnseek.game.phase.GamePhaseManager
 import dev.slne.hideandnseek.old.util.TimeUtil
 import dev.slne.hideandnseek.util.tp
 import dev.slne.surf.surfapi.bukkit.api.extensions.server
@@ -20,7 +19,7 @@ import kotlin.time.Duration.Companion.seconds
 class EndGamePhase(val game: HASGame) : GamePhase {
 
     override suspend fun start() {
-        GamePhaseManager.endGame(HASEndReason.TIME_UP)
+        game.stopGame(HASEndReason.TIME_UP)
     }
 
     override suspend fun end(reason: HASEndReason) {

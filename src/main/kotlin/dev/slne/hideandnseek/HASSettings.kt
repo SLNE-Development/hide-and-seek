@@ -57,9 +57,11 @@ class HASSettings(
 
         val initialSeekers = initialSeekers
         if (initialSeekers != null) {
-            val seekerTag = ListTag(StringTag::class.java)
+            val seekerTag = ListTag(CompoundTag::class.java)
             for (seeker in initialSeekers) {
-                seekerTag.addString(seeker.uuid.toString())
+                seekerTag.add(CompoundTag().apply {
+                    putString("uuid", seeker.uuid.toString())
+                })
             }
 
             tag.put("InitialSeekers", seekerTag)

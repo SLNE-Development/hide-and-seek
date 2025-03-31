@@ -4,6 +4,7 @@ import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import dev.slne.hideandnseek.HASManager
 import dev.slne.hideandnseek.game.role.HASHiderRole
 import dev.slne.hideandnseek.game.role.HASRole
+import dev.slne.hideandnseek.game.role.HASSeekerRole
 import dev.slne.hideandnseek.game.role.HASUndefinedRole
 import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.tp
@@ -22,10 +23,11 @@ import org.bukkit.Sound as BukkitSound
 
 class HASPlayer(val uuid: UUID) {
     val online get() = player?.isOnline == true
-    val seeker get() = role == HASHiderRole
+    val seeker get() = role == HASSeekerRole
     val hider get() = role == HASHiderRole
     val player: Player? get() = Bukkit.getPlayer(uuid)
 
+    @Volatile
     var role: HASRole = HASUndefinedRole
         private set
 
@@ -35,7 +37,6 @@ class HASPlayer(val uuid: UUID) {
         val player = player ?: return
         withContext(plugin.entityDispatcher(player)) {
             with(player) {
-                inventory.clear()
                 gameMode = role.gameMode
                 role.giveInventory(this)
             }
@@ -46,7 +47,7 @@ class HASPlayer(val uuid: UUID) {
                     appendPrefix()
                     info("Du bist ")
                     if (roleChanged) {
-                        text("nun ")
+                        info("nun ")
                     }
                     info("ein ")
                     text(role.displayName, color = role.color)
