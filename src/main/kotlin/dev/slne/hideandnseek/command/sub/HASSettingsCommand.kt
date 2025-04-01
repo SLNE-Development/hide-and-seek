@@ -3,11 +3,9 @@ package dev.slne.hideandnseek.command.sub
 import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandTree
 import dev.jorel.commandapi.arguments.ListArgumentBuilder
-import dev.jorel.commandapi.arguments.LocationType
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.jorel.commandapi.executors.CommandExecutor
 import dev.jorel.commandapi.kotlindsl.*
-import dev.jorel.commandapi.wrappers.Location2D
 import dev.slne.hideandnseek.HASPermissions
 import dev.slne.hideandnseek.command.getAreaOrThrow
 import dev.slne.hideandnseek.game.HASGameRules
@@ -98,31 +96,6 @@ fun CommandTree.settingsCommand() = literalArgument("settings") {
         }
     }
 
-    literalArgument("borderCenter") {
-        playerExecutor { sender, _ ->
-            val center = sender.getAreaOrThrow().settings.boarderCenter
-            sender.sendText {
-                appendPrefix()
-                info("Der Border-Center ist ")
-                variableValue(center.toString())
-            }
-        }
-
-        location2DArgument("center", LocationType.BLOCK_POSITION, true) {
-            playerExecutor { sender, args ->
-                val center: Location2D by args
-
-                sender.getAreaOrThrow().settings.boarderCenter = center
-                sender.sendText {
-                    appendPrefix()
-                    success("Der Border-Center wurde auf ")
-                    variableValue(center.toString())
-                    success(" gesetzt.")
-                }
-            }
-        }
-    }
-
     literalArgument("startRadius") {
         playerExecutor { sender, _ ->
             val startRadius = sender.getAreaOrThrow().settings.startRadius
@@ -172,31 +145,6 @@ fun CommandTree.settingsCommand() = literalArgument("settings") {
                 sender.sendText {
                     appendPrefix()
                     success("Der End-Radius wurde auf ")
-                    variableValue(radius.toString())
-                    success(" gesetzt.")
-                }
-            }
-        }
-    }
-
-    literalArgument("lobbyBorderRadius") {
-        playerExecutor { sender, _ ->
-            val lobbyBorderRadius = sender.getAreaOrThrow().settings.lobbyBorderRadius
-            sender.sendText {
-                appendPrefix()
-                info("Der Lobby-Radius ist ")
-                variableValue(lobbyBorderRadius.toString())
-            }
-        }
-
-        integerArgument("radius", 1) {
-            playerExecutor { sender, args ->
-                val radius: Int by args
-
-                sender.getAreaOrThrow().settings.lobbyBorderRadius = radius
-                sender.sendText {
-                    appendPrefix()
-                    success("Der Lobby-Radius wurde auf ")
                     variableValue(radius.toString())
                     success(" gesetzt.")
                 }

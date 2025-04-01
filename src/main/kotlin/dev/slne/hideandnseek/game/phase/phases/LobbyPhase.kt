@@ -22,13 +22,12 @@ class LobbyPhase(val game: HASGame) : GamePhase {
         game.teleportToLobby()
 
         withContext(plugin.globalRegionDispatcher) {
-            val settings = game.area.settings
-            val world = settings.world
-            val center = settings.boarderCenter
+            val areaSettings = game.area.settings
+            val world = areaSettings.world
 
             world.worldBorder.apply {
-                this.center = center
-                this.size = game.area.settings.lobbyBorderRadius * 2.0
+                this.center = areaSettings.spawnLocation
+                this.size = areaSettings.startRadius * 2.0
                 this.damageAmount = game.rules.getDouble(HASGameRules.RULE_BORDER_DAMAGE)
                 this.damageBuffer = game.rules.getDouble(HASGameRules.RULE_BORDER_BUFFER)
                 this.warningDistance = 0

@@ -26,7 +26,7 @@ class HASGameArea(
             }
 
             val spawn = world.spawnLocation
-            val areaSettings = existingSettings ?: HASAreaSettings(name, spawn, spawn, world).also {
+            val areaSettings = existingSettings ?: HASAreaSettings(name, spawn, world).also {
                 plugin.data.settings.areaSettings[name] = it
             }
 

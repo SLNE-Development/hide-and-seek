@@ -38,7 +38,7 @@ class EndGamePhase(val game: HASGame) : GamePhase {
                 inventory.clear()
                 isVisibleByDefault = true
 
-                tp(game.area.settings.lobbyLocation)
+                tp(game.settings.lobbyLocation)
 //                HASPlayer[uniqueId].prepare()
             }
 

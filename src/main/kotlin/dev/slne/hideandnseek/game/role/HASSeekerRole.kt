@@ -188,7 +188,7 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
         }
 
     override suspend fun teleportStartPosition(player: Player, game: HASGame) {
-        player.tp(game.area.settings.lobbyLocation)
+        player.tp(game.settings.lobbyLocation)
     }
 
     override fun canDamage(role: HASRole) = role != this

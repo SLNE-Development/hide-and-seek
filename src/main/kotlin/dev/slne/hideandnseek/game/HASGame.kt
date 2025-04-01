@@ -98,6 +98,6 @@ class HASGame(val area: HASGameArea) {
     }
 
     suspend fun teleportToLobby() {
-        forEachPlayerInRegion({ it.tp(area.settings.lobbyLocation) }, concurrent = true)
+        forEachPlayerInRegion({ it.tp(settings.lobbyLocation) }, concurrent = true)
     }
 }

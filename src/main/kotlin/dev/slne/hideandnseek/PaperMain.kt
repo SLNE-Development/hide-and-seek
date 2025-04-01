@@ -62,7 +62,8 @@ class PaperMain : SuspendingJavaPlugin() {
                 HASSettings(
                     HASGameRules(),
                     null,
-                    mutableObject2ObjectMapOf()
+                    mutableObject2ObjectMapOf(),
+                    spawn
                 )
             )
             session.saveDataTag(data)

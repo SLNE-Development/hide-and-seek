@@ -20,7 +20,8 @@ import kotlin.jvm.optionals.getOrNull
 class HASSettings(
     var gameRules: HASGameRules,
     var initialSeekers: ObjectSet<HASPlayer>?,
-    val areaSettings: Object2ObjectMap<String, HASAreaSettings>
+    val areaSettings: Object2ObjectMap<String, HASAreaSettings>,
+    var lobbyLocation: Location
 ) {
     companion object {
         fun parse(data: Dynamic<*>): HASSettings {
@@ -42,7 +43,8 @@ class HASSettings(
             return HASSettings(
                 HASGameRules(data.get("GameRules")),
                 initialSeekers,
-                areaSettings
+                areaSettings,
+                data.get("lobbyLocation").asLocation(),
             )
         }
     }
@@ -70,6 +72,7 @@ class HASSettings(
             })
         }
         tag.put("AreaSettings", areaTag)
+        tag.put("lobbyLocation", lobbyLocation.toTag())
     }
 }
 
