@@ -26,6 +26,7 @@ object HASConnectionListener: Listener {
         val hasPlayer = player.HAS
 
         event.joinMessage(buildText {
+            appendPrefix()
             append(hasPlayer.displayName())
             spacer(" hat das Spiel betreten.")
         })
@@ -59,6 +60,7 @@ object HASConnectionListener: Listener {
         val hasPlayer = player.HAS
 
         event.quitMessage(buildText {
+            appendPrefix()
             append(hasPlayer.displayName())
             spacer(" hat das Spiel verlassen.")
         })
