@@ -6,10 +6,12 @@ import dev.jorel.commandapi.wrappers.Location2D
 import dev.slne.hideandnseek.command.hasCommand
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.listener.HASListenerManager
+import dev.slne.hideandnseek.papi.HASPlaceholder
 import dev.slne.hideandnseek.storage.HASData
 import dev.slne.hideandnseek.storage.HASDataFixers
 import dev.slne.hideandnseek.storage.HASStorageSource
 import dev.slne.surf.surfapi.bukkit.api.event.listen
+import dev.slne.surf.surfapi.bukkit.api.hook.papi.papiHook
 import kotlinx.io.IOException
 import org.bukkit.Bukkit
 import org.bukkit.event.world.WorldSaveEvent
@@ -71,6 +73,8 @@ class PaperMain : SuspendingJavaPlugin() {
 
         HASListenerManager.register()
         hasCommand()
+
+        papiHook.register(HASPlaceholder())
     }
 }
 
