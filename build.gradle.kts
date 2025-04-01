@@ -1,4 +1,3 @@
-import dev.slne.surf.surfapi.gradle.util.registerRequired
 import dev.slne.surf.surfapi.gradle.util.withSurfApiBukkit
 
 plugins {
@@ -16,17 +15,11 @@ repositories {
 dependencies {
     paperLibrary("com.mojang:datafixerupper:8.0.16")
     paperLibrary("com.github.Querz:NBT:6.1")
-
-    compileOnly("com.github.NEZNAMY:TAB-API:5.2.0")
 }
 
 surfPaperPluginApi {
     mainClass("dev.slne.hideandnseek.PaperMain")
     authors.add("SLNE Development")
-
-    serverDependencies {
-        registerRequired("TAB")
-    }
 
     runServer {
         withSurfApiBukkit()
