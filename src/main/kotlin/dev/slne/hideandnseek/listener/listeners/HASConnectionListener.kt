@@ -67,14 +67,8 @@ object HASConnectionListener: Listener {
 
         plugin.launch {
             try {
-                withContext(plugin.entityDispatcher(player)) {
-                    with(player) {
-                        isFlying = false
-                        allowFlight = false
-                    }
-                }
-
                 hasPlayer.setRole(HASUndefinedRole)
+                hasPlayer.reset()
             } finally {
                 runningGame.performPlayerCheck()
             }

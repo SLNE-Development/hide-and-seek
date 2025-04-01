@@ -12,6 +12,7 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.Sound
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import kotlinx.coroutines.withContext
+import me.neznamy.tab.api.TabAPI
 import net.kyori.adventure.sound.Sound
 import net.querz.nbt.tag.CompoundTag
 import org.bukkit.Bukkit
@@ -75,6 +76,9 @@ class HASPlayer(val uuid: UUID) {
     }
 
     suspend fun reset() {
+        val tab = TabAPI.getInstance()
+        tab.getPlayer(uuid)?.let { tab.nameTagManager?.showNameTag(it) }
+
         val player = player ?: return
         withContext(plugin.entityDispatcher(player)) {
             with(player) {
@@ -93,6 +97,9 @@ class HASPlayer(val uuid: UUID) {
 
     suspend fun prepare() {
         reset()
+
+        val tab = TabAPI.getInstance()
+        tab.getPlayer(uuid)?.let { tab.nameTagManager?.hideNameTag(it) }
 
         val player = player ?: return
         role.giveInventory(player)
