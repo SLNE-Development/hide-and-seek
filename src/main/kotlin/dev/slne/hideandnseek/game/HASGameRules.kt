@@ -29,13 +29,13 @@ class HASGameRules {
         val RULE_PREPARATION_TIME = register("preparationTime", DurationValue.create(60.seconds), "Vorbereitungszeit für die Versteckenden")
         val RULE_GAME_TIME = register("gameTime", DurationValue.create(60.seconds), "Spielzeit für die Suchenden")
         val RULE_CELEBRATION_TIME_SECONDS = register("celebrationTime", DurationValue.create(60.seconds), "Feierzeit für die Suchenden bevor das Spiel endet")
-        val RULE_GAME_START_RADIUS = register("gameStartRadius", IntegerValue.create(1000, 1, Int.MAX_VALUE), "Startradius für das Spiel")
-        val RULE_GAME_END_RADIUS = register("gameEndRadius", IntegerValue.create(25, 1, Int.MAX_VALUE), "Endradius für das Spiel")
+//        val RULE_GAME_START_RADIUS = register("gameStartRadius", IntegerValue.create(1000, 1, Int.MAX_VALUE), "Startradius für das Spiel") //
+//        val RULE_GAME_END_RADIUS = register("gameEndRadius", IntegerValue.create(25, 1, Int.MAX_VALUE), "Endradius für das Spiel") //
         val RULE_DO_HIDERS_BECOME_SEEKERS = register("doHidersBecomeSeekers", BooleanValue.create(false), "Ob die Versteckenden zu Suchenden werden")
         val RULE_BORDER_DAMAGE = register("borderDamage", DoubleValue.create(1.0, 0.0, Double.MAX_VALUE), "Schaden pro Tick der Grenze")
         val RULE_BORDER_BUFFER = register("borderBuffer", DoubleValue.create(0.0, 0.0, Double.MAX_VALUE), "Buffer der Grenze")
         val RULE_IS_ONE_HIT_KNOCK_OUT = register("isOneHitKnockOut", BooleanValue.create(false), "Ob die Spieler mit einem Schlag rausfliegen")
-        val RULE_LOBBY_BORDER_RADIUS = register("lobbyBorderRadius", IntegerValue.create(512, 1, Int.MAX_VALUE), "Wartezeitradius")
+//        val RULE_LOBBY_BORDER_RADIUS = register("lobbyBorderRadius", IntegerValue.create(512, 1, Int.MAX_VALUE), "Wartezeitradius") //
         val RULE_SEEKER_AMOUNT = register("seekerAmount", IntegerValue.create(1, 1, Int.MAX_VALUE), "Anzahl der Suchenden")
         val RULE_SPECIAL_ITEM_COOLDOWN = register("specialItemCooldown", DurationValue.create(3.minutes), "Cooldown für die Spezialgegenstände")
         val RULE_GLOW_ITEM_EFFECT_DURATION = register("glowItemEffectDuration", DurationValue.create(30.seconds), "Dauer des Glow-Effekts")

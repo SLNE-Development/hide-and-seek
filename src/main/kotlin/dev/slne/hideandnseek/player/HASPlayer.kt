@@ -2,6 +2,7 @@ package dev.slne.hideandnseek.player
 
 import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import dev.slne.hideandnseek.HASManager
+import dev.slne.hideandnseek.game.HASGame
 import dev.slne.hideandnseek.game.role.HASHiderRole
 import dev.slne.hideandnseek.game.role.HASRole
 import dev.slne.hideandnseek.game.role.HASSeekerRole
@@ -98,17 +99,19 @@ class HASPlayer(val uuid: UUID) {
     suspend fun prepare() {
         reset()
 
+        val game = HASManager.currentGame ?: error("Prepare was called without a game")
+
         val tab = TabAPI.getInstance()
         tab.getPlayer(uuid)?.let { tab.nameTagManager?.hideNameTag(it) }
 
         val player = player ?: return
         role.giveInventory(player)
-        role.teleportStartPosition(player)
+        role.teleportStartPosition(player, game)
         role.applyScale(player)
     }
 
-    suspend fun teleportToSpawn() {
-        player?.tp(HASManager.settings.spawnLocation)
+    suspend fun teleportToSpawn(game: HASGame) {
+        player?.tp(game.area.settings.spawnLocation)
     }
 
     fun displayName() = buildText {

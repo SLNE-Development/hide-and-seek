@@ -41,9 +41,9 @@ class PreparationPhase(val game: HASGame) : GamePhase {
 
             // TODO: 31.03.2025 16:46 - change difficulty to peaceful
 
-            val worldBorder = game.settings.world.worldBorder
+            val worldBorder = game.area.settings.world.worldBorder
             previousWorldBorderSize = worldBorder.size
-            worldBorder.size = game.rules.getInteger(HASGameRules.RULE_GAME_START_RADIUS) * 2.0
+            worldBorder.size = game.area.settings.startRadius * 2.0
         }
 
         printStartMessage()
@@ -135,7 +135,7 @@ class PreparationPhase(val game: HASGame) : GamePhase {
             }
 
             if (previousWorldBorderSize != -1.0) {
-                game.settings.world.worldBorder.size = previousWorldBorderSize
+                game.area.settings.world.worldBorder.size = previousWorldBorderSize
             }
         }
     }

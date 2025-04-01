@@ -41,10 +41,10 @@ class IngamePhase(val game: HASGame) : GamePhase {
                 appendNewPrefixedLine()
             }
 
-            val worldBorder = game.settings.world.worldBorder
+            val worldBorder = game.area.settings.world.worldBorder
             previousWorldBoarderSize = worldBorder.size
             worldBorder.setSize(
-                game.rules.getInteger(HASGameRules.RULE_GAME_END_RADIUS) * 2.0,
+                game.area.settings.endRadius * 2.0,
                 game.rules.getDuration(HASGameRules.RULE_GAME_TIME).inWholeSeconds
             )
         }
@@ -58,7 +58,7 @@ class IngamePhase(val game: HASGame) : GamePhase {
             }, Sound.Emitter.self())
         }, concurrent = true)
 
-        game.seekers.forEach { it.teleportToSpawn() }
+        game.seekers.forEach { it.teleportToSpawn(game) }
 
         for (currentSeconds in game.rules.getDuration(HASGameRules.RULE_GAME_TIME).inWholeSeconds downTo 1) {
             if (currentSeconds in remainingTimeAnnouncements) {
@@ -127,20 +127,20 @@ class IngamePhase(val game: HASGame) : GamePhase {
         }, concurrent = true)
 
         withContext(plugin.globalRegionDispatcher) {
-            val worldBorder = game.settings.world.worldBorder
+            val worldBorder = game.area.settings.world.worldBorder
             worldBorder.size = worldBorder.size
         }
     }
 
     override suspend fun reset() {
         withContext(plugin.globalRegionDispatcher) {
-            val worldBorder = game.settings.world.worldBorder
+            val worldBorder = game.area.settings.world.worldBorder
             worldBorder.size = previousWorldBoarderSize
         }
     }
 
     companion object {
-        private var remainingTimeAnnouncements = longSetOf(
+        private val remainingTimeAnnouncements = longSetOf(
             3600, 1800, 900, 600, 300, 240,
             180, 120, 60, 30, 15, 10, 5, 4, 3, 2, 1
         )

@@ -13,4 +13,5 @@ object HASPermissions: PermissionRegistry() {
     val SET_LOBBY_COMMAND = create("hideandseek.command.setlobby")
     val SET_SPAWN_COMMAND = create("hideandseek.command.setspawn")
     val START_COMMAND = create("hideandseek.command.start")
+    val CREATE_AREA_COMMAND = create("hideandseek.command.createarea")
 }

@@ -4,25 +4,23 @@ import com.mojang.serialization.Dynamic
 import com.mojang.serialization.OptionalDynamic
 import dev.jorel.commandapi.wrappers.Location2D
 import dev.slne.hideandnseek.game.HASGameRules
+import dev.slne.hideandnseek.game.area.HASAreaSettings
 import dev.slne.hideandnseek.player.HASPlayer
+import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import dev.slne.surf.surfapi.core.api.util.toObjectSet
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap
 import it.unimi.dsi.fastutil.objects.ObjectSet
 import net.querz.nbt.tag.CompoundTag
 import net.querz.nbt.tag.ListTag
-import net.querz.nbt.tag.StringTag
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.World
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 class HASSettings(
-    var lobbyLocation: Location,
-    var spawnLocation: Location,
     var gameRules: HASGameRules,
     var initialSeekers: ObjectSet<HASPlayer>?,
-    var world: World,
-    var boarderCenter: Location2D,
+    val areaSettings: Object2ObjectMap<String, HASAreaSettings>
 ) {
     companion object {
         fun parse(data: Dynamic<*>): HASSettings {
@@ -33,26 +31,26 @@ class HASSettings(
                 .result()
                 .getOrNull()
 
-            val worldUuid = data.get("worldUid").asUuid(Bukkit.getWorlds().first().uid)
-            val world = Bukkit.getWorld(worldUuid) ?: error("World with UUID $worldUuid not found")
-
             return HASSettings(
-                data.get("LobbyLocation").asLocation(),
-                data.get("SpawnLocation").asLocation(),
                 HASGameRules(data.get("GameRules")),
                 initialSeekers,
-                world,
-                data.get("BoarderCenter")
-                    .map { Location2D(world, it.get("x").asDouble(0.0), it.get("z").asDouble(0.0)) }
-                    .result()
-                    .getOrNull() ?: Location2D(world, 0.0, 0.0)
+                data.get("AreaSettings")
+                    .asMap(
+                        { it.get("worldName").asString().orThrow },
+                        { HASAreaSettings.create(it) }
+                    )
+                    .let {
+                        mutableObject2ObjectMapOf<String, HASAreaSettings>().apply {
+                            for ((key, value) in it) {
+                                put(key, value.apply { worldName = key })
+                            }
+                        }
+                    }
             )
         }
     }
 
     fun writeToTag(tag: CompoundTag) {
-        tag.put("LobbyLocation", lobbyLocation.toTag())
-        tag.put("SpawnLocation", spawnLocation.toTag())
         tag.put("GameRules", gameRules.createTag())
 
         val initialSeekers = initialSeekers
@@ -67,8 +65,14 @@ class HASSettings(
             tag.put("InitialSeekers", seekerTag)
         }
 
-        tag.put("worldUid", StringTag(world.uid.toString()))
-        tag.put("BoarderCenter", boarderCenter.toTag())
+        val areaTag = ListTag(CompoundTag::class.java)
+        for (area in areaSettings.values) {
+            areaTag.add(CompoundTag().apply {
+                putString("worldName", area.worldName)
+                put("settings", area.createTag())
+            })
+        }
+        tag.put("AreaSettings", areaTag)
     }
 }
 

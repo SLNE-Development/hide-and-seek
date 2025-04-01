@@ -1,5 +1,6 @@
 package dev.slne.hideandnseek.game.role
 
+import dev.slne.hideandnseek.game.HASGame
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
@@ -10,7 +11,7 @@ abstract class HASRole(
     val gameMode: GameMode = GameMode.ADVENTURE
 ) {
     open suspend fun giveInventory(player: Player) {}
-    open suspend fun teleportStartPosition(player: Player) {}
+    open suspend fun teleportStartPosition(player: Player, game: HASGame) {}
     open suspend fun applyScale(player: Player) {}
 
     open fun canDamage(role: HASRole): Boolean = true

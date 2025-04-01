@@ -1,6 +1,5 @@
 package dev.slne.hideandnseek.game.phase.phases
 
-import dev.slne.hideandnseek.HASManager
 import dev.slne.hideandnseek.HASPermissions
 import dev.slne.hideandnseek.game.HASEndReason
 import dev.slne.hideandnseek.game.HASGame
@@ -39,7 +38,7 @@ class EndGamePhase(val game: HASGame) : GamePhase {
                 inventory.clear()
                 isVisibleByDefault = true
 
-                tp(HASManager.settings.lobbyLocation)
+                tp(game.area.settings.lobbyLocation)
 //                HASPlayer[uniqueId].prepare()
             }
 

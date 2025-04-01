@@ -3,10 +3,8 @@ package dev.slne.hideandnseek.command.sub
 import dev.jorel.commandapi.CommandTree
 import dev.jorel.commandapi.arguments.LocationType
 import dev.jorel.commandapi.kotlindsl.*
-import dev.slne.hideandnseek.HASManager
 import dev.slne.hideandnseek.HASPermissions
-import dev.slne.hideandnseek.game.HASGameRules
-import dev.slne.hideandnseek.plugin
+import dev.slne.hideandnseek.command.getAreaOrThrow
 import org.bukkit.Location
 
 fun CommandTree.setLobbyCommand() = literalArgument("setLobby") {
@@ -14,12 +12,15 @@ fun CommandTree.setLobbyCommand() = literalArgument("setLobby") {
 
     locationArgument("location", LocationType.BLOCK_POSITION, true) {
         integerArgument("radius", 1) {
-            anyExecutor { sender, args ->
+            playerExecutor { sender, args ->
                 val location: Location by args
+                val radius: Int by args
+                val area = sender.getAreaOrThrow()
 
-                HASManager.settings.lobbyLocation = location
-                plugin.data.settings.gameRules.getRule(HASGameRules.RULE_LOBBY_BORDER_RADIUS)
-                    .setFromArgument(args, "radius", HASGameRules.RULE_LOBBY_BORDER_RADIUS)
+                area.settings.apply {
+                    lobbyLocation = location
+                    lobbyBorderRadius = radius
+                }
             }
         }
     }

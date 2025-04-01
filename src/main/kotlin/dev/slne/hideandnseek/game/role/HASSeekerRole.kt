@@ -3,7 +3,7 @@ package dev.slne.hideandnseek.game.role
 import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import com.jeff_media.morepersistentdatatypes.DataType
-import dev.slne.hideandnseek.HASManager
+import dev.slne.hideandnseek.game.HASGame
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.old.util.TimeUtil
 import dev.slne.hideandnseek.plugin
@@ -187,8 +187,8 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
             }
         }
 
-    override suspend fun teleportStartPosition(player: Player) {
-        player.tp(HASManager.settings.lobbyLocation)
+    override suspend fun teleportStartPosition(player: Player, game: HASGame) {
+        player.tp(game.area.settings.lobbyLocation)
     }
 
     override fun canDamage(role: HASRole) = role != this

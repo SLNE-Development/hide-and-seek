@@ -1,6 +1,8 @@
 package dev.slne.hideandnseek
 
 import dev.slne.hideandnseek.game.HASGame
+import dev.slne.hideandnseek.game.area.HASGameArea
+import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import org.bukkit.entity.Player
 import java.util.*
@@ -8,6 +10,7 @@ import java.util.*
 object HASManager {
     val settings get() = plugin.data.settings
     var currentGame: HASGame? = null
+    private val areas = mutableObject2ObjectMapOf<String, HASGameArea>()
 
     private val bypassingPlayers = mutableObjectSetOf<UUID>()
 
@@ -26,5 +29,17 @@ object HASManager {
             bypassingPlayers.add(player.uniqueId)
             return true
         }
+    }
+
+    fun getArea(name: String): HASGameArea? {
+        return areas[name]
+    }
+
+    fun addArea(area: HASGameArea) {
+        areas[area.settings.worldName] = area
+    }
+
+    fun getAreaKeys(): Set<String> {
+        return areas.keys
     }
 }

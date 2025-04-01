@@ -1,6 +1,7 @@
 package dev.slne.hideandnseek.game
 
 import dev.slne.hideandnseek.HASManager
+import dev.slne.hideandnseek.game.area.HASGameArea
 import dev.slne.hideandnseek.game.phase.GamePhaseManager
 import dev.slne.hideandnseek.game.role.HASSeekerRole
 import dev.slne.hideandnseek.game.role.HASUndefinedRole
@@ -12,7 +13,7 @@ import dev.slne.surf.surfapi.core.api.util.random
 import org.bukkit.Bukkit
 import kotlin.random.asKotlinRandom
 
-class HASGame {
+class HASGame(val area: HASGameArea) {
 
     val seekers get() = Bukkit.getOnlinePlayers().map { it.HAS }.filter { it.seeker }
     val hiders get() = Bukkit.getOnlinePlayers().map { it.HAS }.filter { it.hider }
@@ -92,6 +93,6 @@ class HASGame {
     }
 
     suspend fun teleportToLobby() {
-        forEachPlayerInRegion({ it.tp(HASManager.settings.lobbyLocation) }, concurrent = true)
+        forEachPlayerInRegion({ it.tp(area.settings.lobbyLocation) }, concurrent = true)
     }
 }

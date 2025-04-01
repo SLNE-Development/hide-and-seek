@@ -9,6 +9,7 @@ import dev.jorel.commandapi.executors.CommandExecutor
 import dev.jorel.commandapi.kotlindsl.*
 import dev.jorel.commandapi.wrappers.Location2D
 import dev.slne.hideandnseek.HASPermissions
+import dev.slne.hideandnseek.command.getAreaOrThrow
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.player.HASPlayer
 import dev.slne.hideandnseek.plugin
@@ -18,7 +19,6 @@ import dev.slne.surf.surfapi.core.api.messages.joinToComponent
 import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
-import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -98,34 +98,9 @@ fun CommandTree.settingsCommand() = literalArgument("settings") {
         }
     }
 
-    literalArgument("world") {
-        anyExecutor { sender, _ ->
-            val world = plugin.data.settings.world
-            sender.sendText {
-                appendPrefix()
-                info("Die Welt ist ")
-                variableValue(world.name)
-            }
-        }
-
-        worldArgument("world") {
-            anyExecutor { sender, args ->
-                val world: World by args
-
-                plugin.data.settings.world = world
-                sender.sendText {
-                    appendPrefix()
-                    success("Die Welt wurde auf ")
-                    variableValue(world.name)
-                    success(" gesetzt.")
-                }
-            }
-        }
-    }
-
     literalArgument("borderCenter") {
-        anyExecutor { sender, _ ->
-            val center = plugin.data.settings.boarderCenter
+        playerExecutor { sender, _ ->
+            val center = sender.getAreaOrThrow().settings.boarderCenter
             sender.sendText {
                 appendPrefix()
                 info("Der Border-Center ist ")
@@ -134,14 +109,95 @@ fun CommandTree.settingsCommand() = literalArgument("settings") {
         }
 
         location2DArgument("center", LocationType.BLOCK_POSITION, true) {
-            anyExecutor { sender, args ->
+            playerExecutor { sender, args ->
                 val center: Location2D by args
 
-                plugin.data.settings.boarderCenter = center
+                sender.getAreaOrThrow().settings.boarderCenter = center
                 sender.sendText {
                     appendPrefix()
                     success("Der Border-Center wurde auf ")
                     variableValue(center.toString())
+                    success(" gesetzt.")
+                }
+            }
+        }
+    }
+
+    literalArgument("startRadius") {
+        playerExecutor { sender, _ ->
+            val startRadius = sender.getAreaOrThrow().settings.startRadius
+            sender.sendText {
+                appendPrefix()
+                info("Der Start-Radius ist ")
+                variableValue(startRadius.toString())
+            }
+        }
+
+        integerArgument("radius", 1) {
+            playerExecutor { sender, args ->
+                val radius: Int by args
+
+                sender.getAreaOrThrow().settings.startRadius = radius
+                sender.sendText {
+                    appendPrefix()
+                    success("Der Start-Radius wurde auf ")
+                    variableValue(radius.toString())
+                    success(" gesetzt.")
+                }
+            }
+        }
+    }
+
+    literalArgument("endRadius") {
+        playerExecutor { sender, _ ->
+            val endRadius = sender.getAreaOrThrow().settings.endRadius
+            sender.sendText {
+                appendPrefix()
+                info("Der End-Radius ist ")
+                variableValue(endRadius.toString())
+            }
+        }
+
+        integerArgument("radius", 1) {
+            playerExecutor { sender, args ->
+                val radius: Int by args
+
+                val settings = sender.getAreaOrThrow().settings
+
+                if (radius > settings.startRadius) {
+                    throw CommandAPI.failWithString("Der End-Radius muss kleiner als der Start-Radius sein.")
+                }
+
+                settings.endRadius = radius
+                sender.sendText {
+                    appendPrefix()
+                    success("Der End-Radius wurde auf ")
+                    variableValue(radius.toString())
+                    success(" gesetzt.")
+                }
+            }
+        }
+    }
+
+    literalArgument("lobbyBorderRadius") {
+        playerExecutor { sender, _ ->
+            val lobbyBorderRadius = sender.getAreaOrThrow().settings.lobbyBorderRadius
+            sender.sendText {
+                appendPrefix()
+                info("Der Lobby-Radius ist ")
+                variableValue(lobbyBorderRadius.toString())
+            }
+        }
+
+        integerArgument("radius", 1) {
+            playerExecutor { sender, args ->
+                val radius: Int by args
+
+                sender.getAreaOrThrow().settings.lobbyBorderRadius = radius
+                sender.sendText {
+                    appendPrefix()
+                    success("Der Lobby-Radius wurde auf ")
+                    variableValue(radius.toString())
                     success(" gesetzt.")
                 }
             }

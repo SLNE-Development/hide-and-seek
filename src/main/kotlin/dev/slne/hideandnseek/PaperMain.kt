@@ -2,9 +2,9 @@ package dev.slne.hideandnseek
 
 import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
 import com.mojang.serialization.Dynamic
-import dev.jorel.commandapi.wrappers.Location2D
 import dev.slne.hideandnseek.command.hasCommand
 import dev.slne.hideandnseek.game.HASGameRules
+import dev.slne.hideandnseek.game.area.HASGameArea
 import dev.slne.hideandnseek.listener.HASListenerManager
 import dev.slne.hideandnseek.papi.HASPlaceholder
 import dev.slne.hideandnseek.storage.HASData
@@ -12,6 +12,7 @@ import dev.slne.hideandnseek.storage.HASDataFixers
 import dev.slne.hideandnseek.storage.HASStorageSource
 import dev.slne.surf.surfapi.bukkit.api.event.listen
 import dev.slne.surf.surfapi.bukkit.api.hook.papi.papiHook
+import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import kotlinx.io.IOException
 import org.bukkit.Bukkit
 import org.bukkit.event.world.WorldSaveEvent
@@ -57,8 +58,31 @@ class PaperMain : SuspendingJavaPlugin() {
             componentLogger.info("No HAS data found. Creating new data file.")
             val spawn = Bukkit.getWorlds().first().spawnLocation
 
-            data = HASData(HASSettings(spawn, spawn, HASGameRules(), null, spawn.world, Location2D(spawn.world, spawn.x, spawn.z)))
+            data = HASData(
+                HASSettings(
+                    HASGameRules(),
+                    null,
+                    mutableObject2ObjectMapOf()
+                )
+            )
             session.saveDataTag(data)
+        }
+
+        for ((worldName, _) in data.settings.areaSettings) {
+            val loadedWorld = server.getWorld(worldName)
+            if (loadedWorld != null) {
+                val loaded = HASGameArea.load(worldName)
+                HASManager.addArea(loaded)
+                continue
+            }
+
+            val folder = server.worldContainer.resolve(worldName)
+            if (folder.exists()) {
+                val loaded = HASGameArea.load(worldName)
+                HASManager.addArea(loaded)
+            } else {
+                componentLogger.warn("World $worldName does not exist. Skipping area loading.")
+            }
         }
 
         listen<WorldSaveEvent> {
