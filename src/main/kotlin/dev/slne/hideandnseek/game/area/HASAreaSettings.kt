@@ -13,7 +13,7 @@ import org.bukkit.World
 import kotlin.jvm.optionals.getOrElse
 
 data class HASAreaSettings(
-    var worldName: String,
+    val worldName: String,
     var lobbyLocation: Location,
     var spawnLocation: Location,
     var world: World,
@@ -33,7 +33,7 @@ data class HASAreaSettings(
     }
 
     companion object {
-        fun create(dynamic: Dynamic<*>): HASAreaSettings {
+        fun create(worldName: String, dynamic: Dynamic<*>): HASAreaSettings {
             val worldUuid = dynamic.get("worldUid").asUuid(Bukkit.getWorlds().first().uid)
             val world = Bukkit.getWorld(worldUuid) ?: error("World with UUID $worldUuid not found")
 
@@ -48,7 +48,7 @@ data class HASAreaSettings(
             val lobbyBorderRadius = dynamic.get("lobbyBorderRadius").asInt(15)
 
             return HASAreaSettings(
-                "",
+                worldName,
                 lobbyLocation,
                 spawnLocation,
                 world,

@@ -23,6 +23,8 @@ class HASGame(val area: HASGameArea) {
     val playersDamageable get() = phase?.isPlayerDamageable == true
 
     private var prepared = false
+    var active = false
+        private set
 
     val rules get() = plugin.data.settings.gameRules
     val settings get() = plugin.data.settings
@@ -38,12 +40,14 @@ class HASGame(val area: HASGameArea) {
 
     suspend fun startGame() {
         check(prepared) { "Game is not prepared" }
+        active = true
         GamePhaseManager.startGame()
     }
 
     suspend fun stopGame(reason: HASEndReason) {
         check(prepared) { "Game is not prepared" }
 
+        active = false
         GamePhaseManager.endGame(reason)
         prepared = false
         HASManager.currentGame = null
@@ -54,6 +58,7 @@ class HASGame(val area: HASGameArea) {
     suspend fun forceStop() {
         check(prepared) { "Game is not prepared" }
 
+        active = false
         GamePhaseManager.cancelImmediately()
         prepared = false
         HASManager.currentGame = null

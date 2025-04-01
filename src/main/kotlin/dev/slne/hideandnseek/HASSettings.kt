@@ -31,21 +31,18 @@ class HASSettings(
                 .result()
                 .getOrNull()
 
+            val areaSettings = data.get("AreaSettings")
+                .asList {
+                    val worldName = it.get("worldName").asString().orThrow
+                    HASAreaSettings.create(worldName, it.get("settings").get().orThrow)
+                }
+                .associateTo(mutableObject2ObjectMapOf()) { it.worldName to it }
+
+
             return HASSettings(
                 HASGameRules(data.get("GameRules")),
                 initialSeekers,
-                data.get("AreaSettings")
-                    .asMap(
-                        { it.get("worldName").asString().orThrow },
-                        { HASAreaSettings.create(it) }
-                    )
-                    .let {
-                        mutableObject2ObjectMapOf<String, HASAreaSettings>().apply {
-                            for ((key, value) in it) {
-                                put(key, value.apply { worldName = key })
-                            }
-                        }
-                    }
+                areaSettings
             )
         }
     }

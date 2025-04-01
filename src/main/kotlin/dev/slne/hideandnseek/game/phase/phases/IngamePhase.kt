@@ -61,6 +61,8 @@ class IngamePhase(val game: HASGame) : GamePhase {
         game.seekers.forEach { it.teleportToSpawn(game) }
 
         for (currentSeconds in game.rules.getDuration(HASGameRules.RULE_GAME_TIME).inWholeSeconds downTo 1) {
+            if (!game.active) break
+
             if (currentSeconds in remainingTimeAnnouncements) {
                 server.sendText {
                     appendPrefix()

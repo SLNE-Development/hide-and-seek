@@ -63,10 +63,11 @@ class PreparationPhase(val game: HASGame) : GamePhase {
         }, concurrent = true)
 
         for (currentSecond in game.rules.getDuration(HASGameRules.RULE_PREPARATION_TIME).inWholeSeconds downTo 1) {
+            if (!game.active) break
             if (currentSecond in announcements) {
                 server.sendText {
                     appendPrefix()
-                    info("Die Verstecker haben noch ")
+                    info("Die Versteckenden haben noch ")
                     append(
                         TimeUtil.formatLongTimestamp(
                             TimeUnit.SECONDS,

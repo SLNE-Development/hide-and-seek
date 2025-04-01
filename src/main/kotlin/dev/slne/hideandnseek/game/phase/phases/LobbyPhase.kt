@@ -41,6 +41,7 @@ class LobbyPhase(val game: HASGame) : GamePhase {
 
     override suspend fun start() {
         for (time in game.rules.getDuration(HASGameRules.RULE_LOBBY_TIME).inWholeSeconds downTo 1) {
+            if (!game.active) break
             server.sendActionBar(
                 TimeUtil.formatTimestamp(
                     TimeUnit.SECONDS,
