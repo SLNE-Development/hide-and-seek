@@ -202,7 +202,8 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
                 val duration = plugin.data.settings.gameRules
                     .getDuration(HASGameRules.RULE_GLOW_ITEM_EFFECT_DURATION)
 
-                if (runPreCheck(player, item, duration)) {
+                if (runPreCheck(player, item,  plugin.data.settings.gameRules
+                        .getDuration(HASGameRules.RULE_SPECIAL_ITEM_COOLDOWN))) {
                     val effect = PotionEffectType.GLOWING.createEffect(
                         (duration.inWholeMilliseconds / Ticks.SINGLE_TICK_DURATION_MS).toInt(),
                         255
