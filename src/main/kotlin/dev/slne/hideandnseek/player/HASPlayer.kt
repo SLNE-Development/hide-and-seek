@@ -22,6 +22,7 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
+import kotlin.math.sqrt
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 import org.bukkit.Sound as BukkitSound
@@ -76,7 +77,7 @@ class HASPlayer(val uuid: UUID) {
                 if (attribute != null) {
                     attribute.baseValue = scale
                 }
-                walkSpeed = (scale * 0.2f).coerceIn(0.01, 1.0).toFloat()
+                walkSpeed = (0.2f * sqrt(scale)).coerceIn(0.01, 1.0).toFloat()
             }
         }
     }
