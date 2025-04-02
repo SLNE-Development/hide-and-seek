@@ -50,16 +50,12 @@ object HASDeathListener : Listener {
             }
         })
 
-        print("${player.name} ist gestorben!")
         plugin.launch {
             try {
                 if (hasPlayer.hider) {
-                    println("${player.name} ist ein Verstecker!")
                     if (game.rules.getBoolean(HASGameRules.RULE_DO_HIDERS_BECOME_SEEKERS)) {
-                        println("${player.name} wird ein Sucher!")
                         hasPlayer.setRole(HASSeekerRole)
                     } else {
-                        println("${player.name} wird ein Zuschauer!")
                         try {
                             hasPlayer.setRole(HASSpectatorRole)
                         } finally {
@@ -72,7 +68,6 @@ object HASDeathListener : Listener {
                     }
                 }
             } finally {
-                println("Player check!")
                 game.performPlayerCheck()
             }
         }
