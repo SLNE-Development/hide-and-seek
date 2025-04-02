@@ -2,6 +2,7 @@ package dev.slne.hideandnseek.listener.listeners
 
 import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
+import com.github.shynixn.mccoroutine.folia.ticks
 import dev.slne.hideandnseek.HASManager
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.game.phase.phases.PreparationPhase
@@ -9,6 +10,7 @@ import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.HAS
 import dev.slne.hideandnseek.util.cancel
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
+import kotlinx.coroutines.delay
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -52,6 +54,7 @@ object HASDamageListener : Listener {
 
         if (hasDamager.seeker && game.rules.getBoolean(HASGameRules.RULE_IS_ONE_HIT_KNOCK_OUT)) {
             plugin.launch(plugin.entityDispatcher(target)) {
+                delay(1.ticks)
                 target.damage(Float.MAX_VALUE.toDouble(), damager)
             }
         }
