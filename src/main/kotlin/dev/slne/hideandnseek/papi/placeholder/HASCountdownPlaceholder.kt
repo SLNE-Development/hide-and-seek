@@ -10,7 +10,7 @@ class HASCountdownPlaceholder: PapiPlaceholder("countdown") {
         player: OfflinePlayer,
         args: List<String>
     ): String? {
-        return TimeUtil.formatTimestampString(TimeUnit.SECONDS, currentCountdownSeconds ?: return null)
+        return TimeUtil.formatTimestampString(TimeUnit.SECONDS, currentCountdownSeconds ?: 0)
     }
 
     companion object {

@@ -8,14 +8,12 @@ class HASCountPlaceholder: PapiPlaceholder("count") {
     enum class Type(val value: String) {
         HIDER("hider") {
             override fun parse(player: OfflinePlayer): String? {
-                val game = HASManager.currentGame ?: return null
-                return game.hiders.count().toString()
+                return HASManager.currentGame?.hiders?.count()?.toString() ?: "0"
             }
         },
         SEEKER("seeker") {
             override fun parse(player: OfflinePlayer): String? {
-                val game = HASManager.currentGame ?: return null
-                return game.seekers.count().toString()
+                return HASManager.currentGame?.seekers?.count()?.toString() ?: "0"
             }
         };
 
