@@ -3,6 +3,7 @@ package dev.slne.hideandnseek.game.role
 import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import com.jeff_media.morepersistentdatatypes.DataType
+import dev.slne.hideandnseek.HASManager
 import dev.slne.hideandnseek.game.HASGame
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.old.util.TimeUtil
@@ -286,9 +287,24 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
             item: ItemStack,
             cooldown: Duration
         ): Boolean {
+            val game = HASManager.currentGame ?: run {
+                player.sendText {
+                    appendPrefix()
+                    error("Aktuell ist kein Spiel aktiv und du kannst das Item nicht benutzen.")
+                }
+                return false
+            }
+
+            if (game.canPlayersJoin) {
+                player.sendText {
+                    appendPrefix()
+                    error("Du kannst das Item noch nicht benutzen, da das Spiel noch nicht gestartet ist.")
+                }
+                return false
+            }
+
             val currentTime = System.currentTimeMillis()
             val remainingTime = cooldown.inWholeMilliseconds - (currentTime - lastUseTime)
-
 
             if (remainingTime <= 0) {
                 lastUseTime = currentTime
