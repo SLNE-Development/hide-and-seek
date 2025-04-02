@@ -28,6 +28,7 @@ import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -78,6 +79,7 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
                 meta {
                     isUnbreakable = true
                 }
+                addEnchantment(Enchantment.INFINITY, Enchantment.INFINITY.maxLevel)
             }
             val arrow = buildItem(Material.ARROW) {
                 displayName { primary("Pfeil der Unendlichkeit") }
