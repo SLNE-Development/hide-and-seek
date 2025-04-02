@@ -30,15 +30,11 @@ import org.bukkit.Sound as BukkitSound
 
 class PreparationPhase(val game: HASGame) : GamePhase {
 
-    private var previousMaxPlayers = -1
     private var previousWorldBorderSize = -1.0
     override val isPlayerDamageable = true
 
     override suspend fun start() = coroutineScope {
         withContext(plugin.globalRegionDispatcher) {
-            previousMaxPlayers = server.maxPlayers
-            server.maxPlayers = 0
-
             // TODO: 31.03.2025 16:46 - change difficulty to peaceful
 
             val worldBorder = game.area.settings.world.worldBorder
@@ -131,10 +127,6 @@ class PreparationPhase(val game: HASGame) : GamePhase {
 
     override suspend fun reset() {
         withContext(plugin.globalRegionDispatcher) {
-            if (previousMaxPlayers != -1) {
-                server.maxPlayers = previousMaxPlayers
-            }
-
             if (previousWorldBorderSize != -1.0) {
                 game.area.settings.world.worldBorder.size = previousWorldBorderSize
             }

@@ -18,10 +18,16 @@ import kotlin.time.Duration.Companion.seconds
 
 class LobbyPhase(val game: HASGame) : GamePhase {
 
+    private var previousMaxPlayers = -1
+
+
     override suspend fun prepare() {
         game.teleportToLobby()
 
         withContext(plugin.globalRegionDispatcher) {
+            previousMaxPlayers = server.maxPlayers
+            server.maxPlayers = 0
+
             val areaSettings = game.area.settings
             val world = areaSettings.world
 
@@ -65,6 +71,14 @@ class LobbyPhase(val game: HASGame) : GamePhase {
             }
 
             delay(1.seconds)
+        }
+    }
+
+    override suspend fun reset() {
+        withContext(plugin.globalRegionDispatcher) {
+            if (previousMaxPlayers != -1) {
+                server.maxPlayers = previousMaxPlayers
+            }
         }
     }
 
