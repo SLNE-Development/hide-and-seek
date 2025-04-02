@@ -21,8 +21,7 @@ import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.util.Ticks
 import org.bukkit.Color
@@ -271,7 +270,6 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
 
         abstract suspend fun handle(player: Player, item: ItemStack)
 
-
         private var lastUseTime = 0L
 
         /**
@@ -308,13 +306,19 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
 
             if (remainingTime <= 0) {
                 lastUseTime = currentTime
+
+                val cooldownJobs = coroutineScope {
+                    game.seekers.map { seeker ->
+                        launch {
+                            seeker.sendCooldown(item, cooldown)
+                        }
+                    }
+                }
+
+                cooldownJobs.joinAll()
                 return true
             }
 
-            withContext(plugin.entityDispatcher(player)) {
-                val ticks = (remainingTime / Ticks.SINGLE_TICK_DURATION_MS).toInt()
-                player.setCooldown(item, ticks)
-            }
             return false
         }
 

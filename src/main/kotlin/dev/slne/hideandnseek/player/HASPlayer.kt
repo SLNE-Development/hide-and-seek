@@ -12,6 +12,7 @@ import dev.slne.hideandnseek.util.tp
 import dev.slne.surf.surfapi.core.api.messages.adventure.Sound
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import io.papermc.paper.util.Tick
 import kotlinx.coroutines.withContext
 import net.kyori.adventure.sound.Sound
 import net.querz.nbt.tag.CompoundTag
@@ -19,7 +20,10 @@ import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import java.util.*
+import kotlin.time.Duration
+import kotlin.time.toJavaDuration
 import org.bukkit.Sound as BukkitSound
 
 class HASPlayer(val uuid: UUID) {
@@ -113,6 +117,13 @@ class HASPlayer(val uuid: UUID) {
     fun toTag() = CompoundTag().apply {
         putString("uuid", uuid.toString())
         putString("roleClass", role::class.java.name)
+    }
+
+    suspend fun sendCooldown(stack: ItemStack, cooldown: Duration) {
+        val player = player ?: return
+        withContext(plugin.entityDispatcher(player)) {
+            player.setCooldown(stack, Tick.tick().fromDuration(cooldown.toJavaDuration()))
+        }
     }
 
     companion object {
