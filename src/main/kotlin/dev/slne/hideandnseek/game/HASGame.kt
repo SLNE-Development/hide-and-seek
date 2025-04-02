@@ -10,6 +10,8 @@ import dev.slne.hideandnseek.util.HAS
 import dev.slne.hideandnseek.util.tp
 import dev.slne.surf.surfapi.bukkit.api.util.forEachPlayerInRegion
 import dev.slne.surf.surfapi.core.api.util.random
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import kotlin.random.asKotlinRandom
 
@@ -60,17 +62,25 @@ class HASGame(val area: HASGameArea) {
 
         active = false
         GamePhaseManager.cancelImmediately()
+        reset()
         prepared = false
         HASManager.currentGame = null
-
-        reset()
     }
 
     suspend fun reset() {
-        forEachPlayerInRegion(
-            { it.HAS.setRole(HASUndefinedRole, sendMessage = false) },
-            concurrent = true
-        )
+        coroutineScope {
+            val roleJob = launch {
+                forEachPlayerInRegion(
+                    { it.HAS.setRole(HASUndefinedRole, sendMessage = false) },
+                    concurrent = true
+                )
+            }
+
+            val resetJob = launch { GamePhaseManager.resetGame() }
+
+            roleJob.join()
+            resetJob.join()
+        }
     }
 
     suspend fun performPlayerCheck() {
