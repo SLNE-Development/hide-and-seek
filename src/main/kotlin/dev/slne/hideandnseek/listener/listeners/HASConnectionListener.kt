@@ -25,6 +25,8 @@ object HASConnectionListener: Listener {
         val player = event.player
         val hasPlayer = player.HAS
 
+        player.sendRawMessage("§n§o§m§i§n§i§m§a§p")
+
         event.joinMessage(buildText {
             appendPrefix()
             append(hasPlayer.displayName())
