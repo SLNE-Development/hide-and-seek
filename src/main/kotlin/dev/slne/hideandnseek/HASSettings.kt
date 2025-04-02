@@ -107,10 +107,10 @@ class HASSettings(
 }
 
 fun OptionalDynamic<*>.asLocation(): Location {
-    val worldUid = get("worldUid").asUuid(Bukkit.getWorlds().first().uid)
-    val x = get("x").asDouble(0.0)
-    val y = get("y").asDouble(0.0)
-    val z = get("z").asDouble(0.0)
+    val worldUid = get("worldUid").asUuid(null)
+    val x = get("x").asNumber().orThrow.toDouble()
+    val y = get("y").asNumber().orThrow.toDouble()
+    val z = get("z").asNumber().orThrow.toDouble()
     return Location(Bukkit.getWorld(worldUid), x, y, z)
 }
 

@@ -12,8 +12,10 @@ import org.bukkit.WorldCreator
 
 class HASGameArea(
     val world: World,
-    val settings: HASAreaSettings
 ) {
+    lateinit var settings: HASAreaSettings
+
+
     suspend fun unload() {
         withContext(plugin.globalRegionDispatcher) {
             Bukkit.unloadWorld(world, true)
@@ -30,15 +32,14 @@ class HASGameArea(
                     ?: error("World $name could not be loaded")
             }
 
-            val spawn = world.spawnLocation
-            val existingSettings = if (checkForLoadedSettings) plugin.data.settings.areaSettings[name] else null
-            val areaSettings = existingSettings ?: HASAreaSettings(name, spawn, world).also {
+            return HASGameArea(world).also {
                 if (checkForLoadedSettings) {
-                    plugin.data.settings.areaSettings[name] = it
+                    val spawn = world.spawnLocation
+                    it.settings = HASAreaSettings(name, spawn, world).also {
+                        plugin.data.settings.areaSettings[name] = it
+                    }
                 }
             }
-
-            return HASGameArea(world, areaSettings)
         }
     }
 }

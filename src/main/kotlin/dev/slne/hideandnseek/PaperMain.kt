@@ -76,21 +76,24 @@ class PaperMain : SuspendingJavaPlugin() {
             val loadedWorld = server.getWorld(worldName)
             if (loadedWorld != null) {
                 val loaded = HASGameArea.load(worldName, checkForLoadedSettings = false)
-                HASManager.addArea(loaded)
+                HASManager.addArea(worldName, loaded)
                 continue
             }
 
             val folder = server.worldContainer.resolve(worldName)
             if (folder.exists()) {
                 val loaded = HASGameArea.load(worldName, checkForLoadedSettings = false)
-                HASManager.addArea(loaded)
+                HASManager.addArea(worldName, loaded)
             } else {
                 componentLogger.warn("World $worldName does not exist. Skipping area loading.")
             }
         }
 
         with(data.settings) {
-            areaSettings// initialize the area settings
+            areaSettings.forEach {(name, settings) ->
+                HASManager.getArea(name)!!.settings = settings
+            }
+
             refreshLobbyLocation()
         }
 

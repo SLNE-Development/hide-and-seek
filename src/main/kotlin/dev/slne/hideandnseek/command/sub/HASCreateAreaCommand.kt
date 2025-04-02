@@ -27,7 +27,7 @@ fun CommandTree.createAreaCommand() = literalArgument("createArea") {
 
             plugin.launch {
                 val loaded = HASGameArea.load(worldName)
-                HASManager.addArea(loaded)
+                HASManager.addArea(worldName, loaded)
 
                 sender.sendText {
                     appendPrefix()

@@ -27,13 +27,14 @@ fun CommandTree.setSpawnCommand() = literalArgument("setspawn"){
 }
 
 private fun setSpawn(sender: Player, location: Location, rotation: Rotation = Rotation(0f, 0f)) {
-    sender.getAreaOrThrow().settings.spawnLocation = location.apply {
+    val finalLocation = location.clone().apply {
         yaw = rotation.yaw
         pitch = rotation.pitch
     }
+    sender.getAreaOrThrow().settings.spawnLocation = finalLocation
 
     sender.sendText {
         appendPrefix()
-        success("Du hast den Spawn gesetzt.")
+        success("Du hast den Spawn zu $finalLocation gesetzt.")
     }
 }

@@ -35,8 +35,8 @@ object HASManager {
         return areas[name]
     }
 
-    fun addArea(area: HASGameArea) {
-        areas[area.settings.worldName] = area
+    fun addArea(name: String, area: HASGameArea) {
+        areas[name] = area
     }
 
     fun getAreaKeys(): Set<String> {
