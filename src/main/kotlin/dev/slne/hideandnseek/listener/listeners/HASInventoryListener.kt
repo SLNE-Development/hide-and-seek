@@ -8,6 +8,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 
 object HASInventoryListener : Listener {
 
@@ -28,6 +29,13 @@ object HASInventoryListener : Listener {
     @EventHandler
     fun onInventoryDrag(event: InventoryDragEvent) {
         if (!HASManager.isBypassing(event.whoClicked as? Player ?: return)) {
+            event.cancel()
+        }
+    }
+
+    @EventHandler
+    fun onPlayerSwapHandItems(event: PlayerSwapHandItemsEvent) {
+        if (!HASManager.isBypassing(event.player)) {
             event.cancel()
         }
     }
