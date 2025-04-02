@@ -63,7 +63,7 @@ object HASDamageListener : Listener {
         if (game.canPlayersJoin) return event.cancel()
 
         val hasPlayer = event.player.HAS
-        if (!hasPlayer.seeker || !hasPlayer.hider) return event.cancel()
+        if (!hasPlayer.seeker && !hasPlayer.hider) return event.cancel()
     }
 
     @EventHandler
