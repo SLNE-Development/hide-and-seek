@@ -10,6 +10,7 @@ object HASPlayerMoveListener : Listener {
 
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent) {
+        if (!(event.hasChangedBlock())) return
         val game = HASManager.currentGame ?: return
         if (!game.playersDamageable) return
 
