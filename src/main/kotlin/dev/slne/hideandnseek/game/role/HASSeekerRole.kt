@@ -7,6 +7,7 @@ import dev.slne.hideandnseek.HASManager
 import dev.slne.hideandnseek.game.HASGame
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.old.util.TimeUtil
+import dev.slne.hideandnseek.player.HASPlayer
 import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.HAS
 import dev.slne.hideandnseek.util.tp
@@ -37,6 +38,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffectType
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 private val specialItemCooldownGroup = key("has_special_item_cooldown")
 
@@ -179,14 +181,22 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
                 setItem(0, sword)
                 setItem(1, bow)
                 setItem(8, arrow)
-                setItem(3, glowItem)
-                setItem(4, shrinkItem)
+                setItem(4, glowItem)
+                setItem(5, shrinkItem)
 
                 this.helmet = helmet
                 this.chestplate = chestplate
                 this.leggings = leggings
                 this.boots = boots
             }
+
+            val has = player.HAS
+            SpecialItemType.GLOW.sendRemainingCooldown(
+                has,
+                glowItem,
+                plugin.data.settings.gameRules
+                    .getDuration(HASGameRules.RULE_SPECIAL_ITEM_COOLDOWN)
+            )
         }
 
     override suspend fun teleportStartPosition(player: Player, game: HASGame) {
@@ -322,6 +332,16 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
             }
 
             return false
+        }
+
+        suspend fun sendRemainingCooldown(
+            player: HASPlayer,
+            item: ItemStack,
+            cooldown: Duration
+        ) {
+            val remainingTime = cooldown.inWholeMilliseconds - (System.currentTimeMillis() - lastUseTime)
+            val remainingDuration = remainingTime.milliseconds
+            player.sendCooldown(item, remainingDuration)
         }
 
         companion object {
