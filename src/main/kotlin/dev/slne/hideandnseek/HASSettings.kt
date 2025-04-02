@@ -59,6 +59,7 @@ class HASSettings(
                     val worldName = it.get("worldName").asString().orThrow
                     HASAreaSettings.create(worldName, it.get("settings").get().orThrow)
                 }
+                .filterNotNull()
                 .associateTo(mutableObject2ObjectMapOf()) { it.worldName to it }
             }
 

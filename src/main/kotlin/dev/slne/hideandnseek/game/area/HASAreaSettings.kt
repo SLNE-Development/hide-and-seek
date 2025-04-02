@@ -25,9 +25,9 @@ data class HASAreaSettings(
     }
 
     companion object {
-        fun create(worldName: String, dynamic: Dynamic<*>): HASAreaSettings {
+        fun create(worldName: String, dynamic: Dynamic<*>): HASAreaSettings? {
             val worldUuid = dynamic.get("worldUid").asUuid(null)
-            val world = Bukkit.getWorld(worldUuid) ?: error("World with UUID $worldUuid not found")
+            val world = Bukkit.getWorld(worldUuid) ?: return null
 
             val spawnLocation = dynamic.get("spawnLocation").asLocation()
             val startRadius = dynamic.get("startRadius").asInt(1000)
