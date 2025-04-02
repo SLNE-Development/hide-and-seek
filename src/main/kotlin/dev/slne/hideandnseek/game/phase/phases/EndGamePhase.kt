@@ -19,7 +19,9 @@ import kotlin.time.Duration.Companion.seconds
 class EndGamePhase(val game: HASGame) : GamePhase {
 
     override suspend fun start() {
-        game.stopGame(HASEndReason.TIME_UP)
+        if (game.active) {
+            game.stopGame(HASEndReason.TIME_UP)
+        }
     }
 
     override suspend fun end(reason: HASEndReason) {
