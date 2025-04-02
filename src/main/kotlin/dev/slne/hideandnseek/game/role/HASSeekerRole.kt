@@ -212,22 +212,24 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
                     ).withIcon(false).withParticles(false).withAmbient(false)
 
                     forEachPlayerInRegion({
-                        if (it.HAS.hider) {
+                        val has = it.HAS
+                        if (has.hider) {
                             it.addPotionEffect(effect)
+                        } else if (has.seeker) {
+                            it.sendText {
+                                appendPrefix()
+                                info("Die Versteckten Spieler sind nun für ")
+                                append(
+                                    TimeUtil.formatLongTimestamp(
+                                        TimeUnit.SECONDS,
+                                        duration.inWholeSeconds,
+                                        Colors.VARIABLE_VALUE
+                                    )
+                                )
+                                info(" sichtbar.")
+                            }
                         }
                     })
-                    player.sendText {
-                        appendPrefix()
-                        info("Die Versteckten Spieler sind nun für ")
-                        append(
-                            TimeUtil.formatLongTimestamp(
-                                TimeUnit.SECONDS,
-                                duration.inWholeSeconds,
-                                Colors.VARIABLE_VALUE
-                            )
-                        )
-                        info(" sichtbar.")
-                    }
                 }
             }
         },
