@@ -42,4 +42,8 @@ object HASManager {
     fun getAreaKeys(): Set<String> {
         return areas.keys
     }
+
+    fun removeArea(area: HASGameArea) {
+        areas.remove(area.settings.worldName)
+    }
 }

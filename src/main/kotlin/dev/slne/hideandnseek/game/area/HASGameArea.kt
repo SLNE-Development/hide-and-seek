@@ -6,6 +6,7 @@ import dev.slne.hideandnseek.HASManager
 import dev.slne.hideandnseek.plugin
 import dev.slne.surf.surfapi.bukkit.api.extensions.server
 import kotlinx.coroutines.withContext
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.WorldCreator
 
@@ -13,6 +14,12 @@ class HASGameArea(
     val world: World,
     val settings: HASAreaSettings
 ) {
+    suspend fun unload() {
+        withContext(plugin.globalRegionDispatcher) {
+            Bukkit.unloadWorld(world, true)
+        }
+    }
+
     companion object {
         suspend fun load(name: String, loadAsync: Boolean = false, checkForLoadedSettings: Boolean = true): HASGameArea {
             val existingWorld = server.getWorld(name)

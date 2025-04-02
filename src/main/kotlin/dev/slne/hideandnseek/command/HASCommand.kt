@@ -18,6 +18,7 @@ fun hasCommand() = commandTree("hideandseek") {
     setSpawnCommand()
     startCommand()
     createAreaCommand()
+    deleteAreaCommand()
 }
 
 fun Player.getAreaOrThrow() = world.getArea() ?: throw CommandAPI.failWithString("Du befindest dich nicht in einer Arena.")
