@@ -26,7 +26,7 @@ fun CommandTree.deleteAreaCommand() = literalArgument("deleteArea") {
                     throw CommandAPI.failWithString("Area with name $worldName not found.")
                 }
 
-                HASManager.removeArea(area)
+                HASManager.deleteArea(area)
                 area.unload()
 
                 sender.sendText {

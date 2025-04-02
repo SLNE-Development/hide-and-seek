@@ -43,7 +43,8 @@ object HASManager {
         return areas.keys
     }
 
-    fun removeArea(area: HASGameArea) {
+    fun deleteArea(area: HASGameArea) {
         areas.remove(area.settings.worldName)
+        settings.areaSettings.remove(area.settings.worldName)
     }
 }
