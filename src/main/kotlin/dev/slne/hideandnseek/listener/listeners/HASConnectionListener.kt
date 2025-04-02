@@ -27,12 +27,6 @@ object HASConnectionListener: Listener {
 
         player.sendRawMessage("§n§o§m§i§n§i§m§a§p")
 
-        event.joinMessage(buildText {
-            appendPrefix()
-            append(hasPlayer.displayName())
-            spacer(" hat das Spiel betreten.")
-        })
-
         plugin.launch {
             hasPlayer.reset()
             val runningGame = HASManager.currentGame
