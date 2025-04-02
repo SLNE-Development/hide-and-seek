@@ -1,5 +1,6 @@
 package dev.slne.hideandnseek.command.sub
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.CommandTree
 import dev.jorel.commandapi.arguments.LocationType
 import dev.jorel.commandapi.kotlindsl.anyExecutor
@@ -18,12 +19,14 @@ fun CommandTree.setLobbyCommand() = literalArgument("setLobby") {
         anyExecutor { sender, args ->
             val location: Location by args
 
-            plugin.data.settings.lobbyLocation = location
-            sender.sendText {
-                appendPrefix()
-                success("Die Lobby-Position wurde auf ")
-                variableValue(location.toString())
-                success(" gesetzt.")
+            plugin.launch {
+                plugin.data.settings.changeLobbyLocation(location)
+                sender.sendText {
+                    appendPrefix()
+                    success("Die Lobby-Position wurde auf ")
+                    variableValue(location.toString())
+                    success(" gesetzt.")
+                }
             }
         }
     }

@@ -14,10 +14,8 @@ class HASGameArea(
     val settings: HASAreaSettings
 ) {
     companion object {
-        suspend fun load(name: String, loadAsync: Boolean = false): HASGameArea {
-            val existingSettings = plugin.data.settings.areaSettings[name]
+        suspend fun load(name: String, loadAsync: Boolean = false, checkForLoadedSettings: Boolean = true): HASGameArea {
             val existingWorld = server.getWorld(name)
-
             val world = existingWorld ?: withContext(
                 if (loadAsync) plugin.asyncDispatcher else plugin.globalRegionDispatcher
             ) {
@@ -26,8 +24,11 @@ class HASGameArea(
             }
 
             val spawn = world.spawnLocation
+            val existingSettings = if (checkForLoadedSettings) plugin.data.settings.areaSettings[name] else null
             val areaSettings = existingSettings ?: HASAreaSettings(name, spawn, world).also {
-                plugin.data.settings.areaSettings[name] = it
+                if (checkForLoadedSettings) {
+                    plugin.data.settings.areaSettings[name] = it
+                }
             }
 
             return HASGameArea(world, areaSettings)

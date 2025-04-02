@@ -1,6 +1,7 @@
 package dev.slne.hideandnseek
 
 import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
+import com.google.common.base.Suppliers
 import com.mojang.serialization.Dynamic
 import dev.slne.hideandnseek.command.hasCommand
 import dev.slne.hideandnseek.game.HASGameRules
@@ -13,6 +14,7 @@ import dev.slne.hideandnseek.storage.HASStorageSource
 import dev.slne.surf.surfapi.bukkit.api.event.listen
 import dev.slne.surf.surfapi.bukkit.api.hook.papi.papiHook
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
+import dev.slne.surf.surfapi.core.api.util.objectSetOf
 import kotlinx.io.IOException
 import org.bukkit.Bukkit
 import org.bukkit.event.world.WorldSaveEvent
@@ -62,28 +64,34 @@ class PaperMain : SuspendingJavaPlugin() {
                 HASSettings(
                     HASGameRules(),
                     null,
-                    mutableObject2ObjectMapOf(),
+                    Suppliers.memoize { mutableObject2ObjectMapOf() },
+                    objectSetOf(),
                     spawn
                 )
             )
             session.saveDataTag(data)
         }
 
-        for ((worldName, _) in data.settings.areaSettings) {
+        for (worldName in data.settings.worldsToLoad) {
             val loadedWorld = server.getWorld(worldName)
             if (loadedWorld != null) {
-                val loaded = HASGameArea.load(worldName)
+                val loaded = HASGameArea.load(worldName, checkForLoadedSettings = false)
                 HASManager.addArea(loaded)
                 continue
             }
 
             val folder = server.worldContainer.resolve(worldName)
             if (folder.exists()) {
-                val loaded = HASGameArea.load(worldName)
+                val loaded = HASGameArea.load(worldName, checkForLoadedSettings = false)
                 HASManager.addArea(loaded)
             } else {
                 componentLogger.warn("World $worldName does not exist. Skipping area loading.")
             }
+        }
+
+        with(data.settings) {
+            areaSettings// initialize the area settings
+            refreshLobbyLocation()
         }
 
         listen<WorldSaveEvent> {
