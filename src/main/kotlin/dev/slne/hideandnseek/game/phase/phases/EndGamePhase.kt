@@ -26,7 +26,6 @@ class EndGamePhase(val game: HASGame) : GamePhase {
 
     override suspend fun end(reason: HASEndReason) {
         for (currentSecond in game.rules.getDuration(HASGameRules.RULE_CELEBRATION_TIME_SECONDS).inWholeSeconds downTo 0) {
-            if (!game.active) break
             server.sendActionBar(
                 TimeUtil.formatTimestamp(
                     TimeUnit.SECONDS,
