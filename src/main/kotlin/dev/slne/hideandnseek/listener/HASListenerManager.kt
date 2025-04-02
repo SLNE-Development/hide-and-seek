@@ -17,5 +17,6 @@ object HASListenerManager {
         HASRegenerationListener.register()
         HASRespawnListener.register()
         HASEntityDestroyListener.register()
+        HASProjectileShootListener.register()
     }
 }
