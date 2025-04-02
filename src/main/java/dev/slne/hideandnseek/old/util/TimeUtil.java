@@ -55,4 +55,12 @@ public class TimeUtil {
 
     return Component.text("%1$02d:%2$02d:%3$02d".formatted(hours, minutes, seconds), textColor);
   }
+
+  public static String formatTimestampString(@NotNull TimeUnit timeUnit, long time) {
+    long hours = timeUnit.toHours(time);
+    long minutes = timeUnit.toMinutes(time) % 60;
+    long seconds = timeUnit.toSeconds(time) % 60;
+
+    return "%1$02d:%2$02d:%3$02d".formatted(hours, minutes, seconds);
+  }
 }

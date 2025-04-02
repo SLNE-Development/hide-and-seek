@@ -6,6 +6,7 @@ import dev.slne.hideandnseek.game.HASGame
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.game.phase.GamePhase
 import dev.slne.hideandnseek.old.util.TimeUtil
+import dev.slne.hideandnseek.papi.placeholder.HASCountdownPlaceholder
 import dev.slne.hideandnseek.plugin
 import dev.slne.surf.surfapi.bukkit.api.extensions.server
 import dev.slne.surf.surfapi.bukkit.api.util.forEachPlayerInRegion
@@ -61,7 +62,10 @@ class IngamePhase(val game: HASGame) : GamePhase {
         game.seekers.forEach { it.teleportToSpawn(game) }
 
         for (currentSeconds in game.rules.getDuration(HASGameRules.RULE_GAME_TIME).inWholeSeconds downTo 1) {
-            if (!game.active) break
+            if (!game.active) {
+                HASCountdownPlaceholder.currentCountdownSeconds = null
+                break
+            }
 
             if (currentSeconds in remainingTimeAnnouncements) {
                 server.sendText {
@@ -78,14 +82,15 @@ class IngamePhase(val game: HASGame) : GamePhase {
                 }
             }
 
-            server.sendActionBar(
-                TimeUtil.formatTimestamp(
-                    TimeUnit.SECONDS,
-                    currentSeconds,
-                    Colors.VARIABLE_VALUE
-                )
-            )
+//            server.sendActionBar(
+//                TimeUtil.formatTimestamp(
+//                    TimeUnit.SECONDS,
+//                    currentSeconds,
+//                    Colors.VARIABLE_VALUE
+//                )
+//            )
 
+            HASCountdownPlaceholder.currentCountdownSeconds = currentSeconds
             delay(1.seconds)
         }
     }

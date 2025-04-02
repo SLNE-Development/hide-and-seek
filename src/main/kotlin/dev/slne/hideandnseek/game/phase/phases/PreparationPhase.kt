@@ -8,6 +8,7 @@ import dev.slne.hideandnseek.game.role.HASHiderRole
 import dev.slne.hideandnseek.game.role.HASSeekerRole
 import dev.slne.hideandnseek.game.role.HASUndefinedRole
 import dev.slne.hideandnseek.old.util.TimeUtil
+import dev.slne.hideandnseek.papi.placeholder.HASCountdownPlaceholder
 import dev.slne.hideandnseek.player.HASPlayer
 import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.HAS
@@ -59,7 +60,10 @@ class PreparationPhase(val game: HASGame) : GamePhase {
         }, concurrent = true)
 
         for (currentSecond in game.rules.getDuration(HASGameRules.RULE_PREPARATION_TIME).inWholeSeconds downTo 1) {
-            if (!game.active) break
+            if (!game.active) {
+                HASCountdownPlaceholder.currentCountdownSeconds = null
+                break
+            }
             if (currentSecond in announcements) {
                 server.sendText {
                     appendPrefix()
@@ -74,14 +78,15 @@ class PreparationPhase(val game: HASGame) : GamePhase {
                     info(" bis zum Spielstart!")
                 }
             }
-            server.sendActionBar(
-                TimeUtil.formatTimestamp(
-                    TimeUnit.SECONDS,
-                    currentSecond,
-                    Colors.VARIABLE_VALUE,
-                )
-            )
+//            server.sendActionBar(
+//                TimeUtil.formatTimestamp(
+//                    TimeUnit.SECONDS,
+//                    currentSecond,
+//                    Colors.VARIABLE_VALUE,
+//                )
+//            )
 
+            HASCountdownPlaceholder.currentCountdownSeconds = currentSecond
             delay(1.seconds)
         }
     }

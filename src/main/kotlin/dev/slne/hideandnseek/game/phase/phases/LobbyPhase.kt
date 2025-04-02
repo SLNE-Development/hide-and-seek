@@ -5,6 +5,7 @@ import dev.slne.hideandnseek.game.HASGame
 import dev.slne.hideandnseek.game.HASGameRules
 import dev.slne.hideandnseek.game.phase.GamePhase
 import dev.slne.hideandnseek.old.util.TimeUtil
+import dev.slne.hideandnseek.papi.placeholder.HASCountdownPlaceholder
 import dev.slne.hideandnseek.plugin
 import dev.slne.surf.surfapi.bukkit.api.extensions.server
 import dev.slne.surf.surfapi.core.api.messages.Colors
@@ -46,14 +47,19 @@ class LobbyPhase(val game: HASGame) : GamePhase {
 
     override suspend fun start() {
         for (time in game.rules.getDuration(HASGameRules.RULE_LOBBY_TIME).inWholeSeconds downTo 1) {
-            if (!game.active) break
-            server.sendActionBar(
-                TimeUtil.formatTimestamp(
-                    TimeUnit.SECONDS,
-                    time,
-                    Colors.VARIABLE_VALUE
-                )
-            )
+            if (!game.active) {
+                HASCountdownPlaceholder.currentCountdownSeconds = null
+                break
+            }
+//            server.sendActionBar(
+//                TimeUtil.formatTimestamp(
+//                    TimeUnit.SECONDS,
+//                    time,
+//                    Colors.VARIABLE_VALUE
+//                )
+//            )
+
+            HASCountdownPlaceholder.currentCountdownSeconds = time
 
             if (time in announcementTimes) {
                 server.sendText {
