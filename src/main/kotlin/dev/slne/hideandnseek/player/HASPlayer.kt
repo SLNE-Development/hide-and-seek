@@ -76,7 +76,7 @@ class HASPlayer(val uuid: UUID) {
                 if (attribute != null) {
                     attribute.baseValue = scale
                 }
-                walkSpeed = (scale * 0.2f).coerceIn(0.01, 1.0).toFloat()
+//                walkSpeed = (scale * 0.2f).coerceIn(0.01, 1.0).toFloat()
             }
         }
     }
