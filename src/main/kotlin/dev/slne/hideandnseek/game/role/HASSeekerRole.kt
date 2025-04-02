@@ -141,10 +141,10 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
             }
 
             val glowItem = buildItem(Material.GLOWSTONE_DUST) {
-                displayName { primary("Leuchtendes Item") }
+                displayName { primary("Leuchtstaub") }
                 buildLore {
-                    line { secondary("Ein Item, das leuchtet.") }
-                    line { info("Es ist ein Platzhalter.") }
+                    line { secondary("Lässt alle Hider für kurze Zeit leuchten.") }
+                    line { info("Hilft dir, versteckte Spieler aufzuspüren.") }
                 }
 
                 editPersistentDataContainer {
@@ -152,10 +152,10 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
                 }
             }
             val shrinkItem = buildItem(Material.BARRIER) {
-                displayName { primary("Verstecktes Item") }
+                displayName { primary("Schrumpfbarriere") }
                 buildLore {
-                    line { secondary("Ein Item, das nicht sichtbar ist.") }
-                    line { info("Es ist ein Platzhalter.") }
+                    line { secondary("Passt deine Größe an die der Versteckenden an.") }
+                    line { info("Hilft dir, dich besser in ihre Welt einzufügen.") }
                 }
 
 //                editPersistentDataContainer {
