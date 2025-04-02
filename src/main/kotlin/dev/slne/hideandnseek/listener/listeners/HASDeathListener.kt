@@ -56,11 +56,13 @@ object HASDeathListener : Listener {
                     if (game.rules.getBoolean(HASGameRules.RULE_DO_HIDERS_BECOME_SEEKERS)) {
                         hasPlayer.setRole(HASSeekerRole)
                     } else {
-                        hasPlayer.setRole(HASSpectatorRole)
-
-                        withContext(plugin.entityDispatcher(player)) {
-                            if (!player.hasPermission(HASPermissions.BYPASS_ELIMINATION_KICK)) {
-                                player.kick(buildText { error("Du bist ausgeschieden!") })
+                        try {
+                            hasPlayer.setRole(HASSpectatorRole)
+                        } finally {
+                            withContext(plugin.entityDispatcher(player)) {
+                                if (!player.hasPermission(HASPermissions.BYPASS_ELIMINATION_KICK)) {
+                                    player.kick(buildText { error("Du bist ausgeschieden!") })
+                                }
                             }
                         }
                     }
