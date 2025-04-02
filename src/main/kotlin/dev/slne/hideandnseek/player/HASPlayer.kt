@@ -43,6 +43,7 @@ class HASPlayer(val uuid: UUID) {
         withContext(plugin.entityDispatcher(player)) {
             with(player) {
                 gameMode = role.gameMode
+                role.applyScale(this)
                 role.giveInventory(this)
             }
 
