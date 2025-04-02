@@ -340,6 +340,7 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
             cooldown: Duration
         ) {
             val remainingTime = cooldown.inWholeMilliseconds - (System.currentTimeMillis() - lastUseTime)
+            if (remainingTime <= 0) return
             val remainingDuration = remainingTime.milliseconds
             player.sendCooldown(item, remainingDuration)
         }
