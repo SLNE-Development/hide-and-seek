@@ -9,6 +9,7 @@ import dev.slne.hideandnseek.game.role.HASSeekerRole
 import dev.slne.hideandnseek.game.role.HASSpectatorRole
 import dev.slne.hideandnseek.plugin
 import dev.slne.hideandnseek.util.HAS
+import dev.slne.hideandnseek.util.cancel
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import kotlinx.coroutines.withContext
 import org.bukkit.event.EventHandler
@@ -20,7 +21,8 @@ object HASDeathListener : Listener {
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.entity
         val hasPlayer = player.HAS
-        val game = HASManager.currentGame ?: return
+        val game = HASManager.currentGame ?: return event.cancel()
+        if (game.canPlayersJoin) return event.cancel()
 
         event.drops.clear()
         event.deathMessage(buildText {
