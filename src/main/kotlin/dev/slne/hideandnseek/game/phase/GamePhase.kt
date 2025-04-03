@@ -31,12 +31,14 @@ interface GamePhase {
                 )
             }
 
-            player.playSound(Sound {
-                type(BukkitSound.BLOCK_NOTE_BLOCK_PLING)
-                pitch(2f)
-                volume(.5f)
-                source(Sound.Source.BLOCK)
-            }, Sound.Emitter.self())
+            if (currentSecond in 1..10) {
+                player.playSound(Sound {
+                    type(BukkitSound.BLOCK_NOTE_BLOCK_PLING)
+                    pitch(2f)
+                    volume(.5f)
+                    source(Sound.Source.BLOCK)
+                }, Sound.Emitter.self())
+            }
         }, concurrent = true)
     }
 }
