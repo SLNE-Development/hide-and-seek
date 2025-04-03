@@ -78,7 +78,7 @@ class IngamePhase(val game: HASGame) : GamePhase {
                             Colors.VARIABLE_VALUE
                         )
                     )
-                    info(" Sekunden.")
+                    info(" .")
                 }
             }
 

@@ -228,7 +228,7 @@ object HASSeekerRole : HASRole("Sucher", TextColor.color(0xE74C3C)) {
                         } else if (has.seeker) {
                             it.sendText {
                                 appendPrefix()
-                                info("Die Versteckten Spieler sind nun für ")
+                                info("Die Versteckten sind nun für ")
                                 append(
                                     TimeUtil.formatLongTimestamp(
                                         TimeUnit.SECONDS,
