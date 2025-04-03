@@ -86,6 +86,7 @@ class PreparationPhase(val game: HASGame) : GamePhase {
 //                )
 //            )
 
+            sendActionbarTimerAndPlaySound(currentSecond)
             HASCountdownPlaceholder.currentCountdownSeconds = currentSecond
             delay(1.seconds)
         }

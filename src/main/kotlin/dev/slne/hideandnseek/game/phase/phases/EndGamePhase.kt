@@ -10,6 +10,7 @@ import dev.slne.hideandnseek.util.HAS
 import dev.slne.hideandnseek.util.tp
 import dev.slne.surf.surfapi.bukkit.api.util.forEachPlayerInRegion
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -21,7 +22,7 @@ class EndGamePhase(val game: HASGame) : GamePhase {
         }
     }
 
-    override suspend fun end(reason: HASEndReason) {
+    override suspend fun end(reason: HASEndReason) = coroutineScope {
         for (currentSecond in game.rules.getDuration(HASGameRules.RULE_CELEBRATION_TIME_SECONDS).inWholeSeconds downTo 0) {
 //            server.sendActionBar(
 //                TimeUtil.formatTimestamp(
@@ -30,6 +31,8 @@ class EndGamePhase(val game: HASGame) : GamePhase {
 //                    Colors.VARIABLE_VALUE
 //                )
 //            )
+
+            sendActionbarTimerAndPlaySound(currentSecond)
             HASCountdownPlaceholder.currentCountdownSeconds = currentSecond
             delay(1.seconds)
         }

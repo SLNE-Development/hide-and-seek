@@ -59,6 +59,7 @@ class LobbyPhase(val game: HASGame) : GamePhase {
 //                )
 //            )
 
+            sendActionbarTimerAndPlaySound(time)
             HASCountdownPlaceholder.currentCountdownSeconds = time
 
             if (time in announcementTimes) {
